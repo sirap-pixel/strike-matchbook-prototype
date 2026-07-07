@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mode 4 — Guide Only — Strike</title>
+<link rel="stylesheet" href="../css/design-system.css">
+<style>
+  body { padding-top: 64px; background: var(--gray-50); min-height: 100vh; }
+  .nav .tag { font-family: var(--font-mono); font-size: 11px; color: var(--gray-400); border: 1px solid var(--gray-300); border-radius: var(--radius-pill); padding: 4px 12px; }
+
+  .stage { max-width: 620px; margin: 0 auto; padding: 72px 32px 100px; }
+  .stage-head { text-align: center; margin-bottom: 44px; }
+  .stage-head .eyebrow { justify-content: center; display: block; margin-bottom: 14px; }
+  .stage-head h1 { font-size: 28px; font-weight: 500; margin-bottom: 10px; }
+  .stage-head p { font-size: 14px; color: var(--gray-600); }
+
+  .step-dots { justify-content: center; margin-bottom: 40px; }
+
+  .screen { display: none; }
+  .screen.active { display: block; animation: rise .35s ease; }
+  @keyframes rise { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  /* QUESTIONS */
+  .option-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .option-grid.two { grid-template-columns: 1fr 1fr; }
+  .option-card .swatch-preview { width: 100%; height: 54px; border-radius: var(--radius-sm); margin-bottom: 14px; }
+
+  .actions-row { display: flex; justify-content: space-between; align-items: center; margin-top: 36px; }
+  .actions-row .btn-ghost { padding: 0 14px; }
+
+  /* HANDOFF */
+  .handoff { text-align: center; padding: 40px 0; }
+  .handoff .spinner { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--gray-200); border-top-color: var(--black); margin: 0 auto 22px; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .field { margin-bottom: 0; }
+  .field label { display:block; font-size:11.5px; font-weight:500; color:var(--gray-600); margin-bottom:8px; }
+  .field input { width:100%; height:46px; border:1px solid var(--gray-300); border-radius:var(--radius-sm); padding:0 14px; font-family:var(--font); font-size:14px; color:var(--black); background:var(--white); outline:none; transition:border-color var(--ease); }
+  .field input:focus { border-color: var(--black); }
+  .field-hint { font-size: 11.5px; color: var(--gray-400); margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="wordmark" href="../index.html">STRIKE</a>
+  <div class="nav-right"><span class="tag">Flow 04 — Guide Only</span></div>
+</nav>
+
+<div class="stage">
+
+  <div class="step-dots" id="dots">
+    <span class="dot active" data-dot="q1"></span>
+    <span class="dot" data-dot="q2"></span>
+    <span class="dot" data-dot="q3"></span>
+  </div>
+
+  <!-- Q1: FORMAT -->
+  <div class="screen active" id="screen-q1">
+    <div class="stage-head">
+      <span class="eyebrow">Question 1 of 3</span>
+      <h1>Where will these live?</h1>
+      <p>Every customer starts here — this helps us suggest the right format for you.</p>
+    </div>
+    <div class="option-grid">
+      <div class="option-card" data-val="classic" onclick="pickQ1('classic',this)">
+        <h4>On every table</h4>
+        <p>Classic booklet, low profile</p>
+      </div>
+      <div class="option-card" data-val="premium" onclick="pickQ1('premium',this)">
+        <h4>At the host stand</h4>
+        <p>Premium tall format</p>
+      </div>
+      <div class="option-card" data-val="matchbox" onclick="pickQ1('matchbox',this)">
+        <h4>As a takeaway gift</h4>
+        <p>Sliding matchbox</p>
+      </div>
+    </div>
+    <div class="actions-row">
+      <div></div>
+      <button class="btn btn-primary" id="q1Continue" disabled onclick="goTo('q2')">Continue</button>
+    </div>
+  </div>
+
+  <!-- Q2: MOOD -->
+  <div class="screen" id="screen-q2">
+    <div class="stage-head">
+      <span class="eyebrow">Question 2 of 3</span>
+      <h1>Pick your palette</h1>
+      <p>Pick the mood that's closest to your space — you can fine-tune the exact color in the builder.</p>
+    </div>
+    <div class="option-grid two">
+      <div class="option-card" data-cover="#1a1a1a" data-finish="matte" onclick="pickQ2('#1a1a1a','matte',this)">
+        <div class="swatch-preview" style="background:#1a1a1a"></div>
+        <h4>Midnight</h4>
+        <p>Dark, moody, matte</p>
+      </div>
+      <div class="option-card" data-cover="#c8b8a2" data-finish="matte" onclick="pickQ2('#c8b8a2','matte',this)">
+        <div class="swatch-preview" style="background:#c8b8a2"></div>
+        <h4>Warm Neutral</h4>
+        <p>Earthy, inviting, matte</p>
+      </div>
+      <div class="option-card" data-cover="#ffffff" data-finish="soft" onclick="pickQ2('#ffffff','soft',this)">
+        <div class="swatch-preview" style="background:#ffffff;border:1px solid var(--gray-300)"></div>
+        <h4>Ivory Minimal</h4>
+        <p>Clean, quiet, soft-touch</p>
+      </div>
+      <div class="option-card" data-cover="#8b2635" data-finish="gloss" onclick="pickQ2('#8b2635','gloss',this)">
+        <div class="swatch-preview" style="background:#8b2635"></div>
+        <h4>Bold Color</h4>
+        <p>Confident, vivid, gloss</p>
+      </div>
+    </div>
+    <div class="actions-row">
+      <button class="btn btn-ghost" onclick="goTo('q1')">Back</button>
+      <button class="btn btn-primary" id="q2Continue" disabled onclick="goTo('q3')">Continue</button>
+    </div>
+  </div>
+
+  <!-- Q3: NAME / OPTIONAL -->
+  <div class="screen" id="screen-q3">
+    <div class="stage-head">
+      <span class="eyebrow">Question 3 of 3</span>
+      <h1>What should the front say?</h1>
+      <p>Your business name or a short line — optional, you can change this later in the builder.</p>
+    </div>
+    <div class="field">
+      <label>Front text</label>
+      <input id="q3text" maxlength="22" placeholder="e.g. The Elk">
+      <p class="field-hint">Leave blank to decide later in the builder.</p>
+    </div>
+    <div class="actions-row">
+      <button class="btn btn-ghost" onclick="goTo('q2')">Back</button>
+      <button class="btn btn-primary" onclick="finishToBuilder()">See my starting point</button>
+    </div>
+  </div>
+
+  <!-- HANDOFF -->
+  <div class="screen" id="screen-handoff">
+    <div class="handoff">
+      <div class="spinner"></div>
+      <p class="fine-print">Setting up your builder…</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const answers = { type: null, cover: null, finish: null, text: '' };
+  const DOT_ORDER = ['q1','q2','q3'];
+
+  function goTo(screen) {
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById('screen-'+screen).classList.add('active');
+    const idx = DOT_ORDER.indexOf(screen);
+    document.querySelectorAll('.dot').forEach((d)=>{
+      d.classList.toggle('active', d.dataset.dot===screen);
+      d.classList.toggle('done', idx>=0 && DOT_ORDER.indexOf(d.dataset.dot) < idx);
+    });
+  }
+
+  function pickQ1(val, el) {
+    answers.type = val;
+    document.querySelectorAll('#screen-q1 .option-card').forEach(c=>c.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('q1Continue').disabled = false;
+  }
+
+  function pickQ2(cover, finish, el) {
+    answers.cover = cover; answers.finish = finish;
+    document.querySelectorAll('#screen-q2 .option-card').forEach(c=>c.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('q2Continue').disabled = false;
+  }
+
+  function finishToBuilder() {
+    answers.text = document.getElementById('q3text').value.trim();
+    goTo('handoff');
+    const params = new URLSearchParams();
+    params.set('mode', '4');
+    if (answers.type)   params.set('type', answers.type);
+    if (answers.cover)  params.set('cover', answers.cover);
+    if (answers.finish) params.set('finish', answers.finish);
+    if (answers.text)   params.set('fl1', answers.text);
+    setTimeout(()=>{
+      window.location.href = '../configurator.html?' + params.toString();
+    }, 700);
+  }
+</script>
+<script src="../js/testing-bar.js"></script>
+</body>
+</html>

@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customize — Strike Matchbooks</title>
+<link rel="stylesheet" href="css/design-system.css">
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<style>
+  html, body { overflow: hidden; background: var(--white); }
+
+  /* NAV */
+  .nav a.back { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--gray-600); }
+  .nav a.back:hover { color:var(--black); }
+  .nav a.back svg { width:14px; height:14px; }
+
+  /* PROGRESS — thin uppercase tabs instead of arrow shapes */
+  .progress-bar { position: fixed; top:64px; left:0; right:0; height:50px; background:var(--white); border-bottom:1px solid var(--gray-300); display:flex; align-items:stretch; z-index:100; user-select:none; }
+  .step-tab { flex:1; display:flex; align-items:center; justify-content:center; gap:9px; font-size:11px; font-weight:500; letter-spacing:.1em; text-transform:uppercase; color:var(--gray-400); cursor:pointer; transition:color var(--ease); border-bottom:2px solid transparent; }
+  .step-tab .sn { font-family:var(--font-mono); font-size:10px; opacity:.7; }
+  .step-tab.active { color:var(--black); border-bottom-color:var(--black); }
+  .step-tab.done { color:var(--gray-600); }
+
+  /* LAYOUT */
+  .layout { display:grid; grid-template-columns:420px 1fr; height:100vh; padding-top:114px; }
+
+  /* PANEL */
+  .panel { background:var(--white); border-right:1px solid var(--gray-300); display:flex; flex-direction:column; overflow:hidden; }
+  .panel-header { padding:30px 34px 18px; border-bottom:1px solid var(--gray-100); flex-shrink:0; }
+  .panel-header h2 { font-size:20px; font-weight:500; letter-spacing:-0.3px; margin-bottom:5px; }
+  .panel-header p  { font-size:12.5px; color:var(--gray-400); line-height:1.55; }
+  .panel-body  { flex:1; overflow-y:auto; padding:26px 34px; scrollbar-width:thin; scrollbar-color:var(--gray-300) transparent; }
+  .panel-footer { padding:18px 34px 26px; border-top:1px solid var(--gray-100); display:flex; gap:10px; flex-shrink:0; }
+  .panel-footer .btn-secondary { flex:0 0 auto; width:96px; }
+  .panel-footer .btn-primary { flex:1; }
+
+  /* STEP */
+  .step-content { display:none; }
+  .step-content.visible { display:block; }
+
+  /* TYPE CARDS */
+  .type-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:11px; }
+  .type-card { border:1px solid var(--gray-300); border-radius:var(--radius-sm); padding:0 0 14px; cursor:pointer; transition:all var(--ease); text-align:center; background:var(--white); overflow:hidden; }
+  .type-card:hover    { border-color:var(--gray-600); }
+  .type-card.selected { border-color:var(--black); box-shadow:inset 0 0 0 1px var(--black); }
+  .type-card canvas   { display:block; width:100%; aspect-ratio:1/1; background:var(--gray-50); }
+  .type-card-info { padding:12px 10px 0; }
+  .type-card h4  { font-size:12.5px; font-weight:500; margin-bottom:3px; }
+  .type-card span { font-size:10.5px; color:var(--gray-400); display:block; }
+  .type-card .dims { margin-top:4px; font-size:9.5px; color:var(--gray-300); font-family:var(--font-mono); }
+
+  /* LABELS */
+  .slabel { font-size:10.5px; font-weight:500; letter-spacing:.12em; text-transform:uppercase; color:var(--gray-400); margin-bottom:12px; margin-top:24px; }
+  .slabel:first-child { margin-top:0; }
+  .slabel .hint { font-family:var(--font-mono); text-transform:none; letter-spacing:0; color:var(--gray-300); font-size:10px; margin-left:6px; }
+
+  input[type=color] { display:none; }
+
+  /* FINISH */
+  .finish-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .finish-card { border:1px solid var(--gray-300); border-radius:var(--radius-sm); padding:13px; cursor:pointer; transition:all var(--ease); background:var(--white); }
+  .finish-card:hover    { border-color:var(--gray-600); }
+  .finish-card.selected { border-color:var(--black); box-shadow:inset 0 0 0 1px var(--black); }
+  .finish-card h4  { font-size:12px; font-weight:500; margin-bottom:2px; }
+  .finish-card span { font-size:11px; color:var(--gray-400); }
+
+  /* FIELDS */
+  .field { margin-bottom:16px; }
+  .field label { display:block; font-size:11.5px; font-weight:500; color:var(--gray-600); margin-bottom:6px; }
+  .field input { width:100%; height:42px; border:1px solid var(--gray-300); border-radius:var(--radius-sm); padding:0 13px; font-family:var(--font); font-size:13px; color:var(--black); background:var(--white); transition:border-color var(--ease); outline:none; }
+  .field input:focus { border-color:var(--black); }
+
+  /* POSITION */
+  .pos-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+  .pos-btn { height:36px; border:1px solid var(--gray-300); border-radius:var(--radius-sm); font-family:var(--font); font-size:10.5px; font-weight:500; letter-spacing:.02em; cursor:pointer; background:var(--white); color:var(--gray-600); transition:all var(--ease); }
+  .pos-btn:hover    { border-color:var(--gray-600); }
+  .pos-btn.selected { background:var(--black); color:var(--white); border-color:var(--black); }
+
+  /* TEXT COLOR (small square swatches for text, distinct from circular product swatches) */
+  .tc-row { display:flex; gap:8px; flex-wrap:wrap; }
+  .tc-sw { width:26px; height:26px; border-radius:50%; cursor:pointer; border:1.5px solid var(--gray-200); transition:all var(--ease); }
+  .tc-sw.selected { border-color:var(--black); box-shadow:0 0 0 2px var(--white), 0 0 0 3.5px var(--black); }
+
+  /* FONT SIZE */
+  .fsrow { display:flex; align-items:center; gap:12px; }
+  .fsrow input[type=range] { flex:1; accent-color:var(--black); }
+  .fsrow span { font-size:11px; font-family:var(--font-mono); color:var(--gray-400); min-width:24px; text-align:right; }
+
+  /* SUMMARY */
+  .summary-box { border:1px solid var(--gray-300); border-radius:var(--radius-sm); padding:18px; margin-bottom:14px; }
+  .sum-row { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--gray-100); font-size:12.5px; }
+  .sum-row:last-child { border-bottom:none; }
+  .sum-row .k { color:var(--gray-400); }
+  .sum-row .v { font-weight:500; font-family:var(--font-mono); font-size:11.5px; }
+
+  /* VIEWER */
+  .viewer-wrap { position:relative; background:var(--gray-50); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  #three-canvas { width:100%; height:100%; display:block; cursor:grab; }
+  #three-canvas:active { cursor:grabbing; }
+  .viewer-label { position:absolute; top:26px; left:30px; font-size:10.5px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:var(--gray-400); pointer-events:none; }
+  .viewer-hint  { position:absolute; bottom:28px; left:50%; transform:translateX(-50%); font-size:11px; color:var(--gray-400); font-weight:500; letter-spacing:.02em; pointer-events:none; white-space:nowrap; font-family:var(--font-mono); }
+
+  .open-toggle-wrap { position:absolute; right:26px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; align-items:center; gap:9px; z-index:10; }
+  #open-btn { width:48px; height:48px; border-radius:50%; background:var(--white); border:1px solid var(--gray-300); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all var(--ease); }
+  #open-btn:hover { border-color:var(--black); }
+  #open-label { font-size:9.5px; font-weight:500; letter-spacing:.1em; text-transform:uppercase; color:var(--gray-400); text-align:center; line-height:1.5; }
+
+  @media (max-width:860px) {
+    body { overflow:auto; }
+    .layout { grid-template-columns:1fr; grid-template-rows:auto 380px; }
+    .viewer-wrap { height:380px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="wordmark" href="index.html">STRIKE</a>
+  <a class="back" href="javascript:history.back()">
+    <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2 4 7l5 5"/></svg>
+    Back
+  </a>
+</nav>
+
+<nav class="progress-bar">
+  <div class="step-tab active" data-step="1" onclick="goToStep(1)"><span class="sn">01</span> Choose type</div>
+  <div class="step-tab"        data-step="2" onclick="goToStep(2)"><span class="sn">02</span> Finishing</div>
+  <div class="step-tab"        data-step="3" onclick="goToStep(3)"><span class="sn">03</span> Front side</div>
+  <div class="step-tab"        data-step="4" onclick="goToStep(4)"><span class="sn">04</span> Back side</div>
+</nav>
+
+<div class="layout">
+  <div class="panel">
+
+    <!-- STEP 1 -->
+    <div id="step-1" class="step-content visible">
+      <div class="panel-header">
+        <h2>Choose your type</h2>
+        <p>Three distinct formats — each produces a different finished product.</p>
+      </div>
+      <div class="panel-body">
+        <div class="type-grid">
+          <div class="type-card selected" data-type="classic" onclick="selectType('classic')">
+            <canvas id="mini-classic" width="200" height="170"></canvas>
+            <div class="type-card-info">
+              <h4>Classic</h4>
+              <span>Saddle-stitched</span>
+              <div class="dims">1.75 × 1.75 IN</div>
+            </div>
+          </div>
+          <div class="type-card" data-type="premium" onclick="selectType('premium')">
+            <canvas id="mini-premium" width="200" height="170"></canvas>
+            <div class="type-card-info">
+              <h4>Premium</h4>
+              <span>Tall format booklet</span>
+              <div class="dims">1.5 × 2.5 IN</div>
+            </div>
+          </div>
+          <div class="type-card" data-type="matchbox" onclick="selectType('matchbox')">
+            <canvas id="mini-matchbox" width="200" height="170"></canvas>
+            <div class="type-card-info">
+              <h4>Matchbox</h4>
+              <span>Sliding drawer</span>
+              <div class="dims">2.0 × 0.75 IN</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-primary btn-full" onclick="nextStep()">Continue</button>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div id="step-2" class="step-content">
+      <div class="panel-header"><h2>Finishing</h2><p>Choose the cover color, surface treatment, and match color.</p></div>
+      <div class="panel-body">
+        <div class="slabel">Cover color</div>
+        <div class="swatch-row" id="cover-colors">
+          <div class="swatch selected" style="background:#1a1a1a"                     onclick="pickCover('#1a1a1a',this)"></div>
+          <div class="swatch"          style="background:#fff;border-color:var(--gray-300)"      onclick="pickCover('#ffffff',this)"></div>
+          <div class="swatch"          style="background:#e8e0d4"                     onclick="pickCover('#e8e0d4',this)"></div>
+          <div class="swatch"          style="background:#c8b8a2"                     onclick="pickCover('#c8b8a2',this)"></div>
+          <div class="swatch"          style="background:#2c3e50"                     onclick="pickCover('#2c3e50',this)"></div>
+          <div class="swatch"          style="background:#8b2635"                     onclick="pickCover('#8b2635',this)"></div>
+          <div class="swatch"          style="background:#2d6a4f"                     onclick="pickCover('#2d6a4f',this)"></div>
+          <div class="swatch"          style="background:#d4a017"                     onclick="pickCover('#d4a017',this)"></div>
+          <div class="swatch"          style="background:#f4a261"                     onclick="pickCover('#f4a261',this)"></div>
+          <div class="swatch"          style="background:#f4c6c6"                     onclick="pickCover('#f4c6c6',this)"></div>
+          <div class="swatch"          style="background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)" onclick="document.getElementById('cpicker').click()"></div>
+        </div>
+        <input type="color" id="cpicker" onchange="pickCover(this.value,null)">
+
+        <div class="slabel">Surface finish</div>
+        <div class="finish-grid">
+          <div class="finish-card selected" data-fin="matte"  onclick="pickFinish('matte',this)"><h4>Matte</h4><span>Soft, no-glare</span></div>
+          <div class="finish-card"          data-fin="gloss"  onclick="pickFinish('gloss',this)"><h4>Gloss</h4><span>Bright &amp; vivid</span></div>
+          <div class="finish-card"          data-fin="soft"   onclick="pickFinish('soft',this)"><h4>Soft Touch</h4><span>Velvet feel</span></div>
+          <div class="finish-card"          data-fin="foil"   onclick="pickFinish('foil',this)"><h4>Foil</h4><span>Metallic sheen</span></div>
+        </div>
+
+        <div class="slabel">Strike strip</div>
+        <div class="finish-grid">
+          <div class="finish-card selected" data-strip="bottom" onclick="pickStrip('bottom',this)"><h4>Bottom edge</h4><span>Traditional</span></div>
+          <div class="finish-card"          data-strip="back"   onclick="pickStrip('back',this)"><h4>Back panel</h4><span>Full-width</span></div>
+        </div>
+
+        <div class="slabel">Match color <span class="hint" id="match-hint">— matchbox only</span></div>
+        <div class="swatch-row" id="match-colors">
+          <div class="swatch selected" style="background:#bb2222" onclick="pickMatchColor('#bb2222',this)"></div>
+          <div class="swatch"          style="background:#333333" onclick="pickMatchColor('#333333',this)"></div>
+          <div class="swatch"          style="background:#775522" onclick="pickMatchColor('#775522',this)"></div>
+          <div class="swatch"          style="background:#2d6a4f" onclick="pickMatchColor('#2d6a4f',this)"></div>
+          <div class="swatch"          style="background:#2c3e50" onclick="pickMatchColor('#2c3e50',this)"></div>
+          <div class="swatch"          style="background:#d4a017" onclick="pickMatchColor('#d4a017',this)"></div>
+          <div class="swatch"          style="background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)" onclick="document.getElementById('mpicker').click()"></div>
+        </div>
+        <input type="color" id="mpicker" onchange="pickMatchColor(this.value,null)">
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-secondary" onclick="prevStep()">Back</button>
+        <button class="btn btn-primary"   onclick="nextStep()">Continue</button>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div id="step-3" class="step-content">
+      <div class="panel-header"><h2>Front side</h2><p>Design the face that people see first.</p></div>
+      <div class="panel-body">
+        <div class="slabel">Text</div>
+        <div class="field"><label>Line 1</label><input id="fl1" maxlength="22" placeholder="Primary text" oninput="syncText();rebuildModel()"></div>
+        <div class="field"><label>Line 2</label><input id="fl2" maxlength="28" placeholder="Secondary text" oninput="syncText();rebuildModel()"></div>
+        <div class="slabel">Text color</div>
+        <div class="tc-row" id="ftc">
+          <div class="tc-sw selected" style="background:#fff;border-color:var(--gray-300)" onclick="pickTC('f','#ffffff',this)"></div>
+          <div class="tc-sw" style="background:#000" onclick="pickTC('f','#000000',this)"></div>
+          <div class="tc-sw" style="background:#d4a017" onclick="pickTC('f','#d4a017',this)"></div>
+          <div class="tc-sw" style="background:#b5b5b5" onclick="pickTC('f','#b5b5b5',this)"></div>
+          <div class="tc-sw" style="background:#f4c6c6" onclick="pickTC('f','#f4c6c6',this)"></div>
+          <div class="tc-sw" style="background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)" onclick="document.getElementById('tcf').click()"></div>
+        </div>
+        <input type="color" id="tcf" onchange="pickTC('f',this.value,null)">
+        <div class="slabel" style="margin-top:22px">Position</div>
+        <div class="pos-grid" id="fpos">
+          <button class="pos-btn" onclick="pickPos('f','tl',this)">Top left</button>
+          <button class="pos-btn" onclick="pickPos('f','tc',this)">Top center</button>
+          <button class="pos-btn" onclick="pickPos('f','tr',this)">Top right</button>
+          <button class="pos-btn" onclick="pickPos('f','ml',this)">Mid left</button>
+          <button class="pos-btn selected" onclick="pickPos('f','mc',this)">Center</button>
+          <button class="pos-btn" onclick="pickPos('f','mr',this)">Mid right</button>
+          <button class="pos-btn" onclick="pickPos('f','bl',this)">Bot left</button>
+          <button class="pos-btn" onclick="pickPos('f','bc',this)">Bottom</button>
+          <button class="pos-btn" onclick="pickPos('f','br',this)">Bot right</button>
+        </div>
+        <div class="slabel" style="margin-top:22px">Font size</div>
+        <div class="fsrow">
+          <input type="range" id="fsize" min="10" max="42" value="22" oninput="state.f.size=+this.value;document.getElementById('fsizev').textContent=this.value;rebuildModel()">
+          <span id="fsizev">22</span>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-secondary" onclick="prevStep()">Back</button>
+        <button class="btn btn-primary"   onclick="nextStep()">Continue</button>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div id="step-4" class="step-content">
+      <div class="panel-header"><h2>Back side</h2><p>Contact info, a short message, or leave it clean.</p></div>
+      <div class="panel-body">
+        <div class="slabel">Text</div>
+        <div class="field"><label>Line 1</label><input id="bl1" maxlength="28" placeholder="Address or website" oninput="syncText();rebuildModel()"></div>
+        <div class="field"><label>Line 2</label><input id="bl2" maxlength="32" placeholder="Phone or tagline" oninput="syncText();rebuildModel()"></div>
+        <div class="slabel">Text color</div>
+        <div class="tc-row" id="btc">
+          <div class="tc-sw selected" style="background:#fff;border-color:var(--gray-300)" onclick="pickTC('b','#ffffff',this)"></div>
+          <div class="tc-sw" style="background:#000" onclick="pickTC('b','#000000',this)"></div>
+          <div class="tc-sw" style="background:#d4a017" onclick="pickTC('b','#d4a017',this)"></div>
+          <div class="tc-sw" style="background:#b5b5b5" onclick="pickTC('b','#b5b5b5',this)"></div>
+          <div class="tc-sw" style="background:#f4c6c6" onclick="pickTC('b','#f4c6c6',this)"></div>
+          <div class="tc-sw" style="background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)" onclick="document.getElementById('tcb').click()"></div>
+        </div>
+        <input type="color" id="tcb" onchange="pickTC('b',this.value,null)">
+        <div class="slabel" style="margin-top:22px">Position</div>
+        <div class="pos-grid" id="bpos">
+          <button class="pos-btn" onclick="pickPos('b','tl',this)">Top left</button>
+          <button class="pos-btn" onclick="pickPos('b','tc',this)">Top center</button>
+          <button class="pos-btn" onclick="pickPos('b','tr',this)">Top right</button>
+          <button class="pos-btn" onclick="pickPos('b','ml',this)">Mid left</button>
+          <button class="pos-btn selected" onclick="pickPos('b','mc',this)">Center</button>
+          <button class="pos-btn" onclick="pickPos('b','mr',this)">Mid right</button>
+          <button class="pos-btn" onclick="pickPos('b','bl',this)">Bot left</button>
+          <button class="pos-btn" onclick="pickPos('b','bc',this)">Bottom</button>
+          <button class="pos-btn" onclick="pickPos('b','br',this)">Bot right</button>
+        </div>
+        <div class="slabel" style="margin-top:22px">Font size</div>
+        <div class="fsrow">
+          <input type="range" id="bsize" min="10" max="42" value="18" oninput="state.b.size=+this.value;document.getElementById('bsizev').textContent=this.value;rebuildModel()">
+          <span id="bsizev">18</span>
+        </div>
+        <div class="slabel" style="margin-top:28px">Summary</div>
+        <div class="summary-box" id="summary"></div>
+        <button class="btn btn-primary btn-full" style="margin-bottom:10px" onclick="alert('Prototype — quote request would submit here.')">Request a quote</button>
+        <p class="fine-print" style="text-align:center">Min. 500 units · 3–4 week production</p>
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-secondary" onclick="prevStep()">Back</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- VIEWER -->
+  <div class="viewer-wrap">
+    <div class="viewer-label">360° Preview</div>
+    <canvas id="three-canvas"></canvas>
+    <div class="viewer-hint" id="viewer-hint">Drag to rotate · Scroll to zoom</div>
+
+    <div class="open-toggle-wrap">
+      <button id="open-btn" onclick="toggleOpen()">
+        <svg id="open-icon" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="5" width="14" height="10" rx="1.5"/>
+          <path d="M2 8h14"/>
+          <path d="M6 2l3 3 3-3"/>
+        </svg>
+      </button>
+      <span id="open-label">Open<br>inside</span>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===================================================================
+   STATE
+=================================================================== */
+const state = {
+  step: 1,
+  type: 'classic',
+  cover: '#1a1a1a',
+  finish: 'matte',
+  strip: 'bottom',
+  matchColor: '#bb2222',
+  f: { l1:'', l2:'', color:'#ffffff', pos:'mc', size:22 },
+  b: { l1:'', l2:'', color:'#ffffff', pos:'mc', size:18 },
+};
+
+const TYPE_INFO = {
+  classic:  { label:'Classic Matchbook',  dims:'1.75 × 1.75 in' },
+  premium:  { label:'Premium Matchbook',  dims:'1.5 × 2.5 in' },
+  matchbox: { label:'Custom Matchbox',    dims:'2.0 × 0.75 in' },
+};
+
+/* Prefill from a guided-question handoff, e.g. configurator.html?type=matchbox&cover=%232c3e50&finish=soft&matchColor=%232d6a4f */
+(function prefillFromQuery(){
+  const p = new URLSearchParams(location.search);
+  if (p.has('type') && Object.keys(TYPE_INFO).includes(p.get('type'))) state.type = p.get('type');
+  if (p.has('cover')) state.cover = p.get('cover');
+  if (p.has('finish')) state.finish = p.get('finish');
+  if (p.has('matchColor')) state.matchColor = p.get('matchColor');
+  if (p.has('fl1')) state.f.l1 = p.get('fl1');
+})();
+
+/* ===================================================================
+   NAV
+=================================================================== */
+function goToStep(n) { if (n <= state.step) setStep(n); }
+function nextStep()  { if (state.step < 4) setStep(state.step + 1); }
+function prevStep()  { if (state.step > 1) setStep(state.step - 1); }
+
+function setStep(n) {
+  state.step = n;
+  document.querySelectorAll('.step-content').forEach(el=>el.classList.remove('visible'));
+  document.getElementById('step-'+n).classList.add('visible');
+  document.querySelectorAll('.step-tab').forEach(t=>{
+    const s=+t.dataset.step;
+    t.classList.toggle('active',s===n);
+    t.classList.toggle('done',s<n);
+  });
+  if (n===4) buildSummary();
+  rebuildModel();
+}
+
+/* ===================================================================
+   PICKERS
+=================================================================== */
+function selectType(type) {
+  state.type = type;
+  document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelector(`.type-card[data-type="${type}"]`).classList.add('selected');
+  updateMatchHint();
+  rebuildModel();
+}
+function pickCover(c, el) {
+  state.cover = c;
+  document.querySelectorAll('#cover-colors .swatch').forEach(s=>s.classList.remove('selected'));
+  if (el) el.classList.add('selected');
+  rebuildModel();
+}
+function pickMatchColor(c, el) {
+  state.matchColor = c;
+  document.querySelectorAll('#match-colors .swatch').forEach(s=>s.classList.remove('selected'));
+  if (el) el.classList.add('selected');
+  rebuildModel();
+}
+function pickFinish(f, el) {
+  state.finish = f;
+  document.querySelectorAll('.finish-card[data-fin]').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  rebuildModel();
+}
+function pickStrip(s, el) {
+  state.strip = s;
+  document.querySelectorAll('.finish-card[data-strip]').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  rebuildModel();
+}
+function pickTC(side, color, el) {
+  state[side].color = color;
+  document.querySelectorAll('#'+side+'tc .tc-sw').forEach(s=>s.classList.remove('selected'));
+  if (el) el.classList.add('selected');
+  rebuildModel();
+}
+function pickPos(side, pos, el) {
+  state[side].pos = pos;
+  document.getElementById(side+'pos').querySelectorAll('.pos-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+  rebuildModel();
+}
+function syncText() {
+  state.f.l1 = document.getElementById('fl1').value;
+  state.f.l2 = document.getElementById('fl2').value;
+  state.b.l1 = document.getElementById('bl1').value;
+  state.b.l2 = document.getElementById('bl2').value;
+}
+function updateMatchHint() {
+  const hint = document.getElementById('match-hint');
+  hint.textContent = state.type === 'matchbox' ? '— visible now' : '— matchbox only';
+}
+function buildSummary() {
+  const rows = [
+    ['Type', TYPE_INFO[state.type].label],
+    ['Size', TYPE_INFO[state.type].dims],
+    ['Color', state.cover],
+    ['Finish', state.finish.charAt(0).toUpperCase()+state.finish.slice(1)],
+    ['Strip', state.strip==='bottom'?'Bottom edge':'Back panel'],
+    ['Match color', state.matchColor],
+    ['Front', [state.f.l1,state.f.l2].filter(Boolean).join(' / ')||'—'],
+    ['Back',  [state.b.l1,state.b.l2].filter(Boolean).join(' / ')||'—'],
+  ];
+  document.getElementById('summary').innerHTML = rows.map(([k,v])=>
+    `<div class="sum-row"><span class="k">${k}</span><span class="v">${v}</span></div>`
+  ).join('');
+}
+
+/* ===================================================================
+   SHARED GEOMETRY HELPERS
+=================================================================== */
+function roughMetal() {
+  if (state.finish==='gloss') return [0.06,0];
+  if (state.finish==='foil')  return [0.25,0.55];
+  return [0.82,0];
+}
+
+function stdMat(color, r, m) {
+  return new THREE.MeshStandardMaterial({ color, roughness:r??0.82, metalness:m??0 });
+}
+
+function canvasMat(cw, ch, fn, r, m) {
+  const cv = document.createElement('canvas'); cv.width=cw; cv.height=ch;
+  fn(cv.getContext('2d'), cw, ch);
+  const tex = new THREE.CanvasTexture(cv);
+  return new THREE.MeshStandardMaterial({ map:tex, roughness:r??0.82, metalness:m??0 });
+}
+
+function blendHex(hexA, hexB, t) {
+  const a=parseInt(hexA.replace('#',''),16), b=hexB;
+  const ra=(a>>16)&255, ga=(a>>8)&255, ba=a&255;
+  const rb=(b>>16)&255, gb=(b>>8)&255, bb=b&255;
+  return ((Math.round(ra+(rb-ra)*t)<<16)|(Math.round(ga+(gb-ga)*t)<<8)|Math.round(ba+(bb-ba)*t));
+}
+
+function drawText(ctx, lines, color, pos, size, cw, ch) {
+  if (!lines.filter(Boolean).length) return;
+  const lh=size*1.42;
+  let tx, ty, align;
+  align = pos.endsWith('l')?'left':pos.endsWith('r')?'right':'center';
+  tx    = pos.endsWith('l')?cw*.1:pos.endsWith('r')?cw*.9:cw*.5;
+  ty    = pos.startsWith('t')?ch*.15:pos.startsWith('b')?ch*.72:ch*.5-lines.length*lh*.5+size*.5;
+  ctx.textAlign=align; ctx.textBaseline='middle'; ctx.fillStyle=color;
+  lines.forEach((ln,i)=>{
+    ctx.font=`${i===0?'500':'400'} ${i===0?size:Math.max(size*.7,9)}px 'Jost',sans-serif`;
+    ctx.fillText(ln, tx, ty+i*lh);
+  });
+}
+
+function makeFaceTex(cw, ch, side, isBack) {
+  const [r,m]=roughMetal();
+  return canvasMat(cw, ch, (ctx)=>{
+    ctx.fillStyle=state.cover; ctx.fillRect(0,0,cw,ch);
+    if (state.finish==='gloss'){
+      const g=ctx.createLinearGradient(0,0,cw*.7,ch*.5);
+      g.addColorStop(0,'rgba(255,255,255,0.13)'); g.addColorStop(1,'rgba(255,255,255,0)');
+      ctx.fillStyle=g; ctx.fillRect(0,0,cw,ch);
+    }
+    if (isBack&&state.strip==='back'){
+      const sh=ch*.13; ctx.fillStyle='#3a2208'; ctx.fillRect(0,ch-sh,cw,sh);
+      ctx.fillStyle='rgba(0,0,0,0.2)';
+      for (let i=0;i<cw;i+=3) for (let j=0;j<sh;j+=3) if (Math.random()>.5) ctx.fillRect(i,ch-sh+j,2,2);
+    }
+    const s=isBack?state.b:state.f;
+    drawText(ctx,[s.l1,s.l2],s.color,s.pos,s.size*(cw/200),cw,ch);
+  }, r, m);
+}
+
+function makeSpineTex(n) {
+  return canvasMat(256,64,(ctx,cw,ch)=>{
+    ctx.fillStyle='#ede9e1'; ctx.fillRect(0,0,cw,ch);
+    for(let i=0;i<n;i++){
+      ctx.fillStyle=i%2===0?'rgba(0,0,0,0.04)':'rgba(255,255,255,0.06)';
+      ctx.fillRect(i*(cw/n),0,cw/n,ch);
+      ctx.fillStyle=i%3===0?'#c0392b':i%3===1?'#e67e22':'#2980b9';
+      ctx.fillRect(i*(cw/n)+1,0,cw/n-2,ch*.38);
+    }
+    ctx.fillStyle='#aaa'; ctx.fillRect(cw*.44,ch*.25,cw*.12,ch*.5);
+  }, 0.9, 0);
+}
+
+function makeStripTex() {
+  return canvasMat(256,64,(ctx,cw,ch)=>{
+    if(state.strip==='bottom'){
+      ctx.fillStyle='#2a1a08'; ctx.fillRect(0,0,cw,ch);
+      ctx.fillStyle='rgba(0,0,0,0.22)';
+      for(let i=0;i<cw;i+=3) for(let j=0;j<ch;j+=3) if(Math.random()>.5) ctx.fillRect(i,j,2,2);
+    } else { ctx.fillStyle=state.cover; ctx.fillRect(0,0,cw,ch); }
+  }, 0.95, 0);
+}
+
+/* ===================================================================
+   CLASSIC MODEL  (square booklet)
+=================================================================== */
+function buildClassicMesh(group, w, h, d, coverColor, isPreview) {
+  const [r,m] = isPreview ? [0.75,0] : roughMetal();
+  const side   = stdMat(blendHex(coverColor??state.cover, 0x888888, 0.2), r, m);
+  const spine  = isPreview
+    ? canvasMat(256,64,(ctx,cw,ch)=>{
+        ctx.fillStyle='#ede9e1'; ctx.fillRect(0,0,cw,ch);
+        for(let i=0;i<14;i++){
+          ctx.fillStyle='rgba(0,0,0,0.05)'; ctx.fillRect(i*(cw/14),0,cw/14,ch);
+          ctx.fillStyle=i%3===0?'#c0392b':i%3===1?'#e67e22':'#2980b9';
+          ctx.fillRect(i*(cw/14)+1,0,cw/14-2,ch*.36);
+        }
+        ctx.fillStyle='#aaa'; ctx.fillRect(cw*.44,ch*.25,cw*.12,ch*.5);
+      }, 0.9, 0)
+    : makeSpineTex(14);
+  const strip  = isPreview
+    ? stdMat(0x1a1a1a, 0.95)
+    : makeStripTex();
+  const front  = isPreview
+    ? stdMat(parseInt((coverColor??state.cover).replace('#',''),16), r, m)
+    : makeFaceTex(300,300,state.f,false);
+  const back   = isPreview
+    ? stdMat(parseInt((coverColor??state.cover).replace('#',''),16), r, m)
+    : makeFaceTex(300,300,state.b,true);
+
+  // +x,-x,+y(spine),-y(strip),+z(front),-z(back)
+  const body = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), [side,side,spine,strip,front,back]);
+  group.add(body);
+
+  // Thin staple line at top
+  const staple = new THREE.Mesh(new THREE.BoxGeometry(w*.18,0.06,d+.02), stdMat(0x999999,0.7));
+  staple.position.y = h/2+.03;
+  group.add(staple);
+}
+
+/* ===================================================================
+   PREMIUM MODEL  (tall booklet)
+=================================================================== */
+function buildPremiumMesh(group, w, h, d, coverColor, isPreview) {
+  const [r,m] = isPreview ? [0.75,0] : roughMetal();
+  const side  = stdMat(blendHex(coverColor??state.cover, 0x888888, 0.2), r, m);
+  const spine = isPreview
+    ? canvasMat(256,64,(ctx,cw,ch)=>{
+        ctx.fillStyle='#ede9e1'; ctx.fillRect(0,0,cw,ch);
+        for(let i=0;i<16;i++){
+          ctx.fillStyle='rgba(0,0,0,0.04)'; ctx.fillRect(i*(cw/16),0,cw/16,ch);
+          ctx.fillStyle=i%3===0?'#c0392b':i%3===1?'#e67e22':'#2980b9';
+          ctx.fillRect(i*(cw/16)+1,0,cw/16-2,ch*.38);
+        }
+      }, 0.9, 0)
+    : makeSpineTex(16);
+  const strip = isPreview ? stdMat(0x1a1a1a,0.95) : makeStripTex();
+  const front = isPreview
+    ? stdMat(parseInt((coverColor??state.cover).replace('#',''),16), r, m)
+    : makeFaceTex(260,400,state.f,false);
+  const back  = isPreview
+    ? stdMat(parseInt((coverColor??state.cover).replace('#',''),16), r, m)
+    : makeFaceTex(260,400,state.b,true);
+
+  const body = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), [side,side,spine,strip,front,back]);
+  group.add(body);
+
+  const staple = new THREE.Mesh(new THREE.BoxGeometry(w*.16,0.06,d+.02), stdMat(0x999999,0.7));
+  staple.position.y = h/2+.03;
+  group.add(staple);
+}
+
+/* ===================================================================
+   MATCHBOX MODEL  (sleeve + tray)
+=================================================================== */
+function buildMatchboxMesh(group, sw, sh, sd, coverColor, isPreview) {
+  const [r,m] = isPreview ? [0.75,0] : roughMetal();
+  const cc = parseInt((coverColor??state.cover).replace('#',''),16);
+  const sMat  = stdMat(cc, r, m);
+  const sSide = stdMat(blendHex(coverColor??state.cover, 0x888888, 0.2), r, m);
+
+  // Sleeve panels
+  const top  = new THREE.Mesh(new THREE.BoxGeometry(sw,.09,sd), sMat);  top.position.y=sh/2;   group.add(top);
+  const bot  = new THREE.Mesh(new THREE.BoxGeometry(sw,.09,sd), sMat);  bot.position.y=-sh/2;  group.add(bot);
+  const back = new THREE.Mesh(new THREE.BoxGeometry(sw,sh,.09), isPreview ? sMat : makeFaceTex(440,165,state.b,true));
+  back.position.z=-sd/2; group.add(back);
+  const front = new THREE.Mesh(new THREE.BoxGeometry(sw,sh,.09), isPreview ? sMat : makeFaceTex(440,165,state.f,false));
+  front.position.z=sd/2; group.add(front);
+  // Left (closed) end
+  const leftEnd = new THREE.Mesh(new THREE.BoxGeometry(.09,sh,sd), sSide);
+  leftEnd.position.x=-sw/2; group.add(leftEnd);
+  // Right (partial, open end)
+  const rightRim = new THREE.Mesh(new THREE.BoxGeometry(.09,sh,.09), sSide);
+  rightRim.position.set(sw/2,0,sd/2-.045); group.add(rightRim);
+  const rightRim2 = new THREE.Mesh(new THREE.BoxGeometry(.09,sh,.09), sSide);
+  rightRim2.position.set(sw/2,0,-sd/2+.045); group.add(rightRim2);
+
+  // Strike strips
+  const stripMat = isPreview ? stdMat(0x1a1a1a,.95) : makeStripTex();
+  const sf = new THREE.Mesh(new THREE.BoxGeometry(sw,.22,.11), isPreview?stdMat(0x1a1a1a):(state.strip==='bottom'?stripMat:sMat));
+  sf.position.set(0,-sh/2+.11,sd/2+.01); group.add(sf);
+  const sb = new THREE.Mesh(new THREE.BoxGeometry(sw,.22,.11), isPreview?stdMat(0x1a1a1a):(state.strip==='bottom'?stripMat:sMat));
+  sb.position.set(0,-sh/2+.11,-sd/2-.01); group.add(sb);
+
+  // Tray (partially extended)
+  const pullX = sw * .28;
+  const tw=sw-.22, th=sh-.26, td=sd-.26;
+  const trayColor = new THREE.Color(coverColor??state.cover).lerp(new THREE.Color(0xcccccc), isPreview?.35:.22);
+  const tray = new THREE.Mesh(new THREE.BoxGeometry(tw,th,td),
+    new THREE.MeshStandardMaterial({ color:trayColor, roughness:.88 }));
+  tray.position.x = pullX; group.add(tray);
+
+  // Match sticks on tray — tip color is the customer's chosen match color
+  const mCount=10, mSpacing=td/(mCount+1);
+  const tipColor = isPreview ? 0xbb2222 : parseInt(state.matchColor.replace('#',''),16);
+  for(let i=0;i<mCount;i++){
+    const stick = new THREE.Mesh(
+      new THREE.CylinderGeometry(.04,.04,tw*.78,6),
+      stdMat(0xddd5c0,.9)
+    );
+    stick.rotation.z=Math.PI/2;
+    stick.position.set(pullX+tw*.02, th/2+.05, -td/2+mSpacing*(i+1));
+    group.add(stick);
+    const tip = new THREE.Mesh(new THREE.SphereGeometry(.075,6,4), stdMat(tipColor,.7));
+    tip.position.set(pullX+tw*.42, th/2+.05, -td/2+mSpacing*(i+1));
+    group.add(tip);
+  }
+}
+
+/* ===================================================================
+   MINI PREVIEWS  (one-shot renders for the type cards)
+=================================================================== */
+function renderMiniPreviews() {
+  const MINI = [
+    { id:'mini-classic',  rx:.36, ry:.48, camZ:7.0,  build:(g)=>buildClassicMesh(g,1.8,1.7,.38,'#f0f0f0',true)  },
+    { id:'mini-premium',  rx:.30, ry:.46, camZ:8.5,  build:(g)=>buildPremiumMesh(g,1.4,2.4,.38,'#f0f0f0',true)  },
+    { id:'mini-matchbox', rx:.36, ry:.54, camZ:9.0,  build:(g)=>buildMatchboxMesh(g,2.8,1.0,1.4,'#f0f0f0',true) },
+  ];
+
+  MINI.forEach(({ id, rx, ry, camZ, build }) => {
+    const cv = document.getElementById(id);
+    if (!cv) return;
+    const dw = cv.clientWidth  || 160;
+    const dh = cv.clientHeight || 160;
+
+    const mr = new THREE.WebGLRenderer({ canvas:cv, antialias:true, alpha:true });
+    mr.setPixelRatio(Math.min(window.devicePixelRatio,2));
+    mr.setSize(dw, dh);
+
+    const ms = new THREE.Scene();
+    ms.add(new THREE.AmbientLight(0xffffff,.85));
+    const kl = new THREE.DirectionalLight(0xffffff,1.2); kl.position.set(4,6,5); ms.add(kl);
+    const fl = new THREE.DirectionalLight(0xfff8f0,.4); fl.position.set(-3,1,3); ms.add(fl);
+    const rl = new THREE.DirectionalLight(0xf0f4ff,.25); rl.position.set(0,-3,-4); ms.add(rl);
+
+    const mc = new THREE.PerspectiveCamera(52, dw/dh, .1, 100);
+    mc.position.z = camZ;
+
+    const g = new THREE.Group();
+    build(g);
+    g.rotation.x = rx;
+    g.rotation.y = ry;
+    ms.add(g);
+
+    mr.render(ms, mc);
+    mr.dispose();
+  });
+}
+
+/* ===================================================================
+   MAIN 3D VIEWER
+=================================================================== */
+let scene, camera, renderer, modelGroup;
+let rot = { x:.35, y:.5 }, rotTarget = { x:.35, y:.5 };
+let vel = { x:0, y:0 }, dragging=false, prev={x:0,y:0};
+
+let camPos    = { x:0, y:0, z:10 };
+let camTarget = { x:0, y:0, z:10 };
+let isOpen = false;
+
+function toggleOpen() {
+  isOpen = !isOpen;
+  const btn = document.getElementById('open-btn');
+  const lbl = document.getElementById('open-label');
+  const hint = document.getElementById('viewer-hint');
+
+  if (isOpen) {
+    rotTarget.x = 0.1;
+    rotTarget.y = 0.0;
+    vel = { x:0, y:0 };
+    btn.style.background = '#0a0a0a';
+    btn.querySelector('svg').style.stroke = '#fff';
+    lbl.textContent = 'Close';
+    hint.textContent = 'Showing inside';
+  } else {
+    rotTarget.x = 0.35;
+    rotTarget.y = 0.5;
+    btn.style.background = '#fff';
+    btn.querySelector('svg').style.stroke = '#0a0a0a';
+    lbl.innerHTML = 'Open<br>inside';
+    hint.textContent = 'Drag to rotate · Scroll to zoom';
+  }
+}
+
+function initThree() {
+  const canvas = document.getElementById('three-canvas');
+  renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(36,1,.1,100);
+  camera.position.set(0,0,10);
+
+  const al = new THREE.AmbientLight(0xffffff,.80); scene.add(al);
+  const kl = new THREE.DirectionalLight(0xffffff,1.2); kl.position.set(5,8,6); scene.add(kl);
+  const fl = new THREE.DirectionalLight(0xfff5e8,.50); fl.position.set(-4,2,4); scene.add(fl);
+  const rl = new THREE.DirectionalLight(0xeef0ff,.30); rl.position.set(0,-4,-5); scene.add(rl);
+
+  rebuildModel();
+  bindDrag(canvas);
+  onResize();
+  window.addEventListener('resize', onResize);
+  animate();
+
+  requestAnimationFrame(renderMiniPreviews);
+}
+
+function onResize() {
+  const wrap = document.querySelector('.viewer-wrap');
+  const w=wrap.clientWidth, h=wrap.clientHeight;
+  renderer.setSize(w,h);
+  camera.aspect=w/h;
+  camera.updateProjectionMatrix();
+}
+
+function rebuildModel() {
+  if (modelGroup) {
+    scene.remove(modelGroup);
+    modelGroup.traverse(c=>{
+      if(c.geometry) c.geometry.dispose();
+      if(c.material){ const mm=Array.isArray(c.material)?c.material:[c.material]; mm.forEach(m=>{if(m.map)m.map.dispose();m.dispose();}); }
+    });
+  }
+  modelGroup = new THREE.Group();
+  if (state.type==='classic')  buildClassicMesh(modelGroup,  3.0, 2.8, .52, null, false);
+  if (state.type==='premium')  buildPremiumMesh(modelGroup,  2.5, 4.0, .52, null, false);
+  if (state.type==='matchbox') buildMatchboxMesh(modelGroup, 4.6, 1.65, 2.2, null, false);
+  scene.add(modelGroup);
+  const baseZ = state.type==='matchbox'?11.5:state.type==='premium'?11:10;
+  if (!isOpen) { camTarget.z = baseZ; camPos.z = baseZ; camera.position.z = baseZ; }
+  camera.updateProjectionMatrix();
+  modelGroup.rotation.x=rot.x;
+  modelGroup.rotation.y=rot.y;
+}
+
+/* ===================================================================
+   DRAG / ZOOM
+=================================================================== */
+function bindDrag(canvas) {
+  canvas.addEventListener('mousedown', e=>{ dragging=true; prev={x:e.clientX,y:e.clientY}; vel={x:0,y:0}; });
+  window.addEventListener('mousemove', e=>{
+    if(!dragging) return;
+    vel.y=(e.clientX-prev.x)*.009; vel.x=(e.clientY-prev.y)*.009;
+    rotTarget.y+=vel.y; rotTarget.x+=vel.x;
+    prev={x:e.clientX,y:e.clientY};
+  });
+  window.addEventListener('mouseup', ()=>{ dragging=false; });
+  canvas.addEventListener('touchstart', e=>{ dragging=true; prev={x:e.touches[0].clientX,y:e.touches[0].clientY}; vel={x:0,y:0}; },{passive:true});
+  canvas.addEventListener('touchmove', e=>{
+    if(!dragging) return;
+    vel.y=(e.touches[0].clientX-prev.x)*.009; vel.x=(e.touches[0].clientY-prev.y)*.009;
+    rotTarget.y+=vel.y; rotTarget.x+=vel.x;
+    prev={x:e.touches[0].clientX,y:e.touches[0].clientY};
+  },{passive:true});
+  canvas.addEventListener('touchend',()=>{ dragging=false; },{passive:true});
+  canvas.addEventListener('wheel', e=>{
+    camera.position.z=Math.max(4,Math.min(20,camera.position.z+e.deltaY*.015));
+    e.preventDefault();
+  },{passive:false});
+}
+
+/* ===================================================================
+   ANIMATE  (no auto-spin)
+=================================================================== */
+function animate() {
+  requestAnimationFrame(animate);
+
+  if (!dragging && !isOpen) {
+    vel.x*=.90; vel.y*=.90;
+    rotTarget.x+=vel.x; rotTarget.y+=vel.y;
+  }
+  if (!isOpen) rotTarget.x=Math.max(-1.3,Math.min(1.3,rotTarget.x));
+  rot.x+=(rotTarget.x-rot.x)*.07;
+  rot.y+=(rotTarget.y-rot.y)*.07;
+  if(modelGroup){ modelGroup.rotation.x=rot.x; modelGroup.rotation.y=rot.y; }
+
+  const lerpSpeed = 0.06;
+  camPos.x+=(camTarget.x-camPos.x)*lerpSpeed;
+  camPos.y+=(camTarget.y-camPos.y)*lerpSpeed;
+  camPos.z+=(camTarget.z-camPos.z)*lerpSpeed;
+  camera.position.set(camPos.x, camPos.y, camPos.z);
+  camera.lookAt(0, 0, 0);
+
+  renderer.render(scene,camera);
+}
+
+/* ===================================================================
+   BOOT — sync UI to any prefilled state, wait for font, then start
+=================================================================== */
+function syncUIToState() {
+  document.querySelectorAll('.type-card').forEach(c=>c.classList.toggle('selected', c.dataset.type===state.type));
+  document.querySelectorAll('#cover-colors .swatch').forEach(s=>s.classList.remove('selected'));
+  document.querySelectorAll('#match-colors .swatch').forEach(s=>s.classList.remove('selected'));
+  document.querySelectorAll('.finish-card[data-fin]').forEach(c=>c.classList.toggle('selected', c.dataset.fin===state.finish));
+  if (state.f.l1) document.getElementById('fl1').value = state.f.l1;
+  updateMatchHint();
+}
+
+window.addEventListener('load', () => {
+  syncUIToState();
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(initThree);
+  } else {
+    initThree();
+  }
+});
+</script>
+<script src="js/testing-bar.js"></script>
+</body>
+</html>

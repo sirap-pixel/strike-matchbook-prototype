@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strike — Prototype Test</title>
+<link rel="stylesheet" href="css/design-system.css">
+<style>
+  body { padding-top: 64px; }
+
+  .hero { padding: 100px 0 64px; border-bottom: 1px solid var(--gray-300); }
+  .hero .eyebrow { margin-bottom: 18px; }
+  .hero h1 { font-size: 40px; line-height: 1.15; max-width: 720px; margin-bottom: 20px; }
+  .hero p { font-size: 15px; color: var(--gray-600); max-width: 560px; line-height: 1.6; }
+
+  .modes { padding: 56px 0 100px; }
+  .modes .slabel { font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 22px; }
+
+  .mode-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--gray-300); border: 1px solid var(--gray-300); }
+  .mode-card { background: var(--white); padding: 36px; display: flex; flex-direction: column; min-height: 300px; transition: background var(--ease); }
+  .mode-card:hover { background: var(--gray-50); }
+  .mode-card .num { font-family: var(--font-mono); font-size: 12px; color: var(--gray-400); margin-bottom: 18px; }
+  .mode-card h3 { font-size: 20px; font-weight: 500; margin-bottom: 10px; }
+  .mode-card .desc { font-size: 13px; color: var(--gray-600); line-height: 1.6; margin-bottom: 20px; }
+  .mode-card .feature-list { list-style: none; margin-bottom: 28px; flex: 1; }
+  .mode-card .feature-list li { font-size: 12.5px; color: var(--gray-400); padding: 6px 0; border-top: 1px solid var(--gray-100); display: flex; gap: 10px; align-items: baseline; }
+  .mode-card .feature-list li:first-child { border-top: none; }
+  .mode-card .feature-list li .tick { font-family: var(--font-mono); color: var(--black); flex-shrink: 0; }
+  .mode-card .feature-list li.off { color: var(--gray-300); }
+  .mode-card .feature-list li.off .tick { color: var(--gray-300); }
+  .mode-card .btn { align-self: flex-start; }
+
+  .configurator-link { padding: 40px 0 100px; }
+  .configurator-link .strip { border: 1px solid var(--gray-300); border-radius: var(--radius-sm); padding: 26px 32px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .configurator-link .strip h4 { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .configurator-link .strip p { font-size: 12.5px; color: var(--gray-400); }
+
+  @media (max-width: 760px) {
+    .mode-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 30px; }
+    .configurator-link .strip { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="wordmark" href="index.html">STRIKE</a>
+  <div class="nav-right"><span>Prototype test build</span></div>
+</nav>
+
+<header class="hero container">
+  <div class="eyebrow">Internal — for user testing</div>
+  <h1>Four ways to help someone who doesn't know what they want yet.</h1>
+  <p>Every flow ends at the same 360° matchbook configurator. What changes is how we get a first-time customer there — whether they can upload their own artwork, and what happens when they get stuck. Pick a flow below to walk through it.</p>
+</header>
+
+<main class="modes container">
+  <div class="slabel">Choose a flow to test</div>
+  <div class="mode-grid">
+
+    <div class="mode-card">
+      <div class="num">01 / 04</div>
+      <h3>Upload &amp; Guide</h3>
+      <p class="desc">The baseline flow. Customers can upload existing artwork, or answer a short set of guided questions to build a starting point.</p>
+      <ul class="feature-list">
+        <li><span class="tick">＋</span> Upload your own logo/artwork</li>
+        <li><span class="tick">＋</span> Guided questions if you don't have one</li>
+        <li class="off"><span class="tick">−</span> No human fallback</li>
+        <li class="off"><span class="tick">−</span> No AI assistant</li>
+      </ul>
+      <a class="btn btn-primary" href="mode-1/index.html">Test this flow</a>
+    </div>
+
+    <div class="mode-card">
+      <div class="num">02 / 04</div>
+      <h3>Upload &amp; Guide + Human</h3>
+      <p class="desc">Same starting point as flow 1, with a fallback to talk to a real person for anything the guided questions and FAQ can't answer.</p>
+      <ul class="feature-list">
+        <li><span class="tick">＋</span> Upload your own logo/artwork</li>
+        <li><span class="tick">＋</span> Guided questions if you don't have one</li>
+        <li><span class="tick">＋</span> "Talk to us" — human touchpoint</li>
+        <li class="off"><span class="tick">−</span> No AI assistant</li>
+      </ul>
+      <a class="btn btn-primary" href="mode-2/index.html">Test this flow</a>
+    </div>
+
+    <div class="mode-card">
+      <div class="num">03 / 04</div>
+      <h3>Upload &amp; Guide + AI</h3>
+      <p class="desc">Same starting point as flow 1, with an AI chat assistant as the fallback instead of a human — testing whether that fallback still feels supportive.</p>
+      <ul class="feature-list">
+        <li><span class="tick">＋</span> Upload your own logo/artwork</li>
+        <li><span class="tick">＋</span> Guided questions if you don't have one</li>
+        <li><span class="tick">＋</span> AI chat assistant fallback</li>
+        <li class="off"><span class="tick">−</span> No human touchpoint</li>
+      </ul>
+      <a class="btn btn-primary" href="mode-3/index.html">Test this flow</a>
+    </div>
+
+    <div class="mode-card">
+      <div class="num">04 / 04</div>
+      <h3>Guide Only</h3>
+      <p class="desc">No upload option at all — every customer is walked through the same guided questions, regardless of whether they already have artwork.</p>
+      <ul class="feature-list">
+        <li class="off"><span class="tick">−</span> No upload option</li>
+        <li><span class="tick">＋</span> Guided questions, required for everyone</li>
+        <li class="off"><span class="tick">−</span> No human fallback</li>
+        <li class="off"><span class="tick">−</span> No AI assistant</li>
+      </ul>
+      <a class="btn btn-primary" href="mode-4/index.html">Test this flow</a>
+    </div>
+
+  </div>
+</main>
+
+<section class="configurator-link container">
+  <div class="strip">
+    <div>
+      <h4>Just want the 360° configurator on its own?</h4>
+      <p>Skip the guided flow and jump straight to the product builder.</p>
+    </div>
+    <a class="btn btn-secondary" href="configurator.html">Open configurator</a>
+  </div>
+</section>
+
+<script src="js/testing-bar.js"></script>
+</body>
+</html>

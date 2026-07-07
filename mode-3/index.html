@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mode 3 — Upload, Guide &amp; AI — Strike</title>
+<link rel="stylesheet" href="../css/design-system.css">
+<style>
+  body { padding-top: 64px; background: var(--gray-50); min-height: 100vh; }
+  .nav .tag { font-family: var(--font-mono); font-size: 11px; color: var(--gray-400); border: 1px solid var(--gray-300); border-radius: var(--radius-pill); padding: 4px 12px; }
+
+  .stage { max-width: 620px; margin: 0 auto; padding: 72px 32px 100px; }
+  .stage-head { text-align: center; margin-bottom: 44px; }
+  .stage-head .eyebrow { justify-content: center; display: block; margin-bottom: 14px; }
+  .stage-head h1 { font-size: 28px; font-weight: 500; margin-bottom: 10px; }
+  .stage-head p { font-size: 14px; color: var(--gray-600); }
+
+  .step-dots { justify-content: center; margin-bottom: 40px; }
+
+  .screen { display: none; }
+  .screen.active { display: block; animation: rise .35s ease; }
+  @keyframes rise { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ENTRY */
+  .entry-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .entry-card { border: 1px solid var(--gray-300); border-radius: var(--radius-sm); padding: 32px 24px; background: var(--white); text-align: center; cursor: pointer; transition: all var(--ease); }
+  .entry-card:hover { border-color: var(--black); }
+  .entry-card .icon { width: 44px; height: 44px; margin: 0 auto 18px; display:flex; align-items:center; justify-content:center; border-radius: 50%; background: var(--gray-100); }
+  .entry-card .icon svg { width: 20px; height: 20px; stroke: var(--black); }
+  .entry-card h4 { font-size: 15px; font-weight: 500; margin-bottom: 6px; }
+  .entry-card p { font-size: 12.5px; color: var(--gray-400); line-height: 1.5; }
+
+  /* UPLOAD */
+  .dropzone { border: 1.5px dashed var(--gray-300); border-radius: var(--radius-sm); padding: 56px 24px; text-align: center; background: var(--white); cursor: pointer; transition: all var(--ease); }
+  .dropzone:hover, .dropzone.drag { border-color: var(--black); background: var(--gray-50); }
+  .dropzone svg { width: 30px; height: 30px; stroke: var(--gray-400); margin-bottom: 16px; }
+  .dropzone h4 { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+  .dropzone p { font-size: 12.5px; color: var(--gray-400); }
+  .dropzone input { display: none; }
+  .file-preview { display: none; align-items: center; gap: 14px; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); padding: 16px 20px; background: var(--white); margin-top: 16px; }
+  .file-preview.active { display: flex; }
+  .file-preview .thumb { width: 44px; height: 44px; border-radius: var(--radius-sm); background: var(--gray-100); flex-shrink:0; object-fit: cover; }
+  .file-preview .meta { flex: 1; min-width:0; }
+  .file-preview .meta .name { font-size: 13px; font-weight: 500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .file-preview .meta .size { font-size: 11px; color: var(--gray-400); font-family: var(--font-mono); }
+  .file-preview .remove { font-size: 12px; color: var(--gray-400); cursor: pointer; background:none; border:none; font-family: var(--font); }
+  .file-preview .remove:hover { color: var(--black); }
+
+  /* QUESTIONS */
+  .option-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .option-grid.two { grid-template-columns: 1fr 1fr; }
+  .option-card .swatch-preview { width: 100%; height: 54px; border-radius: var(--radius-sm); margin-bottom: 14px; }
+
+  .actions-row { display: flex; justify-content: space-between; align-items: center; margin-top: 36px; }
+  .actions-row .btn-ghost { padding: 0 14px; }
+
+  /* HANDOFF */
+  .handoff { text-align: center; padding: 40px 0; }
+  .handoff .spinner { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--gray-200); border-top-color: var(--black); margin: 0 auto 22px; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* AI CHAT — persistent touchpoint */
+  .chat-fab { position: fixed; right: 28px; bottom: 28px; display: flex; align-items: center; gap: 10px; height: 50px; padding: 0 22px 0 18px; border-radius: var(--radius-pill); background: var(--black); color: var(--white); border: none; cursor: pointer; font-family: var(--font); font-size: 13px; font-weight: 500; box-shadow: 0 6px 20px rgba(0,0,0,0.18); z-index: 300; transition: transform var(--ease); }
+  .chat-fab:hover { transform: translateY(-2px); }
+  .chat-fab svg { width: 17px; height: 17px; stroke: var(--white); flex-shrink: 0; }
+  .chat-fab.hidden { display: none; }
+
+  .chat-panel { position: fixed; right: 28px; bottom: 28px; width: 360px; max-width: calc(100vw - 40px); height: 480px; max-height: calc(100vh - 56px); background: var(--white); border: 1px solid var(--gray-300); border-radius: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.16); display: none; flex-direction: column; overflow: hidden; z-index: 400; }
+  .chat-panel.active { display: flex; }
+  .chat-head { padding: 18px 20px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; }
+  .chat-head .who { display: flex; align-items: center; gap: 10px; }
+  .chat-head .dot-live { width: 8px; height: 8px; border-radius: 50%; background: #2d6a4f; }
+  .chat-head h4 { font-size: 13.5px; font-weight: 500; }
+  .chat-head p { font-size: 11px; color: var(--gray-400); }
+  .chat-close { background: none; border: none; cursor: pointer; color: var(--gray-400); }
+  .chat-close:hover { color: var(--black); }
+
+  .chat-body { flex: 1; overflow-y: auto; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; }
+  .msg { max-width: 82%; font-size: 13px; line-height: 1.5; padding: 10px 14px; border-radius: 12px; }
+  .msg.bot { align-self: flex-start; background: var(--gray-100); color: var(--black); border-bottom-left-radius: 3px; }
+  .msg.user { align-self: flex-end; background: var(--black); color: var(--white); border-bottom-right-radius: 3px; }
+
+  .quick-replies { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 20px 14px; }
+  .quick-reply { font-family: var(--font); font-size: 11.5px; font-weight: 500; padding: 8px 14px; border-radius: var(--radius-pill); border: 1px solid var(--gray-300); background: var(--white); cursor: pointer; transition: all var(--ease); }
+  .quick-reply:hover { border-color: var(--black); }
+
+  .chat-input-row { display: flex; gap: 8px; padding: 14px 16px; border-top: 1px solid var(--gray-100); }
+  .chat-input-row input { flex: 1; border: 1px solid var(--gray-300); border-radius: var(--radius-pill); padding: 10px 16px; font-family: var(--font); font-size: 13px; outline: none; }
+  .chat-input-row input:focus { border-color: var(--black); }
+  .chat-input-row button { width: 40px; height: 40px; border-radius: 50%; background: var(--black); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .chat-input-row button svg { width: 16px; height: 16px; stroke: var(--white); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="wordmark" href="../index.html">STRIKE</a>
+  <div class="nav-right"><span class="tag">Flow 03 — Upload, Guide &amp; AI</span></div>
+</nav>
+
+<div class="stage">
+
+  <div class="step-dots" id="dots">
+    <span class="dot active" data-dot="entry"></span>
+    <span class="dot" data-dot="q1"></span>
+    <span class="dot" data-dot="q2"></span>
+  </div>
+
+  <!-- ENTRY -->
+  <div class="screen active" id="screen-entry">
+    <div class="stage-head">
+      <span class="eyebrow">Let's start your design</span>
+      <h1>Do you already have artwork?</h1>
+      <p>Upload a logo to work from, or answer a couple of quick questions and we'll set up a starting point for you. Stuck at any point? Our design assistant can help.</p>
+    </div>
+    <div class="entry-grid">
+      <div class="entry-card" onclick="goTo('upload')">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></div>
+        <h4>Upload my logo</h4>
+        <p>I have artwork ready to work from</p>
+      </div>
+      <div class="entry-card" onclick="goTo('q1')">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.9.4-1.5 1-1.5 2.2"/><path d="M12 17h.01"/></svg></div>
+        <h4>I don't know what I want</h4>
+        <p>Answer a few questions to get started</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div class="screen" id="screen-upload">
+    <div class="stage-head">
+      <span class="eyebrow">Upload artwork</span>
+      <h1>Add your logo</h1>
+      <p>PNG, SVG, or PDF — we'll place it on your matchbook in the builder.</p>
+    </div>
+    <label class="dropzone" id="dropzone">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+      <h4>Drag a file here, or click to browse</h4>
+      <p>Up to 10MB</p>
+      <input type="file" id="fileInput" accept="image/*,.pdf,.svg" onchange="handleFile(this.files[0])">
+    </label>
+    <div class="file-preview" id="filePreview">
+      <img class="thumb" id="fileThumb" alt="">
+      <div class="meta">
+        <div class="name" id="fileName"></div>
+        <div class="size" id="fileSize"></div>
+      </div>
+      <button class="remove" onclick="clearFile(event)">Remove</button>
+    </div>
+    <div class="actions-row">
+      <button class="btn btn-ghost" onclick="goTo('entry')">Back</button>
+      <button class="btn btn-primary" id="uploadContinue" disabled onclick="finishToBuilder()">Continue to builder</button>
+    </div>
+  </div>
+
+  <!-- Q1: FORMAT -->
+  <div class="screen" id="screen-q1">
+    <div class="stage-head">
+      <span class="eyebrow">Question 1 of 2</span>
+      <h1>Where will these live?</h1>
+      <p>This helps us suggest the right format.</p>
+    </div>
+    <div class="option-grid">
+      <div class="option-card" data-val="classic" onclick="pickQ1('classic',this)">
+        <h4>On every table</h4>
+        <p>Classic booklet, low profile</p>
+      </div>
+      <div class="option-card" data-val="premium" onclick="pickQ1('premium',this)">
+        <h4>At the host stand</h4>
+        <p>Premium tall format</p>
+      </div>
+      <div class="option-card" data-val="matchbox" onclick="pickQ1('matchbox',this)">
+        <h4>As a takeaway gift</h4>
+        <p>Sliding matchbox</p>
+      </div>
+    </div>
+    <div class="actions-row">
+      <button class="btn btn-ghost" onclick="goTo('entry')">Back</button>
+      <button class="btn btn-primary" id="q1Continue" disabled onclick="goTo('q2')">Continue</button>
+    </div>
+  </div>
+
+  <!-- Q2: MOOD -->
+  <div class="screen" id="screen-q2">
+    <div class="stage-head">
+      <span class="eyebrow">Question 2 of 2</span>
+      <h1>Pick your palette</h1>
+      <p>Pick the mood that's closest to your space — you can fine-tune the exact color in the builder.</p>
+    </div>
+    <div class="option-grid two">
+      <div class="option-card" data-cover="#1a1a1a" data-finish="matte" onclick="pickQ2('#1a1a1a','matte',this)">
+        <div class="swatch-preview" style="background:#1a1a1a"></div>
+        <h4>Midnight</h4>
+        <p>Dark, moody, matte</p>
+      </div>
+      <div class="option-card" data-cover="#c8b8a2" data-finish="matte" onclick="pickQ2('#c8b8a2','matte',this)">
+        <div class="swatch-preview" style="background:#c8b8a2"></div>
+        <h4>Warm Neutral</h4>
+        <p>Earthy, inviting, matte</p>
+      </div>
+      <div class="option-card" data-cover="#ffffff" data-finish="soft" onclick="pickQ2('#ffffff','soft',this)">
+        <div class="swatch-preview" style="background:#ffffff;border:1px solid var(--gray-300)"></div>
+        <h4>Ivory Minimal</h4>
+        <p>Clean, quiet, soft-touch</p>
+      </div>
+      <div class="option-card" data-cover="#8b2635" data-finish="gloss" onclick="pickQ2('#8b2635','gloss',this)">
+        <div class="swatch-preview" style="background:#8b2635"></div>
+        <h4>Bold Color</h4>
+        <p>Confident, vivid, gloss</p>
+      </div>
+    </div>
+    <div class="actions-row">
+      <button class="btn btn-ghost" onclick="goTo('q1')">Back</button>
+      <button class="btn btn-primary" id="q2Continue" disabled onclick="finishToBuilder()">See my starting point</button>
+    </div>
+  </div>
+
+  <!-- HANDOFF -->
+  <div class="screen" id="screen-handoff">
+    <div class="handoff">
+      <div class="spinner"></div>
+      <p class="fine-print">Setting up your builder…</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- PERSISTENT AI TOUCHPOINT -->
+<button class="chat-fab" id="chatFab" onclick="openChat()">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 10h.01M12 10h.01M16 10h.01"/><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-4-1L3 20l1-5.5A8.38 8.38 0 0 1 12.5 3a8.5 8.5 0 0 1 8.5 8.5Z"/></svg>
+  Ask our assistant
+</button>
+
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-head">
+    <div class="who">
+      <span class="dot-live"></span>
+      <div>
+        <h4>Strike Design Assistant</h4>
+        <p>Usually replies instantly</p>
+      </div>
+    </div>
+    <button class="chat-close" onclick="closeChat()">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 3l12 12M15 3 3 15"/></svg>
+    </button>
+  </div>
+  <div class="chat-body" id="chatBody">
+    <div class="msg bot">Hi — I'm here if you get stuck deciding what to design. What can I help with?</div>
+  </div>
+  <div class="quick-replies" id="quickReplies">
+    <button class="quick-reply" onclick="sendQuick('What is the minimum order?')">Minimum order?</button>
+    <button class="quick-reply" onclick="sendQuick(&quot;I don't know what style I want&quot;)">Don't know what style I want</button>
+    <button class="quick-reply" onclick="sendQuick('Can I see examples?')">Show me examples</button>
+  </div>
+  <div class="chat-input-row">
+    <input id="chatInput" placeholder="Type a message…" onkeydown="if(event.key==='Enter')sendTyped()">
+    <button onclick="sendTyped()">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M14 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+  const answers = { type: null, cover: null, finish: null };
+  const DOT_ORDER = ['entry','q1','q2'];
+
+  function goTo(screen) {
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById('screen-'+screen).classList.add('active');
+    const idx = DOT_ORDER.indexOf(screen);
+    document.querySelectorAll('.dot').forEach((d)=>{
+      d.classList.toggle('active', d.dataset.dot===screen);
+      d.classList.toggle('done', idx>=0 && DOT_ORDER.indexOf(d.dataset.dot) < idx);
+    });
+  }
+
+  function pickQ1(val, el) {
+    answers.type = val;
+    document.querySelectorAll('#screen-q1 .option-card').forEach(c=>c.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('q1Continue').disabled = false;
+  }
+
+  function pickQ2(cover, finish, el) {
+    answers.cover = cover; answers.finish = finish;
+    document.querySelectorAll('#screen-q2 .option-card').forEach(c=>c.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('q2Continue').disabled = false;
+  }
+
+  let currentFile = null;
+  const dropzone = document.getElementById('dropzone');
+  dropzone.addEventListener('dragover', e=>{ e.preventDefault(); dropzone.classList.add('drag'); });
+  dropzone.addEventListener('dragleave', ()=> dropzone.classList.remove('drag'));
+  dropzone.addEventListener('drop', e=>{
+    e.preventDefault(); dropzone.classList.remove('drag');
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+
+  function handleFile(file) {
+    if (!file) return;
+    currentFile = file;
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileSize').textContent = (file.size/1024).toFixed(0) + ' KB';
+    const thumb = document.getElementById('fileThumb');
+    if (file.type.startsWith('image/')) thumb.src = URL.createObjectURL(file);
+    else thumb.removeAttribute('src');
+    document.getElementById('filePreview').classList.add('active');
+    document.getElementById('uploadContinue').disabled = false;
+  }
+  function clearFile(e) {
+    e.preventDefault();
+    currentFile = null;
+    document.getElementById('filePreview').classList.remove('active');
+    document.getElementById('uploadContinue').disabled = true;
+    document.getElementById('fileInput').value = '';
+  }
+
+  function finishToBuilder() {
+    goTo('handoff');
+    const params = new URLSearchParams();
+    params.set('mode', '3');
+    if (answers.type)   params.set('type', answers.type);
+    if (answers.cover)  params.set('cover', answers.cover);
+    if (answers.finish) params.set('finish', answers.finish);
+    setTimeout(()=>{
+      window.location.href = '../configurator.html?' + params.toString();
+    }, 700);
+  }
+
+  /* ---------------- AI chat (scripted, no real backend) ---------------- */
+  function openChat() {
+    document.getElementById('chatPanel').classList.add('active');
+    document.getElementById('chatFab').classList.add('hidden');
+  }
+  function closeChat() {
+    document.getElementById('chatPanel').classList.remove('active');
+    document.getElementById('chatFab').classList.remove('hidden');
+  }
+
+  const RESPONSES = [
+    { match: /minimum|moq|how many/i, reply: "Our minimum order is 500 units per design, with a 3–4 week production window. Larger runs bring the per-unit price down." },
+    { match: /don't know|not sure|no idea|help me decide|style/i, reply: "No problem — that's exactly what the guided questions are for. Close this chat and choose \"I don't know what I want\" on the previous screen, and I'll walk with you the whole way." },
+    { match: /example|inspiration|see.*(other|past)/i, reply: "Cafes tend to go for warm neutrals with a matte finish, while bars and speakeasies usually lean into Midnight with gloss or foil accents. You'll see live previews of all of these once you're in the builder." },
+    { match: /price|cost|\$/i, reply: "Pricing depends on format, finish, and quantity — most cafe orders land between $0.60–$1.10 per unit at 500+ units. You'll get an exact quote at the end of the builder." },
+    { match: /human|person|talk to (a person|someone)/i, reply: "I can loop in a real person if you'd like — for this prototype, that hand-off happens through the \"Talk to us\" flow instead of this chat." },
+  ];
+  const FALLBACK = "Good question — for this prototype I can only answer a few common ones. Try asking about minimum order size, pricing, or examples, or just head into the guided questions and I'll help you shape it from there.";
+
+  function appendMsg(text, who) {
+    const body = document.getElementById('chatBody');
+    const div = document.createElement('div');
+    div.className = 'msg ' + who;
+    div.textContent = text;
+    body.appendChild(div);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function respond(userText) {
+    const hit = RESPONSES.find(r => r.match.test(userText));
+    setTimeout(()=> appendMsg(hit ? hit.reply : FALLBACK, 'bot'), 500);
+  }
+
+  function sendQuick(text) {
+    appendMsg(text, 'user');
+    respond(text);
+  }
+
+  function sendTyped() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if (!text) return;
+    appendMsg(text, 'user');
+    input.value = '';
+    respond(text);
+  }
+</script>
+<script src="../js/testing-bar.js"></script>
+</body>
+</html>
