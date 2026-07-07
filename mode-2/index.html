@@ -139,7 +139,7 @@
     </div>
     <div class="actions-row">
       <button class="btn btn-ghost" onclick="goTo('entry')">Back</button>
-      <button class="btn btn-primary" id="uploadContinue" disabled onclick="finishToBuilder()">Continue to builder</button>
+      <button class="btn btn-primary" id="uploadContinue" disabled onclick="finishToBuilder()">Add a file to continue</button>
     </div>
   </div>
 
@@ -176,7 +176,7 @@
     </div>
     <div class="actions-row">
       <button class="btn btn-ghost" onclick="goTo('entry')">Back</button>
-      <button class="btn btn-primary" id="q1Continue" disabled onclick="goTo('q2')">Continue</button>
+      <button class="btn btn-primary" id="q1Continue" disabled onclick="goTo('q2')">Select an option to continue</button>
     </div>
   </div>
 
@@ -219,7 +219,7 @@
     <input type="color" id="q2ColorPicker" onchange="pickQ2Custom(this.value)">
     <div class="actions-row">
       <button class="btn btn-ghost" onclick="goTo('q1')">Back</button>
-      <button class="btn btn-primary" id="q2Continue" disabled onclick="goTo('q3')">Continue</button>
+      <button class="btn btn-primary" id="q2Continue" disabled onclick="goTo('q3')">Select a color to continue</button>
     </div>
   </div>
 
@@ -249,7 +249,7 @@
     </div>
     <div class="actions-row">
       <button class="btn btn-ghost" onclick="goTo('q2')">Back</button>
-      <button class="btn btn-primary" id="q3Continue" disabled onclick="finishToBuilder()">See my starting point</button>
+      <button class="btn btn-primary" id="q3Continue" disabled onclick="finishToBuilder()">Select a timeline to continue</button>
     </div>
   </div>
 
@@ -289,6 +289,12 @@
 
 <script>
   const answers = { type: null, cover: null, finish: null, customFormat: '', timeline: null };
+
+  function setBtn(id, enabled, label) {
+    const btn = document.getElementById(id);
+    btn.disabled = !enabled;
+    btn.textContent = label;
+  }
   const DOT_ORDER = ['entry','q1','q2','q3'];
 
   function goTo(screen) {
@@ -308,7 +314,7 @@
     el.classList.add('selected');
     document.getElementById('q1CustomRow').classList.remove('selected');
     document.getElementById('q1CustomWrap').classList.remove('active');
-    document.getElementById('q1Continue').disabled = false;
+    setBtn('q1Continue', true, 'Continue');
   }
 
   function toggleQ1Custom() {
@@ -322,7 +328,7 @@
     const text = document.getElementById('q1CustomText').value.trim();
     answers.type = null;
     answers.customFormat = text;
-    document.getElementById('q1Continue').disabled = !text;
+    setBtn('q1Continue', !!text, text ? 'Continue' : 'Select an option to continue');
   }
 
   function pickQ2(cover, finish, el) {
@@ -330,21 +336,21 @@
     document.querySelectorAll('#screen-q2 .option-card').forEach(c=>c.classList.remove('selected'));
     el.classList.add('selected');
     document.getElementById('q2CustomRow').classList.remove('selected');
-    document.getElementById('q2Continue').disabled = false;
+    setBtn('q2Continue', true, 'Continue');
   }
   function pickQ2Custom(hex) {
     answers.cover = hex; answers.finish = 'matte';
     document.querySelectorAll('#screen-q2 .option-card').forEach(c=>c.classList.remove('selected'));
     document.getElementById('q2CustomRow').classList.add('selected');
     document.getElementById('q2CustomSwatch').style.background = hex;
-    document.getElementById('q2Continue').disabled = false;
+    setBtn('q2Continue', true, 'Continue');
   }
 
   function pickQ3(val, el) {
     answers.timeline = val;
     document.querySelectorAll('#screen-q3 .option-card').forEach(c=>c.classList.remove('selected'));
     el.classList.add('selected');
-    document.getElementById('q3Continue').disabled = false;
+    setBtn('q3Continue', true, 'See my starting point');
     document.getElementById('rushHint').style.display = val.startsWith('ASAP') ? 'block' : 'none';
   }
 
@@ -366,13 +372,13 @@
     if (file.type.startsWith('image/')) thumb.src = URL.createObjectURL(file);
     else thumb.removeAttribute('src');
     document.getElementById('filePreview').classList.add('active');
-    document.getElementById('uploadContinue').disabled = false;
+    setBtn('uploadContinue', true, 'Continue to builder');
   }
   function clearFile(e) {
     e.preventDefault();
     currentFile = null;
     document.getElementById('filePreview').classList.remove('active');
-    document.getElementById('uploadContinue').disabled = true;
+    setBtn('uploadContinue', false, 'Add a file to continue');
     document.getElementById('fileInput').value = '';
   }
 
