@@ -104,6 +104,7 @@
     <span class="dot active" data-dot="entry"></span>
     <span class="dot" data-dot="q1"></span>
     <span class="dot" data-dot="q2"></span>
+    <span class="dot" data-dot="q3"></span>
   </div>
 
   <!-- ENTRY -->
@@ -157,7 +158,7 @@
   <!-- Q1: FORMAT -->
   <div class="screen" id="screen-q1">
     <div class="stage-head">
-      <span class="eyebrow">Question 1 of 2</span>
+      <span class="eyebrow">Question 1 of 3</span>
       <h1>Where will these live?</h1>
       <p>This helps us suggest the right format.</p>
     </div>
@@ -175,6 +176,16 @@
         <p>Sliding matchbox</p>
       </div>
     </div>
+    <div class="custom-row" id="q1CustomRow" onclick="toggleQ1Custom()">
+      <span class="custom-row-icon">+</span>
+      <div class="custom-row-text">
+        <h4>Something else</h4>
+        <p>Tell us in your own words</p>
+      </div>
+    </div>
+    <div class="custom-input-wrap" id="q1CustomWrap">
+      <input type="text" id="q1CustomText" maxlength="80" placeholder="e.g. On a gift shelf at checkout" oninput="onQ1CustomInput()">
+    </div>
     <div class="actions-row">
       <button class="btn btn-ghost" onclick="goTo('entry')">Back</button>
       <button class="btn btn-primary" id="q1Continue" disabled onclick="goTo('q2')">Continue</button>
@@ -184,7 +195,7 @@
   <!-- Q2: MOOD -->
   <div class="screen" id="screen-q2">
     <div class="stage-head">
-      <span class="eyebrow">Question 2 of 2</span>
+      <span class="eyebrow">Question 2 of 3</span>
       <h1>Pick your palette</h1>
       <p>Pick the mood that's closest to your space — you can fine-tune the exact color in the builder.</p>
     </div>
@@ -210,9 +221,44 @@
         <p>Confident, vivid, gloss</p>
       </div>
     </div>
+    <div class="custom-row" id="q2CustomRow" onclick="document.getElementById('q2ColorPicker').click()">
+      <span class="custom-row-swatch" id="q2CustomSwatch"></span>
+      <div class="custom-row-text">
+        <h4>Pick a custom color</h4>
+        <p>Not seeing your color? Choose exactly</p>
+      </div>
+    </div>
+    <input type="color" id="q2ColorPicker" onchange="pickQ2Custom(this.value)">
     <div class="actions-row">
       <button class="btn btn-ghost" onclick="goTo('q1')">Back</button>
-      <button class="btn btn-primary" id="q2Continue" disabled onclick="finishToBuilder()">See my starting point</button>
+      <button class="btn btn-primary" id="q2Continue" disabled onclick="goTo('q3')">Continue</button>
+    </div>
+  </div>
+
+  <!-- Q3: CONFIDENCE — differentiator: proactively opens the AI chat if unsure -->
+  <div class="screen" id="screen-q3">
+    <div class="stage-head">
+      <span class="eyebrow">Question 3 of 3</span>
+      <h1>How sure are you about the direction?</h1>
+      <p>Just checking in — if you're not sure yet, our assistant can help you think it through.</p>
+    </div>
+    <div class="option-grid">
+      <div class="option-card" data-val="Very sure" onclick="pickQ3('Very sure',this)">
+        <h4>Very sure</h4>
+        <p>I know what I want</p>
+      </div>
+      <div class="option-card" data-val="Somewhat sure" onclick="pickQ3('Somewhat sure',this)">
+        <h4>Somewhat sure</h4>
+        <p>Open to suggestions</p>
+      </div>
+      <div class="option-card" data-val="Not sure at all" onclick="pickQ3('Not sure at all',this)">
+        <h4>Not sure at all</h4>
+        <p>Could use some help</p>
+      </div>
+    </div>
+    <div class="actions-row">
+      <button class="btn btn-ghost" onclick="goTo('q2')">Back</button>
+      <button class="btn btn-primary" id="q3Continue" disabled onclick="finishToBuilder()">See my starting point</button>
     </div>
   </div>
 
@@ -262,8 +308,8 @@
 </div>
 
 <script>
-  const answers = { type: null, cover: null, finish: null };
-  const DOT_ORDER = ['entry','q1','q2'];
+  const answers = { type: null, cover: null, finish: null, customFormat: '', confidence: null };
+  const DOT_ORDER = ['entry','q1','q2','q3'];
 
   function goTo(screen) {
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -277,16 +323,52 @@
 
   function pickQ1(val, el) {
     answers.type = val;
+    answers.customFormat = '';
     document.querySelectorAll('#screen-q1 .option-card').forEach(c=>c.classList.remove('selected'));
     el.classList.add('selected');
+    document.getElementById('q1CustomRow').classList.remove('selected');
+    document.getElementById('q1CustomWrap').classList.remove('active');
     document.getElementById('q1Continue').disabled = false;
+  }
+
+  function toggleQ1Custom() {
+    document.querySelectorAll('#screen-q1 .option-card').forEach(c=>c.classList.remove('selected'));
+    document.getElementById('q1CustomRow').classList.add('selected');
+    document.getElementById('q1CustomWrap').classList.add('active');
+    document.getElementById('q1CustomText').focus();
+    onQ1CustomInput();
+  }
+  function onQ1CustomInput() {
+    const text = document.getElementById('q1CustomText').value.trim();
+    answers.type = null;
+    answers.customFormat = text;
+    document.getElementById('q1Continue').disabled = !text;
   }
 
   function pickQ2(cover, finish, el) {
     answers.cover = cover; answers.finish = finish;
     document.querySelectorAll('#screen-q2 .option-card').forEach(c=>c.classList.remove('selected'));
     el.classList.add('selected');
+    document.getElementById('q2CustomRow').classList.remove('selected');
     document.getElementById('q2Continue').disabled = false;
+  }
+  function pickQ2Custom(hex) {
+    answers.cover = hex; answers.finish = 'matte';
+    document.querySelectorAll('#screen-q2 .option-card').forEach(c=>c.classList.remove('selected'));
+    document.getElementById('q2CustomRow').classList.add('selected');
+    document.getElementById('q2CustomSwatch').style.background = hex;
+    document.getElementById('q2Continue').disabled = false;
+  }
+
+  function pickQ3(val, el) {
+    answers.confidence = val;
+    document.querySelectorAll('#screen-q3 .option-card').forEach(c=>c.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('q3Continue').disabled = false;
+    if (val === 'Not sure at all') {
+      openChat();
+      appendMsg("Hey — since you're still figuring out the direction, want to talk it through together? Tell me what kind of place this is for and I'll suggest a starting point.", 'bot');
+    }
   }
 
   let currentFile = null;
@@ -324,6 +406,8 @@
     if (answers.type)   params.set('type', answers.type);
     if (answers.cover)  params.set('cover', answers.cover);
     if (answers.finish) params.set('finish', answers.finish);
+    if (answers.customFormat) params.set('note', 'Wants: ' + answers.customFormat);
+    if (answers.confidence)   params.set('confidence', answers.confidence);
     setTimeout(()=>{
       window.location.href = '../configurator.html?' + params.toString();
     }, 700);

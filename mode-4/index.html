@@ -77,6 +77,16 @@
         <p>Sliding matchbox</p>
       </div>
     </div>
+    <div class="custom-row" id="q1CustomRow" onclick="toggleQ1Custom()">
+      <span class="custom-row-icon">+</span>
+      <div class="custom-row-text">
+        <h4>Something else</h4>
+        <p>Tell us in your own words</p>
+      </div>
+    </div>
+    <div class="custom-input-wrap" id="q1CustomWrap">
+      <input type="text" id="q1CustomText" maxlength="80" placeholder="e.g. On a gift shelf at checkout" oninput="onQ1CustomInput()">
+    </div>
     <div class="actions-row">
       <div></div>
       <button class="btn btn-primary" id="q1Continue" disabled onclick="goTo('q2')">Continue</button>
@@ -112,6 +122,14 @@
         <p>Confident, vivid, gloss</p>
       </div>
     </div>
+    <div class="custom-row" id="q2CustomRow" onclick="document.getElementById('q2ColorPicker').click()">
+      <span class="custom-row-swatch" id="q2CustomSwatch"></span>
+      <div class="custom-row-text">
+        <h4>Pick a custom color</h4>
+        <p>Not seeing your color? Choose exactly</p>
+      </div>
+    </div>
+    <input type="color" id="q2ColorPicker" onchange="pickQ2Custom(this.value)">
     <div class="actions-row">
       <button class="btn btn-ghost" onclick="goTo('q1')">Back</button>
       <button class="btn btn-primary" id="q2Continue" disabled onclick="goTo('q3')">Continue</button>
@@ -147,7 +165,7 @@
 </div>
 
 <script>
-  const answers = { type: null, cover: null, finish: null, text: '' };
+  const answers = { type: null, cover: null, finish: null, text: '', customFormat: '' };
   const DOT_ORDER = ['q1','q2','q3'];
 
   function goTo(screen) {
@@ -162,15 +180,40 @@
 
   function pickQ1(val, el) {
     answers.type = val;
+    answers.customFormat = '';
     document.querySelectorAll('#screen-q1 .option-card').forEach(c=>c.classList.remove('selected'));
     el.classList.add('selected');
+    document.getElementById('q1CustomRow').classList.remove('selected');
+    document.getElementById('q1CustomWrap').classList.remove('active');
     document.getElementById('q1Continue').disabled = false;
+  }
+
+  function toggleQ1Custom() {
+    document.querySelectorAll('#screen-q1 .option-card').forEach(c=>c.classList.remove('selected'));
+    document.getElementById('q1CustomRow').classList.add('selected');
+    document.getElementById('q1CustomWrap').classList.add('active');
+    document.getElementById('q1CustomText').focus();
+    onQ1CustomInput();
+  }
+  function onQ1CustomInput() {
+    const text = document.getElementById('q1CustomText').value.trim();
+    answers.type = null;
+    answers.customFormat = text;
+    document.getElementById('q1Continue').disabled = !text;
   }
 
   function pickQ2(cover, finish, el) {
     answers.cover = cover; answers.finish = finish;
     document.querySelectorAll('#screen-q2 .option-card').forEach(c=>c.classList.remove('selected'));
     el.classList.add('selected');
+    document.getElementById('q2CustomRow').classList.remove('selected');
+    document.getElementById('q2Continue').disabled = false;
+  }
+  function pickQ2Custom(hex) {
+    answers.cover = hex; answers.finish = 'matte';
+    document.querySelectorAll('#screen-q2 .option-card').forEach(c=>c.classList.remove('selected'));
+    document.getElementById('q2CustomRow').classList.add('selected');
+    document.getElementById('q2CustomSwatch').style.background = hex;
     document.getElementById('q2Continue').disabled = false;
   }
 
@@ -183,6 +226,7 @@
     if (answers.cover)  params.set('cover', answers.cover);
     if (answers.finish) params.set('finish', answers.finish);
     if (answers.text)   params.set('fl1', answers.text);
+    if (answers.customFormat) params.set('note', 'Wants: ' + answers.customFormat);
     setTimeout(()=>{
       window.location.href = '../configurator.html?' + params.toString();
     }, 700);

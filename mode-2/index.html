@@ -92,6 +92,7 @@
     <span class="dot active" data-dot="entry"></span>
     <span class="dot" data-dot="q1"></span>
     <span class="dot" data-dot="q2"></span>
+    <span class="dot" data-dot="q3"></span>
   </div>
 
   <!-- ENTRY -->
@@ -145,7 +146,7 @@
   <!-- Q1: FORMAT -->
   <div class="screen" id="screen-q1">
     <div class="stage-head">
-      <span class="eyebrow">Question 1 of 2</span>
+      <span class="eyebrow">Question 1 of 3</span>
       <h1>Where will these live?</h1>
       <p>This helps us suggest the right format.</p>
     </div>
@@ -163,6 +164,16 @@
         <p>Sliding matchbox</p>
       </div>
     </div>
+    <div class="custom-row" id="q1CustomRow" onclick="toggleQ1Custom()">
+      <span class="custom-row-icon">+</span>
+      <div class="custom-row-text">
+        <h4>Something else</h4>
+        <p>Tell us in your own words</p>
+      </div>
+    </div>
+    <div class="custom-input-wrap" id="q1CustomWrap">
+      <input type="text" id="q1CustomText" maxlength="80" placeholder="e.g. On a gift shelf at checkout" oninput="onQ1CustomInput()">
+    </div>
     <div class="actions-row">
       <button class="btn btn-ghost" onclick="goTo('entry')">Back</button>
       <button class="btn btn-primary" id="q1Continue" disabled onclick="goTo('q2')">Continue</button>
@@ -172,7 +183,7 @@
   <!-- Q2: MOOD -->
   <div class="screen" id="screen-q2">
     <div class="stage-head">
-      <span class="eyebrow">Question 2 of 2</span>
+      <span class="eyebrow">Question 2 of 3</span>
       <h1>Pick your palette</h1>
       <p>Pick the mood that's closest to your space — you can fine-tune the exact color in the builder.</p>
     </div>
@@ -198,9 +209,47 @@
         <p>Confident, vivid, gloss</p>
       </div>
     </div>
+    <div class="custom-row" id="q2CustomRow" onclick="document.getElementById('q2ColorPicker').click()">
+      <span class="custom-row-swatch" id="q2CustomSwatch"></span>
+      <div class="custom-row-text">
+        <h4>Pick a custom color</h4>
+        <p>Not seeing your color? Choose exactly</p>
+      </div>
+    </div>
+    <input type="color" id="q2ColorPicker" onchange="pickQ2Custom(this.value)">
     <div class="actions-row">
       <button class="btn btn-ghost" onclick="goTo('q1')">Back</button>
-      <button class="btn btn-primary" id="q2Continue" disabled onclick="finishToBuilder()">See my starting point</button>
+      <button class="btn btn-primary" id="q2Continue" disabled onclick="goTo('q3')">Continue</button>
+    </div>
+  </div>
+
+  <!-- Q3: TIMELINE — differentiator: feeds the human touchpoint with urgency -->
+  <div class="screen" id="screen-q3">
+    <div class="stage-head">
+      <span class="eyebrow">Question 3 of 3</span>
+      <h1>When do you need these by?</h1>
+      <p>This helps whoever from our team follows up prioritize your order.</p>
+    </div>
+    <div class="option-grid">
+      <div class="option-card" data-val="ASAP — rush order" onclick="pickQ3('ASAP — rush order',this)">
+        <h4>ASAP</h4>
+        <p>Rush order</p>
+      </div>
+      <div class="option-card" data-val="Within the month" onclick="pickQ3('Within the month',this)">
+        <h4>Within the month</h4>
+        <p>Standard timeline</p>
+      </div>
+      <div class="option-card" data-val="Just exploring" onclick="pickQ3('Just exploring',this)">
+        <h4>Just exploring</h4>
+        <p>No rush yet</p>
+      </div>
+    </div>
+    <div id="rushHint" style="display:none; margin-top:16px; border:1px solid var(--gray-300); border-radius:var(--radius-sm); padding:16px 20px; font-size:12.5px; color:var(--gray-600); line-height:1.5;">
+      Rush orders are best confirmed with a real person. <a href="#" onclick="event.preventDefault();openModal()" style="color:var(--black); text-decoration:underline;">Talk to us</a> before finishing, or keep going and we'll flag it for the team.
+    </div>
+    <div class="actions-row">
+      <button class="btn btn-ghost" onclick="goTo('q2')">Back</button>
+      <button class="btn btn-primary" id="q3Continue" disabled onclick="finishToBuilder()">See my starting point</button>
     </div>
   </div>
 
@@ -239,8 +288,8 @@
 </div>
 
 <script>
-  const answers = { type: null, cover: null, finish: null };
-  const DOT_ORDER = ['entry','q1','q2'];
+  const answers = { type: null, cover: null, finish: null, customFormat: '', timeline: null };
+  const DOT_ORDER = ['entry','q1','q2','q3'];
 
   function goTo(screen) {
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -254,16 +303,49 @@
 
   function pickQ1(val, el) {
     answers.type = val;
+    answers.customFormat = '';
     document.querySelectorAll('#screen-q1 .option-card').forEach(c=>c.classList.remove('selected'));
     el.classList.add('selected');
+    document.getElementById('q1CustomRow').classList.remove('selected');
+    document.getElementById('q1CustomWrap').classList.remove('active');
     document.getElementById('q1Continue').disabled = false;
+  }
+
+  function toggleQ1Custom() {
+    document.querySelectorAll('#screen-q1 .option-card').forEach(c=>c.classList.remove('selected'));
+    document.getElementById('q1CustomRow').classList.add('selected');
+    document.getElementById('q1CustomWrap').classList.add('active');
+    document.getElementById('q1CustomText').focus();
+    onQ1CustomInput();
+  }
+  function onQ1CustomInput() {
+    const text = document.getElementById('q1CustomText').value.trim();
+    answers.type = null;
+    answers.customFormat = text;
+    document.getElementById('q1Continue').disabled = !text;
   }
 
   function pickQ2(cover, finish, el) {
     answers.cover = cover; answers.finish = finish;
     document.querySelectorAll('#screen-q2 .option-card').forEach(c=>c.classList.remove('selected'));
     el.classList.add('selected');
+    document.getElementById('q2CustomRow').classList.remove('selected');
     document.getElementById('q2Continue').disabled = false;
+  }
+  function pickQ2Custom(hex) {
+    answers.cover = hex; answers.finish = 'matte';
+    document.querySelectorAll('#screen-q2 .option-card').forEach(c=>c.classList.remove('selected'));
+    document.getElementById('q2CustomRow').classList.add('selected');
+    document.getElementById('q2CustomSwatch').style.background = hex;
+    document.getElementById('q2Continue').disabled = false;
+  }
+
+  function pickQ3(val, el) {
+    answers.timeline = val;
+    document.querySelectorAll('#screen-q3 .option-card').forEach(c=>c.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('q3Continue').disabled = false;
+    document.getElementById('rushHint').style.display = val.startsWith('ASAP') ? 'block' : 'none';
   }
 
   let currentFile = null;
@@ -301,6 +383,8 @@
     if (answers.type)   params.set('type', answers.type);
     if (answers.cover)  params.set('cover', answers.cover);
     if (answers.finish) params.set('finish', answers.finish);
+    if (answers.customFormat) params.set('note', 'Wants: ' + answers.customFormat);
+    if (answers.timeline) params.set('timeline', answers.timeline);
     setTimeout(()=>{
       window.location.href = '../configurator.html?' + params.toString();
     }, 700);

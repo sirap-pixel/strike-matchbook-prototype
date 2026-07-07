@@ -143,6 +143,56 @@ a { color: inherit; text-decoration: none; }
 /* ---------- fine print ---------- */
 .fine-print { font-size: 11.5px; color: var(--gray-400); }
 
+/* ---------- custom-answer row — lets a customer type/pick their own thing on any guided question ---------- */
+.custom-row {
+  margin-top: 12px;
+  border: 1px dashed var(--gray-300);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: all var(--ease);
+  background: var(--white);
+}
+.custom-row:hover { border-color: var(--gray-600); }
+.custom-row.selected { border-style: solid; border-color: var(--black); box-shadow: inset 0 0 0 1px var(--black); }
+.custom-row-icon {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--gray-100);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  color: var(--gray-400);
+  flex-shrink: 0;
+  transition: all var(--ease);
+}
+.custom-row.selected .custom-row-icon { background: var(--black); color: var(--white); }
+.custom-row-swatch {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1.5px solid var(--gray-300);
+  background: conic-gradient(red,yellow,lime,cyan,blue,magenta,red);
+}
+.custom-row-text h4 { font-size: 13.5px; font-weight: 500; margin-bottom: 2px; }
+.custom-row-text p { font-size: 12px; color: var(--gray-400); }
+.custom-input-wrap { display: none; margin-top: 12px; }
+.custom-input-wrap.active { display: block; animation: rise-in .25s ease; }
+@keyframes rise-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.custom-input-wrap input {
+  width: 100%; height: 44px;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-sm);
+  padding: 0 14px;
+  font-family: var(--font);
+  font-size: 13.5px;
+  outline: none;
+  transition: border-color var(--ease);
+}
+.custom-input-wrap input:focus { border-color: var(--black); }
+
 ::selection { background: var(--black); color: var(--white); }
 
 /* ---------- testing mode bar — internal QA utility, not brand chrome ---------- */

@@ -342,6 +342,7 @@ const state = {
   matchColor: '#bb2222',
   f: { l1:'', l2:'', color:'#ffffff', pos:'mc', size:22 },
   b: { l1:'', l2:'', color:'#ffffff', pos:'mc', size:18 },
+  meta: { note:'', timeline:'', confidence:'' },
 };
 
 const TYPE_INFO = {
@@ -358,6 +359,9 @@ const TYPE_INFO = {
   if (p.has('finish')) state.finish = p.get('finish');
   if (p.has('matchColor')) state.matchColor = p.get('matchColor');
   if (p.has('fl1')) state.f.l1 = p.get('fl1');
+  if (p.has('note')) state.meta.note = p.get('note');
+  if (p.has('timeline')) state.meta.timeline = p.get('timeline');
+  if (p.has('confidence')) state.meta.confidence = p.get('confidence');
 })();
 
 /* ===================================================================
@@ -447,6 +451,9 @@ function buildSummary() {
     ['Front', [state.f.l1,state.f.l2].filter(Boolean).join(' / ')||'—'],
     ['Back',  [state.b.l1,state.b.l2].filter(Boolean).join(' / ')||'—'],
   ];
+  if (state.meta.timeline)   rows.push(['Timeline', state.meta.timeline]);
+  if (state.meta.confidence) rows.push(['Confidence', state.meta.confidence]);
+  if (state.meta.note)       rows.push(['Note from guide', state.meta.note]);
   document.getElementById('summary').innerHTML = rows.map(([k,v])=>
     `<div class="sum-row"><span class="k">${k}</span><span class="v">${v}</span></div>`
   ).join('');
