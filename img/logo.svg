@@ -1,0 +1,13 @@
+<svg viewBox="0 0 880 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Strike">
+  <text x="0" y="232" font-family="'Nunito','Poppins','Helvetica Neue',Arial,sans-serif" font-weight="900" font-size="210" letter-spacing="-4" fill="#0a0a0a">STR</text>
+  <rect x="460" y="68" width="22" height="168" rx="6" fill="#0a0a0a"/>
+  <polygon points="471,6 485,40 521,40 493,60 504,96 471,76 438,96 449,60 421,40 457,40" fill="#fde68a" opacity="0.7"/>
+  <polygon points="471,14 484,46 518,46 491,64 502,98 471,79 440,98 451,64 424,46 458,46" fill="#F5A623"/>
+  <circle cx="471" cy="58" r="17" fill="#7C3A10"/>
+  <circle cx="464" cy="54" r="2.8" fill="#1a1a1a"/>
+  <circle cx="478" cy="54" r="2.8" fill="#1a1a1a"/>
+  <circle cx="465.5" cy="52.5" r="1" fill="white"/>
+  <circle cx="479.5" cy="52.5" r="1" fill="white"/>
+  <path d="M463 63 Q471 70 479 63" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  <text x="489" y="232" font-family="'Nunito','Poppins','Helvetica Neue',Arial,sans-serif" font-weight="900" font-size="210" letter-spacing="-4" fill="#0a0a0a">KE</text>
+</svg>

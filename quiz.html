@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design Quiz Strike Matchbooks</title>
+<link rel="stylesheet" href="css/design-system.css">
+<style>
+  body { padding-top: 64px; overflow-x: hidden; min-height: 100vh; }
+
+  .nav-links { display: flex; align-items: center; gap: 28px; font-size: 13px; color: var(--gray-600); }
+  .nav-links a { transition: color var(--ease); }
+  .nav-links a:hover { color: var(--black); }
+  .nav-cta { background: var(--black); color: #fff !important; padding: 8px 18px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 500; }
+  .nav-cta:hover { background: var(--gray-800) !important; }
+
+  .quiz-shell {
+    min-height: calc(100vh - 64px);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 60px 24px;
+  }
+  .quiz-wrap { width: 100%; max-width: 680px; }
+
+  /* PROGRESS */
+  .progress-row { display: flex; align-items: center; gap: 8px; margin-bottom: 56px; }
+  .progress-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gray-200); transition: background .3s; }
+  .progress-dot.active { background: var(--black); }
+  .progress-dot.done { background: var(--gray-400); }
+  .progress-label { margin-left: auto; font-size: 11px; font-family: var(--font-mono); color: var(--gray-400); letter-spacing: .08em; }
+
+  /* STEP */
+  .step { display: none; animation: fadeUp .35s ease both; }
+  .step.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 16px; }
+  .step h2 { font-size: clamp(26px, 4vw, 42px); font-weight: 500; letter-spacing: -.02em; line-height: 1.1; margin-bottom: 10px; }
+  .step-sub { font-size: 14px; color: var(--gray-600); line-height: 1.65; margin-bottom: 40px; max-width: 480px; }
+
+  /* OPTION CARDS */
+  .option-grid { display: grid; gap: 10px; margin-bottom: 40px; }
+  .option-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .option-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+  .option-card {
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 20px 20px 18px;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    user-select: none;
+  }
+  .option-card:hover { border-color: var(--gray-400); background: var(--gray-50); }
+  .option-card.selected { border-color: var(--black); background: var(--black); color: white; }
+  .option-card.selected .opt-label { color: white; }
+  .option-card.selected .opt-sub { color: rgba(255,255,255,.5); }
+
+  .opt-label { font-size: 14px; font-weight: 500; display: block; margin-bottom: 4px; }
+  .opt-sub { font-size: 12px; color: var(--gray-500); line-height: 1.5; }
+
+  /* COLOR SWATCHES */
+  .color-swatch { width: 32px; height: 32px; border-radius: 50%; margin-bottom: 12px; border: 1px solid rgba(0,0,0,.1); }
+
+  /* TEXTAREA */
+  .quiz-textarea {
+    width: 100%; height: 140px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+    font-family: var(--font);
+    font-size: 14px;
+    color: var(--black);
+    background: var(--white);
+    resize: vertical;
+    outline: none;
+    transition: border-color .2s;
+    box-sizing: border-box;
+    margin-bottom: 40px;
+  }
+  .quiz-textarea:focus { border-color: var(--black); }
+  .quiz-textarea::placeholder { color: var(--gray-400); }
+
+  /* NAV BUTTONS */
+  .step-nav { display: flex; align-items: center; gap: 12px; }
+  .btn-back {
+    background: none; border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-pill); padding: 10px 20px;
+    font-size: 13px; font-family: var(--font); color: var(--gray-600);
+    cursor: pointer; transition: border-color .2s, color .2s;
+  }
+  .btn-back:hover { border-color: var(--gray-400); color: var(--black); }
+  .btn-next {
+    background: var(--black); color: white; border: none;
+    border-radius: var(--radius-pill); padding: 12px 28px;
+    font-size: 13px; font-weight: 500; font-family: var(--font);
+    cursor: pointer; transition: background .2s, opacity .2s;
+    opacity: .3; pointer-events: none;
+  }
+  .btn-next.ready { opacity: 1; pointer-events: all; }
+  .btn-next.ready:hover { background: var(--gray-800); }
+  .btn-next.always-ready { opacity: 1; pointer-events: all; }
+
+  /* FILE UPLOAD */
+  .upload-zone {
+    border: 1.5px dashed var(--gray-300);
+    border-radius: var(--radius-sm);
+    padding: 0;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    overflow: hidden;
+    margin-bottom: 0;
+  }
+  .upload-zone:hover, .upload-zone.drag-over { border-color: var(--black); background: var(--gray-50); }
+  .upload-inner { padding: 40px 24px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .upload-icon { color: var(--gray-400); }
+  .upload-label { font-size: 14px; color: var(--gray-600); margin: 0; }
+  .upload-link { color: var(--black); text-decoration: underline; cursor: pointer; }
+  .upload-sub { font-size: 12px; color: var(--gray-400); margin: 0; }
+  .upload-files { border-top: 1px solid var(--gray-100); }
+  .upload-file-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--gray-100); font-size: 12.5px; }
+  .upload-file-row:last-child { border-bottom: none; }
+  .uf-name { flex: 1; color: var(--black); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .uf-size { color: var(--gray-400); font-family: var(--font-mono); font-size: 11px; flex-shrink: 0; }
+  .uf-remove { background: none; border: none; color: var(--gray-400); cursor: pointer; font-size: 12px; padding: 2px 4px; flex-shrink: 0; transition: color .15s; }
+  .uf-remove:hover { color: var(--black); }
+
+  /* SUMMARY */
+  .summary-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1px; background: var(--gray-200);
+    border: 1px solid var(--gray-200); border-radius: var(--radius-sm);
+    overflow: hidden; margin-bottom: 36px;
+  }
+  .summary-cell { background: var(--white); padding: 20px 22px; }
+  .summary-cell .sc-label { font-size: 10px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+  .summary-cell .sc-val { font-size: 15px; font-weight: 500; }
+  .summary-cell.full { grid-column: 1 / -1; }
+  .summary-cell .sc-notes { font-size: 13px; color: var(--gray-600); line-height: 1.6; }
+
+  @media (max-width: 600px) {
+    .option-grid.cols-2 { grid-template-columns: 1fr; }
+    .option-grid.cols-3 { grid-template-columns: 1fr 1fr; }
+    .summary-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="wordmark" href="index.html" style="padding:0"><img src="img/logo.webp" alt="Strike" style="height:38px;display:block;"></a>
+  <div class="nav-links">
+    <a href="products.html">Products</a>
+    <a href="about.html">About</a>
+    <a href="wholesale.html">Wholesale</a>
+    <a href="products.html#order" class="nav-cta">Start an order</a>
+  </div>
+</nav>
+
+<div class="quiz-shell">
+  <div class="quiz-wrap">
+
+    <div class="progress-row">
+      <div class="progress-dot active" id="dot-0"></div>
+      <div class="progress-dot" id="dot-1"></div>
+      <div class="progress-dot" id="dot-2"></div>
+      <div class="progress-dot" id="dot-3"></div>
+      <div class="progress-dot" id="dot-4"></div>
+      <div class="progress-dot" id="dot-5"></div>
+      <div class="progress-dot" id="dot-6"></div>
+      <span class="progress-label" id="progress-label">Step 1 of 7</span>
+    </div>
+
+    <!-- STEP 1: What are you designing for? -->
+    <div class="step active" id="step-0">
+      <div class="step-eyebrow">Let's figure out what you need</div>
+      <h2>What are you designing for?</h2>
+      <p class="step-sub">This helps us point you toward the right format and size.</p>
+      <div class="option-grid cols-2">
+        <div class="option-card" data-step="0" data-val="Restaurant or bar">
+          <span class="opt-label">Restaurant or bar</span>
+          <span class="opt-sub">Table setups, menus, branded collateral</span>
+        </div>
+        <div class="option-card" data-step="0" data-val="Hotel or hospitality">
+          <span class="opt-label">Hotel or hospitality</span>
+          <span class="opt-sub">Amenity kits, room touches, gift shop</span>
+        </div>
+        <div class="option-card" data-step="0" data-val="Event or wedding">
+          <span class="opt-label">Event or wedding</span>
+          <span class="opt-sub">Favors, seating, takeaway gifts</span>
+        </div>
+        <div class="option-card" data-step="0" data-val="Consumer brand">
+          <span class="opt-label">Consumer brand</span>
+          <span class="opt-sub">Retail, DTC, lifestyle, gifting</span>
+        </div>
+        <div class="option-card" data-step="0" data-val="Corporate or office">
+          <span class="opt-label">Corporate or office</span>
+          <span class="opt-sub">Swag, client gifts, brand moments</span>
+        </div>
+        <div class="option-card" data-step="0" data-val="Something else">
+          <span class="opt-label">Something else</span>
+          <span class="opt-sub">We'll figure it out together</span>
+        </div>
+      </div>
+      <div class="step-nav">
+        <button class="btn-next" id="next-0">Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Vibe -->
+    <div class="step" id="step-1">
+      <div class="step-eyebrow">Aesthetic</div>
+      <h2>What's the vibe?</h2>
+      <p class="step-sub">Pick the feeling that's closest. We can always dial it in together.</p>
+      <div class="option-grid cols-2">
+        <div class="option-card" data-step="1" data-val="Classic and refined">
+          <span class="opt-label">Classic and refined</span>
+          <span class="opt-sub">Clean lines, heritage feel, serif type</span>
+        </div>
+        <div class="option-card" data-step="1" data-val="Fun and playful">
+          <span class="opt-label">Fun and playful</span>
+          <span class="opt-sub">Bold colors, personality, unexpected details</span>
+        </div>
+        <div class="option-card" data-step="1" data-val="Minimal and modern">
+          <span class="opt-label">Minimal and modern</span>
+          <span class="opt-sub">White space, simple type, understated</span>
+        </div>
+        <div class="option-card" data-step="1" data-val="Bold and graphic">
+          <span class="opt-label">Bold and graphic</span>
+          <span class="opt-sub">Strong imagery, high contrast, statement</span>
+        </div>
+      </div>
+      <div class="step-nav">
+        <button class="btn-back" id="back-1">← Back</button>
+        <button class="btn-next" id="next-1">Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Format -->
+    <div class="step" id="step-2">
+      <div class="step-eyebrow">Format</div>
+      <h2>Which format fits best?</h2>
+      <p class="step-sub">Both are fully custom. The main difference is form factor and quantity.</p>
+      <div class="option-grid cols-2">
+        <div class="option-card" data-step="2" data-val="matchbook">
+          <div style="margin-bottom:16px;display:flex;justify-content:center;">
+            <svg viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:180px;height:auto;display:block;margin:0 auto;">
+              <rect x="60" y="8" width="100" height="28" rx="2" fill="#f8f8f8" stroke="#1a1a1a" stroke-width="1.2"/>
+              <line x1="60" y1="36" x2="160" y2="36" stroke="#1a1a1a" stroke-width="0.5" stroke-dasharray="4,3"/>
+              <text x="110" y="24" text-anchor="middle" font-size="7" fill="#999" font-family="monospace">FLAP</text>
+              <rect x="60" y="36" width="100" height="68" fill="#f8f8f8" stroke="#1a1a1a" stroke-width="1.2"/>
+              <text x="110" y="68" text-anchor="middle" font-size="7.5" fill="#aaa" font-family="monospace">OUTSIDE</text>
+              <rect x="60" y="96" width="100" height="8" fill="#e8e8e8" stroke="#1a1a1a" stroke-width="0.8"/>
+              <text x="110" y="103" text-anchor="middle" font-size="5.5" fill="#bbb" font-family="monospace">STRIKE STRIP</text>
+              <rect x="60" y="104" width="100" height="38" fill="#f2f2f2" stroke="#1a1a1a" stroke-width="1.2" stroke-dasharray="5,3"/>
+              <text x="110" y="127" text-anchor="middle" font-size="7.5" fill="#bbb" font-family="monospace">INSIDE</text>
+              <line x1="60" y1="104" x2="160" y2="104" stroke="#1a1a1a" stroke-width="0.5" stroke-dasharray="4,3"/>
+              <line x1="60" y1="142" x2="160" y2="142" stroke="#ccc" stroke-width="0.8"/>
+              <text x="110" y="149" text-anchor="middle" font-size="6" fill="#ccc" font-family="monospace">2.125″</text>
+            </svg>
+          </div>
+          <span class="opt-label">The Matchbook</span>
+          <span class="opt-sub">20 matches · saddle-stitched · Min 500 units from $2.55/unit</span>
+        </div>
+        <div class="option-card" data-step="2" data-val="matchbox">
+          <div style="margin-bottom:16px;">
+            <svg viewBox="0 0 240 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:180px;height:auto;display:block;margin:0 auto;">
+              <rect x="68" y="8" width="104" height="18" rx="2" fill="#f8f8f8" stroke="#1a1a1a" stroke-width="1.2"/>
+              <text x="120" y="20" text-anchor="middle" font-size="6" fill="#bbb" font-family="monospace">TOP</text>
+              <line x1="68" y1="26" x2="172" y2="26" stroke="#1a1a1a" stroke-width="0.5" stroke-dasharray="4,3"/>
+              <rect x="68" y="26" width="104" height="52" fill="#f8f8f8" stroke="#1a1a1a" stroke-width="1.2"/>
+              <text x="120" y="54" text-anchor="middle" font-size="7.5" fill="#aaa" font-family="monospace">FRONT</text>
+              <rect x="68" y="70" width="104" height="8" fill="#e8e8e8" stroke="#1a1a1a" stroke-width="0.8"/>
+              <text x="120" y="77" text-anchor="middle" font-size="5.5" fill="#bbb" font-family="monospace">STRIKE STRIP</text>
+              <rect x="68" y="78" width="104" height="52" fill="#f8f8f8" stroke="#1a1a1a" stroke-width="1.2"/>
+              <text x="120" y="107" text-anchor="middle" font-size="7.5" fill="#aaa" font-family="monospace">BACK</text>
+              <rect x="68" y="130" width="104" height="18" rx="2" fill="#f8f8f8" stroke="#1a1a1a" stroke-width="1.2"/>
+              <text x="120" y="142" text-anchor="middle" font-size="6" fill="#bbb" font-family="monospace">BOTTOM</text>
+              <rect x="8" y="44" width="60" height="38" rx="2" fill="#f2f2f2" stroke="#1a1a1a" stroke-width="1.2" stroke-dasharray="5,3"/>
+              <text x="38" y="66" text-anchor="middle" font-size="6.5" fill="#bbb" font-family="monospace">TRAY</text>
+              <line x1="68" y1="78" x2="172" y2="78" stroke="#1a1a1a" stroke-width="0.5" stroke-dasharray="4,3"/>
+              <line x1="68" y1="130" x2="172" y2="130" stroke="#1a1a1a" stroke-width="0.5" stroke-dasharray="4,3"/>
+              <line x1="68" y1="149" x2="172" y2="149" stroke="#ccc" stroke-width="0.8"/>
+              <text x="120" y="155" text-anchor="middle" font-size="6" fill="#ccc" font-family="monospace">2.25″</text>
+            </svg>
+          </div>
+          <span class="opt-label">The Matchbox</span>
+          <span class="opt-sub">~40 matches · sliding drawer · Min 200 units from $2.16/unit</span>
+        </div>
+      </div>
+      <div class="step-nav">
+        <button class="btn-back" id="back-2">← Back</button>
+        <button class="btn-next" id="next-2">Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Artwork -->
+    <div class="step" id="step-3">
+      <div class="step-eyebrow">Artwork</div>
+      <h2>Where are you with the artwork?</h2>
+      <p class="step-sub">No pressure either way we'll point you to the right next step.</p>
+      <div class="option-grid cols-2">
+        <div class="option-card" data-step="3" data-val="ready">
+          <span class="opt-label">I have files ready</span>
+          <span class="opt-sub">Logos, brand assets, or print-ready artwork I can upload</span>
+        </div>
+        <div class="option-card" data-step="3" data-val="exploring">
+          <span class="opt-label">Still figuring it out</span>
+          <span class="opt-sub">I want to see the dieline and explore what's possible first</span>
+        </div>
+      </div>
+      <div class="step-nav">
+        <button class="btn-back" id="back-3">← Back</button>
+        <button class="btn-next" id="next-3">Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 5: Color scheme -->
+    <div class="step" id="step-4">
+      <div class="step-eyebrow">Color</div>
+      <h2>What's your color direction?</h2>
+      <p class="step-sub">Pick the palette that's closest to your brand. We'll use this as a starting point.</p>
+      <div class="option-grid cols-3">
+        <div class="option-card" data-step="4" data-val="Black & white">
+          <div class="color-swatch" style="background:linear-gradient(135deg,#0a0a0a 50%,#f5f5f5 50%);"></div>
+          <span class="opt-label">Black & white</span>
+          <span class="opt-sub">Timeless, high contrast</span>
+        </div>
+        <div class="option-card" data-step="4" data-val="Warm neutrals">
+          <div class="color-swatch" style="background:linear-gradient(135deg,#c9a97a 0%,#ede4d3 100%);"></div>
+          <span class="opt-label">Warm neutrals</span>
+          <span class="opt-sub">Cream, tan, warm white</span>
+        </div>
+        <div class="option-card" data-step="4" data-val="Earth tones">
+          <div class="color-swatch" style="background:linear-gradient(135deg,#5c4033 0%,#8b6e52 50%,#c4a882 100%);"></div>
+          <span class="opt-label">Earth tones</span>
+          <span class="opt-sub">Terracotta, forest, clay</span>
+        </div>
+        <div class="option-card" data-step="4" data-val="Deep jewel tones">
+          <div class="color-swatch" style="background:linear-gradient(135deg,#1a3a5c 0%,#2d6a4f 50%,#6b2d5e 100%);"></div>
+          <span class="opt-label">Deep jewel tones</span>
+          <span class="opt-sub">Navy, emerald, plum</span>
+        </div>
+        <div class="option-card" data-step="4" data-val="Bright & bold">
+          <div class="color-swatch" style="background:linear-gradient(135deg,#e63946 0%,#f4a261 50%,#2a9d8f 100%);"></div>
+          <span class="opt-label">Bright & bold</span>
+          <span class="opt-sub">Saturated, energetic, pop</span>
+        </div>
+        <div class="option-card" data-step="4" data-val="My own brand colors">
+          <div class="color-swatch" style="background:conic-gradient(#e63946,#f4a261,#2a9d8f,#1a3a5c,#e63946);"></div>
+          <span class="opt-label">My own brand colors</span>
+          <span class="opt-sub">I'll share them in the next step</span>
+        </div>
+      </div>
+      <div class="step-nav">
+        <button class="btn-back" id="back-4">← Back</button>
+        <button class="btn-next" id="next-4">Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 6: Inspiration upload -->
+    <div class="step" id="step-5">
+      <div class="step-eyebrow">Inspiration</div>
+      <h2>Any inspiration we should keep in mind?</h2>
+      <p class="step-sub">Drop images, moodboards, brand decks, or anything that captures the look you're after. Totally optional.</p>
+      <div class="upload-zone" id="upload-zone">
+        <input type="file" id="inspo-files" multiple accept="image/*,.pdf" style="display:none;">
+        <div class="upload-inner" id="upload-inner">
+          <div class="upload-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <p class="upload-label">Drop files here or <span class="upload-link">browse</span></p>
+          <p class="upload-sub">Images, PDFs welcome · No file limit</p>
+        </div>
+        <div class="upload-files" id="upload-files"></div>
+      </div>
+      <div class="step-nav" style="margin-top:32px;">
+        <button class="btn-back" id="back-5">← Back</button>
+        <button class="btn-next always-ready" id="next-5">Next →</button>
+      </div>
+    </div>
+
+    <!-- STEP 7: Anything else -->
+    <div class="step" id="step-6">
+      <div class="step-eyebrow">Almost done</div>
+      <h2>Anything else we should know?</h2>
+      <p class="step-sub">Brand colors, a specific reference, a deadline, a vibe you can't quite name drop it all here. We'll keep it in mind.</p>
+      <textarea class="quiz-textarea" id="notes-field" placeholder="e.g. Our brand colors are #1A2E4A and cream white. We love the look of old apothecary labels. Aiming to have these ready by October for a hotel opening..."></textarea>
+      <div class="step-nav">
+        <button class="btn-back" id="back-6">← Back</button>
+        <button class="btn-next always-ready" id="next-6">See my summary →</button>
+      </div>
+    </div>
+
+    <!-- STEP 8: Summary -->
+    <div class="step" id="step-7">
+      <div class="step-eyebrow">You're all set</div>
+      <h2>Here's what we know so far.</h2>
+      <p class="step-sub">You can change any of this in the configurator. This is just a starting point.</p>
+      <div class="summary-grid">
+        <div class="summary-cell"><div class="sc-label">Designing for</div><div class="sc-val" id="sum-0">-</div></div>
+        <div class="summary-cell"><div class="sc-label">Vibe</div><div class="sc-val" id="sum-1">-</div></div>
+        <div class="summary-cell"><div class="sc-label">Format</div><div class="sc-val" id="sum-2">-</div></div>
+        <div class="summary-cell"><div class="sc-label">Artwork</div><div class="sc-val" id="sum-3">-</div></div>
+        <div class="summary-cell"><div class="sc-label">Color direction</div><div class="sc-val" id="sum-4">-</div></div>
+        <div class="summary-cell" id="sum-inspo-cell" style="display:none;"><div class="sc-label">Inspiration files</div><div class="sc-notes" id="sum-inspo"></div></div>
+        <div class="summary-cell" id="sum-notes-cell" style="display:none;"><div class="sc-label">Notes</div><div class="sc-notes" id="sum-5"></div></div>
+      </div>
+      <div class="step-nav">
+        <button class="btn-back" id="back-7">← Back</button>
+        <a id="go-btn" href="configurator.html" class="btn btn-primary" style="font-size:14px;padding:12px 28px;">Start designing →</a>
+        <a href="wholesale.html" class="btn btn-secondary" style="font-size:13px;padding:12px 22px;">Talk to a human →</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/cursor.js"></script>
+<script>
+(function () {
+  const TOTAL = 7;
+  let current = 0;
+  const answers = ['', '', '', '', '', '', ''];
+  let inspoFiles = [];
+
+  function updateProgress() {
+    for (let i = 0; i < TOTAL; i++) {
+      const dot = document.getElementById('dot-' + i);
+      if (!dot) continue;
+      dot.classList.remove('active', 'done');
+      if (i < current) dot.classList.add('done');
+      else if (i === current) dot.classList.add('active');
+    }
+    const label = document.getElementById('progress-label');
+    label.textContent = current < TOTAL ? 'Step ' + (current + 1) + ' of ' + TOTAL : 'Almost done';
+  }
+
+  function goTo(n) {
+    document.getElementById('step-' + current).classList.remove('active');
+    current = n;
+    document.getElementById('step-' + current).classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Option selection
+  document.querySelectorAll('.option-card').forEach(function (card) {
+    card.addEventListener('click', function () {
+      const step = parseInt(card.dataset.step);
+      document.querySelectorAll('[data-step="' + step + '"]').forEach(function (c) { c.classList.remove('selected'); });
+      card.classList.add('selected');
+      answers[step] = card.dataset.val;
+      const btn = document.getElementById('next-' + step);
+      if (btn) btn.classList.add('ready');
+    });
+  });
+
+  // Next buttons
+  for (let i = 0; i < TOTAL; i++) {
+    (function (i) {
+      const btn = document.getElementById('next-' + i);
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        if (!btn.classList.contains('ready') && !btn.classList.contains('always-ready')) return;
+        if (i === TOTAL - 1) buildSummary();
+        goTo(i + 1);
+      });
+    })(i);
+  }
+
+  // Back buttons
+  for (let i = 1; i <= TOTAL; i++) {
+    (function (i) {
+      const btn = document.getElementById('back-' + i);
+      if (!btn) return;
+      btn.addEventListener('click', function () { goTo(i - 1); });
+    })(i);
+  }
+
+  // File upload (step 5)
+  var zone = document.getElementById('upload-zone');
+  var fileInput = document.getElementById('inspo-files');
+  var filesDiv = document.getElementById('upload-files');
+
+  zone.addEventListener('click', function (e) {
+    if (e.target.closest('#upload-files')) return;
+    fileInput.click();
+  });
+  document.querySelector('.upload-link').addEventListener('click', function (e) {
+    e.stopPropagation();
+    fileInput.click();
+  });
+  fileInput.addEventListener('change', function () {
+    addFiles(Array.from(fileInput.files));
+    fileInput.value = '';
+  });
+  zone.addEventListener('dragover', function (e) { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', function () { zone.classList.remove('drag-over'); });
+  zone.addEventListener('drop', function (e) {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    addFiles(Array.from(e.dataTransfer.files));
+  });
+
+  function addFiles(newFiles) {
+    newFiles.forEach(function (f) {
+      if (!inspoFiles.find(function (x) { return x.name === f.name && x.size === f.size; })) {
+        inspoFiles.push(f);
+      }
+    });
+    renderFiles();
+  }
+
+  function renderFiles() {
+    filesDiv.innerHTML = '';
+    if (!inspoFiles.length) return;
+    inspoFiles.forEach(function (f, i) {
+      var row = document.createElement('div');
+      row.className = 'upload-file-row';
+      row.innerHTML = '<span class="uf-name">' + f.name + '</span><span class="uf-size">' + formatSize(f.size) + '</span><button class="uf-remove" data-i="' + i + '">✕</button>';
+      filesDiv.appendChild(row);
+    });
+    filesDiv.querySelectorAll('.uf-remove').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        inspoFiles.splice(parseInt(btn.dataset.i), 1);
+        renderFiles();
+      });
+    });
+  }
+
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(0) + ' KB';
+    return (bytes / 1048576).toFixed(1) + ' MB';
+  }
+
+  function buildSummary() {
+    answers[6] = document.getElementById('notes-field').value.trim();
+
+    document.getElementById('sum-0').textContent = answers[0] || '-';
+    document.getElementById('sum-1').textContent = answers[1] || '-';
+    const fmt = answers[2];
+    document.getElementById('sum-2').textContent = fmt === 'matchbook' ? 'Matchbook' : fmt === 'matchbox' ? 'Matchbox' : '-';
+    const art = answers[3];
+    document.getElementById('sum-3').textContent = art === 'ready' ? 'Files ready to upload' : art === 'exploring' ? 'Still exploring' : '-';
+    document.getElementById('sum-4').textContent = answers[4] || '-';
+
+    if (inspoFiles.length) {
+      document.getElementById('sum-inspo').textContent = inspoFiles.map(function (f) { return f.name; }).join(', ');
+      document.getElementById('sum-inspo-cell').style.display = '';
+    }
+
+    const notes = answers[6];
+    if (notes) {
+      document.getElementById('sum-5').textContent = notes;
+      document.getElementById('sum-notes-cell').style.display = '';
+    }
+
+    const goBtn = document.getElementById('go-btn');
+    if (fmt) goBtn.href = 'configurator.html?type=' + fmt;
+  }
+
+  updateProgress();
+})();
+</script>
+</body>
+</html>

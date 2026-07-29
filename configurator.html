@@ -3,60 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Customize — Strike Matchbooks</title>
+<title>Customize Strike Matchbooks</title>
 <link rel="stylesheet" href="css/design-system.css">
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <style>
   html, body { overflow: hidden; background: var(--white); }
 
-  /* NAV */
   .nav a.back { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--gray-600); }
   .nav a.back:hover { color:var(--black); }
   .nav a.back svg { width:14px; height:14px; }
 
-  /* PROGRESS — thin uppercase tabs instead of arrow shapes */
-  .progress-bar { position: fixed; top:64px; left:0; right:0; height:50px; background:var(--white); border-bottom:1px solid var(--gray-300); display:flex; align-items:stretch; z-index:100; user-select:none; }
+  .progress-bar { position:fixed; top:64px; left:0; right:0; height:50px; background:var(--white); border-bottom:1px solid var(--gray-300); display:flex; align-items:stretch; z-index:100; user-select:none; }
   .step-tab { flex:1; display:flex; align-items:center; justify-content:center; gap:9px; font-size:11px; font-weight:500; letter-spacing:.1em; text-transform:uppercase; color:var(--gray-400); cursor:pointer; transition:color var(--ease); border-bottom:2px solid transparent; }
   .step-tab .sn { font-family:var(--font-mono); font-size:10px; opacity:.7; }
   .step-tab.active { color:var(--black); border-bottom-color:var(--black); }
-  .step-tab.done { color:var(--gray-600); }
+  .step-tab.done   { color:var(--gray-600); }
 
-  /* LAYOUT */
-  .layout { display:grid; grid-template-columns:420px 1fr; height:100vh; padding-top:114px; }
+  .layout { display:grid; grid-template-columns:380px 1fr; grid-template-rows:1fr; height:100vh; padding-top:114px; }
 
-  /* PANEL */
-  .panel { background:var(--white); border-right:1px solid var(--gray-300); display:flex; flex-direction:column; overflow:hidden; }
-  .panel-header { padding:30px 34px 18px; border-bottom:1px solid var(--gray-100); flex-shrink:0; }
-  .panel-header h2 { font-size:20px; font-weight:500; letter-spacing:-0.3px; margin-bottom:5px; }
-  .panel-header p  { font-size:12.5px; color:var(--gray-400); line-height:1.55; }
-  .panel-body  { flex:1; overflow-y:auto; padding:26px 34px; scrollbar-width:thin; scrollbar-color:var(--gray-300) transparent; }
-  .panel-footer { padding:18px 34px 26px; border-top:1px solid var(--gray-100); display:flex; gap:10px; flex-shrink:0; }
-  .panel-footer .btn-secondary { flex:0 0 auto; width:96px; }
-  .panel-footer .btn-primary { flex:1; }
+  .panel { background:var(--white); border-right:1px solid var(--gray-300); display:flex; flex-direction:column; overflow:hidden; min-height:0; }
+  .panel-header { padding:18px 26px 12px; border-bottom:1px solid var(--gray-100); flex-shrink:0; }
+  .panel-header h2 { font-size:17px; font-weight:500; letter-spacing:-0.3px; margin-bottom:3px; }
+  .panel-header p  { font-size:11.5px; color:var(--gray-400); line-height:1.5; }
+  .panel-body  { flex:1; min-height:0; overflow-y:auto; padding:16px 26px; scrollbar-width:thin; scrollbar-color:var(--gray-300) transparent; }
+  .panel-footer { padding:12px 26px 16px; border-top:1px solid var(--gray-100); display:flex; gap:10px; flex-shrink:0; }
+  .panel-footer .btn-secondary { flex:0 0 auto; width:80px; }
+  .panel-footer .btn-primary   { flex:1; }
 
-  /* STEP */
   .step-content { display:none; }
   .step-content.visible { display:block; }
 
-  /* TYPE CARDS */
-  .type-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:11px; }
+  /* TYPE CARDS 2 col */
+  .type-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:11px; }
   .type-card { border:1px solid var(--gray-300); border-radius:var(--radius-sm); padding:0 0 14px; cursor:pointer; transition:all var(--ease); text-align:center; background:var(--white); overflow:hidden; }
   .type-card:hover    { border-color:var(--gray-600); }
   .type-card.selected { border-color:var(--black); box-shadow:inset 0 0 0 1px var(--black); }
-  .type-card canvas   { display:block; width:100%; aspect-ratio:1/1; background:var(--gray-50); }
+  .type-card canvas   { display:block; width:100%; aspect-ratio:4/3; background:var(--gray-50); }
   .type-card-info { padding:12px 10px 0; }
   .type-card h4  { font-size:12.5px; font-weight:500; margin-bottom:3px; }
   .type-card span { font-size:10.5px; color:var(--gray-400); display:block; }
   .type-card .dims { margin-top:4px; font-size:9.5px; color:var(--gray-300); font-family:var(--font-mono); }
 
-  /* LABELS */
   .slabel { font-size:10.5px; font-weight:500; letter-spacing:.12em; text-transform:uppercase; color:var(--gray-400); margin-bottom:12px; margin-top:24px; }
   .slabel:first-child { margin-top:0; }
   .slabel .hint { font-family:var(--font-mono); text-transform:none; letter-spacing:0; color:var(--gray-300); font-size:10px; margin-left:6px; }
 
   input[type=color] { display:none; }
 
-  /* FINISH */
   .finish-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
   .finish-card { border:1px solid var(--gray-300); border-radius:var(--radius-sm); padding:13px; cursor:pointer; transition:all var(--ease); background:var(--white); }
   .finish-card:hover    { border-color:var(--gray-600); }
@@ -64,58 +57,73 @@
   .finish-card h4  { font-size:12px; font-weight:500; margin-bottom:2px; }
   .finish-card span { font-size:11px; color:var(--gray-400); }
 
-  /* FIELDS */
   .field { margin-bottom:16px; }
   .field label { display:block; font-size:11.5px; font-weight:500; color:var(--gray-600); margin-bottom:6px; }
   .field input { width:100%; height:42px; border:1px solid var(--gray-300); border-radius:var(--radius-sm); padding:0 13px; font-family:var(--font); font-size:13px; color:var(--black); background:var(--white); transition:border-color var(--ease); outline:none; }
   .field input:focus { border-color:var(--black); }
 
-  /* POSITION */
   .pos-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
   .pos-btn { height:36px; border:1px solid var(--gray-300); border-radius:var(--radius-sm); font-family:var(--font); font-size:10.5px; font-weight:500; letter-spacing:.02em; cursor:pointer; background:var(--white); color:var(--gray-600); transition:all var(--ease); }
   .pos-btn:hover    { border-color:var(--gray-600); }
   .pos-btn.selected { background:var(--black); color:var(--white); border-color:var(--black); }
 
-  /* TEXT COLOR (small square swatches for text, distinct from circular product swatches) */
   .tc-row { display:flex; gap:8px; flex-wrap:wrap; }
   .tc-sw { width:26px; height:26px; border-radius:50%; cursor:pointer; border:1.5px solid var(--gray-200); transition:all var(--ease); }
   .tc-sw.selected { border-color:var(--black); box-shadow:0 0 0 2px var(--white), 0 0 0 3.5px var(--black); }
 
-  /* FONT SIZE */
   .fsrow { display:flex; align-items:center; gap:12px; }
   .fsrow input[type=range] { flex:1; accent-color:var(--black); }
   .fsrow span { font-size:11px; font-family:var(--font-mono); color:var(--gray-400); min-width:24px; text-align:right; }
 
-  /* SUMMARY */
   .summary-box { border:1px solid var(--gray-300); border-radius:var(--radius-sm); padding:18px; margin-bottom:14px; }
   .sum-row { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--gray-100); font-size:12.5px; }
   .sum-row:last-child { border-bottom:none; }
   .sum-row .k { color:var(--gray-400); }
   .sum-row .v { font-weight:500; font-family:var(--font-mono); font-size:11.5px; }
 
-  /* VIEWER */
-  .viewer-wrap { position:relative; background:var(--gray-50); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  /* Mobile-only inline continue buttons */
+  .mob-continue { display: none; }
+  @media (max-width:860px) { .mob-continue { display: block; margin-top: 24px; } }
+
+  /* VIEWER PANE */
+  .viewer-wrap { position:relative; background:var(--gray-50); overflow:hidden; }
+
+  /* 2D viewer */
+  #viewer-2d { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  #flat-canvas { display:block; max-width:100%; max-height:100%; }
+  .flat-label { position:absolute; top:26px; left:30px; font-size:10.5px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:var(--gray-400); pointer-events:none; }
+  .flat-hint  { position:absolute; bottom:28px; left:50%; transform:translateX(-50%); font-size:11px; color:var(--gray-400); font-weight:500; letter-spacing:.02em; pointer-events:none; white-space:nowrap; font-family:var(--font-mono); }
+
+  /* 3D viewer */
+  #viewer-3d { position:absolute; inset:0; display:none; }
   #three-canvas { width:100%; height:100%; display:block; cursor:grab; }
   #three-canvas:active { cursor:grabbing; }
-  .viewer-label { position:absolute; top:26px; left:30px; font-size:10.5px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:var(--gray-400); pointer-events:none; }
-  .viewer-hint  { position:absolute; bottom:28px; left:50%; transform:translateX(-50%); font-size:11px; color:var(--gray-400); font-weight:500; letter-spacing:.02em; pointer-events:none; white-space:nowrap; font-family:var(--font-mono); }
+  .viewer-label-3d { position:absolute; top:26px; left:30px; font-size:10.5px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; color:var(--gray-400); pointer-events:none; }
+  .viewer-hint-3d  { position:absolute; bottom:28px; left:50%; transform:translateX(-50%); font-size:11px; color:var(--gray-400); font-weight:500; letter-spacing:.02em; pointer-events:none; white-space:nowrap; font-family:var(--font-mono); }
 
   .open-toggle-wrap { position:absolute; right:26px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; align-items:center; gap:9px; z-index:10; }
   #open-btn { width:48px; height:48px; border-radius:50%; background:var(--white); border:1px solid var(--gray-300); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all var(--ease); }
   #open-btn:hover { border-color:var(--black); }
   #open-label { font-size:9.5px; font-weight:500; letter-spacing:.1em; text-transform:uppercase; color:var(--gray-400); text-align:center; line-height:1.5; }
+  #logo-drop-zone:hover, #logo-drop-zone.drag-over { border-color: var(--black); }
+  #logo-drop-zone.drag-over { background: var(--gray-50); }
 
   @media (max-width:860px) {
-    body { overflow:auto; }
-    .layout { grid-template-columns:1fr; grid-template-rows:auto 380px; }
-    .viewer-wrap { height:380px; }
+    html, body { overflow:hidden; height:100%; }
+    .layout { grid-template-columns:1fr; grid-template-rows:1fr; height:100vh; }
+    .viewer-wrap { display:none; }
+    .panel { height:calc(100vh - 114px); overflow:hidden; display:flex; flex-direction:column; }
+    .panel-body { flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+    .panel-footer { display:flex !important; }
+    .mob-continue { display:none !important; }
   }
 </style>
 </head>
 <body>
 
 <nav class="nav">
-  <a class="wordmark" href="index.html">STRIKE</a>
+  <a class="wordmark" href="index.html"><img src="img/logo.webp" alt="Strike" style="height:36px;display:block;"></a>
+  <a href="about.html" style="font-size:13px;color:var(--gray-600);">About</a>
   <a class="back" href="javascript:history.back()">
     <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2 4 7l5 5"/></svg>
     Back
@@ -124,9 +132,21 @@
 
 <nav class="progress-bar">
   <div class="step-tab active" data-step="1" onclick="goToStep(1)"><span class="sn">01</span> Choose type</div>
-  <div class="step-tab"        data-step="2" onclick="goToStep(2)"><span class="sn">02</span> Finishing</div>
-  <div class="step-tab"        data-step="3" onclick="goToStep(3)"><span class="sn">03</span> Front side</div>
-  <div class="step-tab"        data-step="4" onclick="goToStep(4)"><span class="sn">04</span> Back side</div>
+  <div class="step-tab"        data-step="2" onclick="goToStep(2)"><span class="sn">02</span> Outside</div>
+  <div class="step-tab"        data-step="3" onclick="goToStep(3)"><span class="sn">03</span> Inside</div>
+  <div class="step-tab"        data-step="4" onclick="goToStep(4)"><span class="sn">04</span> Match</div>
+  <div class="step-tab"        data-step="5" onclick="goToStep(5)"><span class="sn">05</span> Preview</div>
+  <button id="progress-next" onclick="nextStep()" style="
+    flex-shrink:0; margin:8px 16px 8px 0;
+    height:34px; padding:0 20px;
+    background:#0a0a0a; color:#fff;
+    border:none; border-radius:9999px;
+    font-family:inherit; font-size:12px; font-weight:500; letter-spacing:.04em;
+    cursor:pointer; display:flex; align-items:center; gap:7px;
+    transition:background .2s;
+  ">Continue
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5h7M7 3.5l3 3-3 3"/></svg>
+  </button>
 </nav>
 
 <div class="layout">
@@ -135,35 +155,30 @@
     <!-- STEP 1 -->
     <div id="step-1" class="step-content visible">
       <div class="panel-header">
-        <h2>Choose your type</h2>
-        <p>Three distinct formats — each produces a different finished product.</p>
+        <h2>Choose your format</h2>
+        <p>Two formats, each producing a distinct finished product.</p>
       </div>
       <div class="panel-body">
         <div class="type-grid">
-          <div class="type-card selected" data-type="classic" onclick="selectType('classic')">
-            <canvas id="mini-classic" width="200" height="170"></canvas>
+          <div class="type-card selected" data-type="matchbook" onclick="selectType('matchbook')">
+            <canvas id="mini-matchbook" width="240" height="180"></canvas>
             <div class="type-card-info">
-              <h4>Classic</h4>
-              <span>Saddle-stitched</span>
-              <div class="dims">1.75 × 1.75 IN</div>
-            </div>
-          </div>
-          <div class="type-card" data-type="premium" onclick="selectType('premium')">
-            <canvas id="mini-premium" width="200" height="170"></canvas>
-            <div class="type-card-info">
-              <h4>Premium</h4>
-              <span>Tall format booklet</span>
-              <div class="dims">1.5 × 2.5 IN</div>
+              <h4>Matchbook</h4>
+              <span>Saddle-stitched booklet</span>
+              <div class="dims">2.125 × 1.5 IN</div>
             </div>
           </div>
           <div class="type-card" data-type="matchbox" onclick="selectType('matchbox')">
-            <canvas id="mini-matchbox" width="200" height="170"></canvas>
+            <canvas id="mini-matchbox" width="240" height="180"></canvas>
             <div class="type-card-info">
               <h4>Matchbox</h4>
-              <span>Sliding drawer</span>
-              <div class="dims">2.0 × 0.75 IN</div>
+              <span>Sliding drawer box</span>
+              <div class="dims">2.25 × 1.5 × 0.625 IN</div>
             </div>
           </div>
+        </div>
+        <div class="mob-continue">
+          <button class="btn btn-primary btn-full" onclick="nextStep()">Continue</button>
         </div>
       </div>
       <div class="panel-footer">
@@ -171,33 +186,26 @@
       </div>
     </div>
 
-    <!-- STEP 2 -->
+    <!-- STEP 2 OUTSIDE -->
     <div id="step-2" class="step-content">
-      <div class="panel-header"><h2>Finishing</h2><p>Choose the cover color, surface treatment, and match color.</p></div>
+      <div class="panel-header"><h2>Outside</h2><p>Cover color, finish, strike strip, and exterior text.</p></div>
       <div class="panel-body">
+
         <div class="slabel">Cover color</div>
         <div class="swatch-row" id="cover-colors">
-          <div class="swatch selected" style="background:#1a1a1a"                     onclick="pickCover('#1a1a1a',this)"></div>
-          <div class="swatch"          style="background:#fff;border-color:var(--gray-300)"      onclick="pickCover('#ffffff',this)"></div>
-          <div class="swatch"          style="background:#e8e0d4"                     onclick="pickCover('#e8e0d4',this)"></div>
-          <div class="swatch"          style="background:#c8b8a2"                     onclick="pickCover('#c8b8a2',this)"></div>
-          <div class="swatch"          style="background:#2c3e50"                     onclick="pickCover('#2c3e50',this)"></div>
-          <div class="swatch"          style="background:#8b2635"                     onclick="pickCover('#8b2635',this)"></div>
-          <div class="swatch"          style="background:#2d6a4f"                     onclick="pickCover('#2d6a4f',this)"></div>
-          <div class="swatch"          style="background:#d4a017"                     onclick="pickCover('#d4a017',this)"></div>
-          <div class="swatch"          style="background:#f4a261"                     onclick="pickCover('#f4a261',this)"></div>
-          <div class="swatch"          style="background:#f4c6c6"                     onclick="pickCover('#f4c6c6',this)"></div>
+          <div class="swatch selected" style="background:#1a1a1a"                              onclick="pickCover('#1a1a1a',this)"></div>
+          <div class="swatch"          style="background:#fff;border-color:var(--gray-300)"    onclick="pickCover('#ffffff',this)"></div>
+          <div class="swatch"          style="background:#e8e0d4"                              onclick="pickCover('#e8e0d4',this)"></div>
+          <div class="swatch"          style="background:#c8b8a2"                              onclick="pickCover('#c8b8a2',this)"></div>
+          <div class="swatch"          style="background:#2c3e50"                              onclick="pickCover('#2c3e50',this)"></div>
+          <div class="swatch"          style="background:#8b2635"                              onclick="pickCover('#8b2635',this)"></div>
+          <div class="swatch"          style="background:#2d6a4f"                              onclick="pickCover('#2d6a4f',this)"></div>
+          <div class="swatch"          style="background:#d4a017"                              onclick="pickCover('#d4a017',this)"></div>
+          <div class="swatch"          style="background:#f4a261"                              onclick="pickCover('#f4a261',this)"></div>
+          <div class="swatch"          style="background:#f4c6c6"                              onclick="pickCover('#f4c6c6',this)"></div>
           <div class="swatch"          style="background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)" onclick="document.getElementById('cpicker').click()"></div>
         </div>
         <input type="color" id="cpicker" onchange="pickCover(this.value,null)">
-
-        <div class="slabel">Surface finish</div>
-        <div class="finish-grid">
-          <div class="finish-card selected" data-fin="matte"  onclick="pickFinish('matte',this)"><h4>Matte</h4><span>Soft, no-glare</span></div>
-          <div class="finish-card"          data-fin="gloss"  onclick="pickFinish('gloss',this)"><h4>Gloss</h4><span>Bright &amp; vivid</span></div>
-          <div class="finish-card"          data-fin="soft"   onclick="pickFinish('soft',this)"><h4>Soft Touch</h4><span>Velvet feel</span></div>
-          <div class="finish-card"          data-fin="foil"   onclick="pickFinish('foil',this)"><h4>Foil</h4><span>Metallic sheen</span></div>
-        </div>
 
         <div class="slabel">Strike strip</div>
         <div class="finish-grid">
@@ -205,17 +213,124 @@
           <div class="finish-card"          data-strip="back"   onclick="pickStrip('back',this)"><h4>Back panel</h4><span>Full-width</span></div>
         </div>
 
-        <div class="slabel">Match color <span class="hint" id="match-hint">— matchbox only</span></div>
-        <div class="swatch-row" id="match-colors">
-          <div class="swatch selected" style="background:#bb2222" onclick="pickMatchColor('#bb2222',this)"></div>
-          <div class="swatch"          style="background:#333333" onclick="pickMatchColor('#333333',this)"></div>
-          <div class="swatch"          style="background:#775522" onclick="pickMatchColor('#775522',this)"></div>
-          <div class="swatch"          style="background:#2d6a4f" onclick="pickMatchColor('#2d6a4f',this)"></div>
-          <div class="swatch"          style="background:#2c3e50" onclick="pickMatchColor('#2c3e50',this)"></div>
-          <div class="swatch"          style="background:#d4a017" onclick="pickMatchColor('#d4a017',this)"></div>
-          <div class="swatch"          style="background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)" onclick="document.getElementById('mpicker').click()"></div>
+        <div class="slabel" style="margin-top:20px;padding-top:16px;border-top:1px solid var(--gray-100)">Logo / Artwork <span style="font-size:10px;color:var(--gray-300);text-transform:none;letter-spacing:0;margin-left:4px;">optional · PNG or SVG</span></div>
+
+        <!-- Upload zone -->
+        <div id="logo-drop-zone" onclick="document.getElementById('logo-file-input').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleLogoDrop(event)" style="border:1.5px dashed var(--gray-300);border-radius:var(--radius-sm);padding:20px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:border-color .2s;margin-bottom:10px;">
+          <div id="logo-thumb-wrap" style="display:none;width:52px;height:52px;border-radius:4px;border:1px solid var(--gray-200);overflow:hidden;flex-shrink:0;">
+            <img id="logo-thumb" style="width:100%;height:100%;object-fit:contain;">
+          </div>
+          <div id="logo-upload-icon" style="width:36px;height:36px;border-radius:50%;background:var(--gray-100);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--gray-400)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11V4M5 7l3-3 3 3"/><path d="M3 13h10"/></svg>
+          </div>
+          <div>
+            <div id="logo-upload-label" style="font-size:12.5px;font-weight:500;color:var(--black);">Drag a file here or click to browse</div>
+            <div style="font-size:11px;color:var(--gray-400);margin-top:2px;">PNG, SVG up to 10 MB</div>
+          </div>
+          <button id="logo-remove-btn" onclick="event.stopPropagation();removeLogo()" style="display:none;margin-left:auto;background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:11px;padding:4px 8px;border-radius:4px;border:1px solid var(--gray-200);">Remove</button>
         </div>
-        <input type="color" id="mpicker" onchange="pickMatchColor(this.value,null)">
+        <input type="file" id="logo-file-input" accept="image/png,image/svg+xml,image/*" style="display:none" onchange="handleLogoFile(this.files[0])">
+
+        <!-- Logo controls (shown after upload) -->
+        <div id="logo-controls" style="display:none;margin-bottom:16px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+            <div>
+              <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);margin-bottom:6px;">Place on</div>
+              <div style="display:flex;gap:6px;">
+                <button class="logo-face-btn selected" data-face="f" onclick="pickLogoFace('f',this)" style="flex:1;height:32px;border:1px solid var(--black);border-radius:var(--radius-sm);background:var(--black);color:#fff;font-family:var(--font);font-size:11px;font-weight:500;cursor:pointer;">Front</button>
+                <button class="logo-face-btn" data-face="b" onclick="pickLogoFace('b',this)" style="flex:1;height:32px;border:1px solid var(--gray-300);border-radius:var(--radius-sm);background:var(--white);color:var(--black);font-family:var(--font);font-size:11px;font-weight:500;cursor:pointer;">Back</button>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);margin-bottom:6px;">Size</div>
+              <div class="fsrow">
+                <input type="range" id="logo-scale" min="15" max="100" value="55" oninput="state.logo.scale=this.value/100;document.getElementById('logo-scale-v').textContent=this.value+'%';draw2D()">
+                <span id="logo-scale-v" style="font-size:11px;font-family:var(--font-mono);color:var(--gray-400);min-width:32px;">55%</span>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);margin-bottom:6px;">Position</div>
+          <div class="pos-grid" id="logo-pos" style="gap:4px;max-width:120px;">
+            <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickLogoPos('tl',this)">↖</button>
+            <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickLogoPos('tc',this)">↑</button>
+            <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickLogoPos('tr',this)">↗</button>
+            <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickLogoPos('ml',this)">←</button>
+            <button class="pos-btn selected" style="height:28px;font-size:9px" onclick="pickLogoPos('mc',this)">●</button>
+            <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickLogoPos('mr',this)">→</button>
+            <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickLogoPos('bl',this)">↙</button>
+            <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickLogoPos('bc',this)">↓</button>
+            <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickLogoPos('br',this)">↘</button>
+          </div>
+        </div>
+
+        <div class="slabel" style="margin-top:4px;padding-top:16px;border-top:1px solid var(--gray-100)">Exterior text <span style="font-size:10px;color:var(--gray-300);text-transform:none;letter-spacing:0;margin-left:4px;">optional</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <!-- FRONT -->
+          <div>
+            <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);margin-bottom:8px;">Front</div>
+            <div class="field" style="margin-bottom:8px"><label>Line 1</label><input id="fl1" maxlength="22" placeholder="Brand name" oninput="syncText();draw2D()" style="height:36px;font-size:12px"></div>
+            <div class="field" style="margin-bottom:8px"><label>Line 2</label><input id="fl2" maxlength="28" placeholder="Tagline" oninput="syncText();draw2D()" style="height:36px;font-size:12px"></div>
+            <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);margin-bottom:6px;">Text color</div>
+            <div class="tc-row" id="ftc" style="gap:5px;margin-bottom:10px">
+              <div class="tc-sw selected" style="width:22px;height:22px;background:#fff;border-color:var(--gray-300)" onclick="pickTC('f','#ffffff',this)"></div>
+              <div class="tc-sw" style="width:22px;height:22px;background:#000"    onclick="pickTC('f','#000000',this)"></div>
+              <div class="tc-sw" style="width:22px;height:22px;background:#d4a017" onclick="pickTC('f','#d4a017',this)"></div>
+              <div class="tc-sw" style="width:22px;height:22px;background:#b5b5b5" onclick="pickTC('f','#b5b5b5',this)"></div>
+              <div class="tc-sw" style="width:22px;height:22px;background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)" onclick="document.getElementById('tcf').click()"></div>
+            </div>
+            <input type="color" id="tcf" onchange="pickTC('f',this.value,null)">
+            <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);margin-bottom:6px;">Position</div>
+            <div class="pos-grid" id="fpos" style="gap:4px">
+              <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickPos('f','tl',this)">↖</button>
+              <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickPos('f','tc',this)">↑</button>
+              <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickPos('f','tr',this)">↗</button>
+              <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickPos('f','ml',this)">←</button>
+              <button class="pos-btn selected" style="height:28px;font-size:9px" onclick="pickPos('f','mc',this)">●</button>
+              <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickPos('f','mr',this)">→</button>
+              <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickPos('f','bl',this)">↙</button>
+              <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickPos('f','bc',this)">↓</button>
+              <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickPos('f','br',this)">↘</button>
+            </div>
+            <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);margin:8px 0 4px">Size</div>
+            <div class="fsrow">
+              <input type="range" id="fsize" min="8" max="36" value="18" oninput="state.f.size=+this.value;document.getElementById('fsizev').textContent=this.value;draw2D()">
+              <span id="fsizev">18</span>
+            </div>
+          </div>
+          <!-- BACK -->
+          <div>
+            <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);margin-bottom:8px;">Back</div>
+            <div class="field" style="margin-bottom:8px"><label>Line 1</label><input id="bl1" maxlength="28" placeholder="Website" oninput="syncText();draw2D()" style="height:36px;font-size:12px"></div>
+            <div class="field" style="margin-bottom:8px"><label>Line 2</label><input id="bl2" maxlength="32" placeholder="Phone / address" oninput="syncText();draw2D()" style="height:36px;font-size:12px"></div>
+            <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);margin-bottom:6px;">Text color</div>
+            <div class="tc-row" id="btc" style="gap:5px;margin-bottom:10px">
+              <div class="tc-sw selected" style="width:22px;height:22px;background:#fff;border-color:var(--gray-300)" onclick="pickTC('b','#ffffff',this)"></div>
+              <div class="tc-sw" style="width:22px;height:22px;background:#000"    onclick="pickTC('b','#000000',this)"></div>
+              <div class="tc-sw" style="width:22px;height:22px;background:#d4a017" onclick="pickTC('b','#d4a017',this)"></div>
+              <div class="tc-sw" style="width:22px;height:22px;background:#b5b5b5" onclick="pickTC('b','#b5b5b5',this)"></div>
+              <div class="tc-sw" style="width:22px;height:22px;background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)" onclick="document.getElementById('tcb').click()"></div>
+            </div>
+            <input type="color" id="tcb" onchange="pickTC('b',this.value,null)">
+            <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);margin-bottom:6px;">Position</div>
+            <div class="pos-grid" id="bpos" style="gap:4px">
+              <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickPos('b','tl',this)">↖</button>
+              <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickPos('b','tc',this)">↑</button>
+              <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickPos('b','tr',this)">↗</button>
+              <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickPos('b','ml',this)">←</button>
+              <button class="pos-btn selected" style="height:28px;font-size:9px" onclick="pickPos('b','mc',this)">●</button>
+              <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickPos('b','mr',this)">→</button>
+              <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickPos('b','bl',this)">↙</button>
+              <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickPos('b','bc',this)">↓</button>
+              <button class="pos-btn" style="height:28px;font-size:9px" onclick="pickPos('b','br',this)">↘</button>
+            </div>
+            <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);margin:8px 0 4px">Size</div>
+            <div class="fsrow">
+              <input type="range" id="bsize" min="8" max="36" value="14" oninput="state.b.size=+this.value;document.getElementById('bsizev').textContent=this.value;draw2D()">
+              <span id="bsizev">14</span>
+            </div>
+          </div>
+        </div>
+        <div class="mob-continue"><button class="btn btn-primary btn-full" onclick="nextStep()">Continue</button></div>
       </div>
       <div class="panel-footer">
         <button class="btn btn-secondary" onclick="prevStep()">Back</button>
@@ -223,40 +338,43 @@
       </div>
     </div>
 
-    <!-- STEP 3 -->
+    <!-- STEP 3 INSIDE -->
     <div id="step-3" class="step-content">
-      <div class="panel-header"><h2>Front side</h2><p>Design the face that people see first.</p></div>
+      <div class="panel-header">
+        <h2>Inside</h2>
+        <p id="inside-desc">Interior color and optional inside text.</p>
+      </div>
       <div class="panel-body">
-        <div class="slabel">Text</div>
-        <div class="field"><label>Line 1</label><input id="fl1" maxlength="22" placeholder="Primary text" oninput="syncText();rebuildModel()"></div>
-        <div class="field"><label>Line 2</label><input id="fl2" maxlength="28" placeholder="Secondary text" oninput="syncText();rebuildModel()"></div>
-        <div class="slabel">Text color</div>
-        <div class="tc-row" id="ftc">
-          <div class="tc-sw selected" style="background:#fff;border-color:var(--gray-300)" onclick="pickTC('f','#ffffff',this)"></div>
-          <div class="tc-sw" style="background:#000" onclick="pickTC('f','#000000',this)"></div>
-          <div class="tc-sw" style="background:#d4a017" onclick="pickTC('f','#d4a017',this)"></div>
-          <div class="tc-sw" style="background:#b5b5b5" onclick="pickTC('f','#b5b5b5',this)"></div>
-          <div class="tc-sw" style="background:#f4c6c6" onclick="pickTC('f','#f4c6c6',this)"></div>
-          <div class="tc-sw" style="background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)" onclick="document.getElementById('tcf').click()"></div>
+
+        <div class="slabel" id="inside-color-label">Interior color</div>
+        <div class="swatch-row" id="inside-colors">
+          <div class="swatch selected" style="background:#f5f0e8;border-color:var(--gray-300)" onclick="pickInsideColor('#f5f0e8',this)"></div>
+          <div class="swatch"          style="background:#fff;border-color:var(--gray-300)"    onclick="pickInsideColor('#ffffff',this)"></div>
+          <div class="swatch"          style="background:#ede9e1"                              onclick="pickInsideColor('#ede9e1',this)"></div>
+          <div class="swatch"          style="background:#d4c9b0"                              onclick="pickInsideColor('#d4c9b0',this)"></div>
+          <div class="swatch"          style="background:#1a1a1a"                              onclick="pickInsideColor('#1a1a1a',this)"></div>
+          <div class="swatch"          style="background:#2c3e50"                              onclick="pickInsideColor('#2c3e50',this)"></div>
+          <div class="swatch"          style="background:#8b2635"                              onclick="pickInsideColor('#8b2635',this)"></div>
+          <div class="swatch"          style="background:#2d6a4f"                              onclick="pickInsideColor('#2d6a4f',this)"></div>
+          <div class="swatch"          style="background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)" onclick="document.getElementById('icpicker').click()"></div>
         </div>
-        <input type="color" id="tcf" onchange="pickTC('f',this.value,null)">
-        <div class="slabel" style="margin-top:22px">Position</div>
-        <div class="pos-grid" id="fpos">
-          <button class="pos-btn" onclick="pickPos('f','tl',this)">Top left</button>
-          <button class="pos-btn" onclick="pickPos('f','tc',this)">Top center</button>
-          <button class="pos-btn" onclick="pickPos('f','tr',this)">Top right</button>
-          <button class="pos-btn" onclick="pickPos('f','ml',this)">Mid left</button>
-          <button class="pos-btn selected" onclick="pickPos('f','mc',this)">Center</button>
-          <button class="pos-btn" onclick="pickPos('f','mr',this)">Mid right</button>
-          <button class="pos-btn" onclick="pickPos('f','bl',this)">Bot left</button>
-          <button class="pos-btn" onclick="pickPos('f','bc',this)">Bottom</button>
-          <button class="pos-btn" onclick="pickPos('f','br',this)">Bot right</button>
+        <input type="color" id="icpicker" onchange="pickInsideColor(this.value,null)">
+
+        <div class="slabel" style="margin-top:20px;padding-top:16px;border-top:1px solid var(--gray-100)">Inside text <span class="hint" style="font-size:10px;color:var(--gray-300);text-transform:none;letter-spacing:0;margin-left:4px;">optional</span></div>
+        <div class="field" style="margin-bottom:8px"><label>Line 1</label><input id="il1" maxlength="28" placeholder="e.g. Thank you" oninput="syncInsideText();draw2D()" style="height:38px;font-size:13px"></div>
+        <div class="field" style="margin-bottom:12px"><label>Line 2</label><input id="il2" maxlength="32" placeholder="e.g. Website or phone" oninput="syncInsideText();draw2D()" style="height:38px;font-size:13px"></div>
+
+        <div class="slabel">Inside text color</div>
+        <div class="tc-row" id="itc" style="gap:6px;margin-bottom:12px">
+          <div class="tc-sw selected" style="background:#1a1a1a" onclick="pickTC('insideText','#1a1a1a',this)"></div>
+          <div class="tc-sw" style="background:#fff;border-color:var(--gray-300)" onclick="pickTC('insideText','#ffffff',this)"></div>
+          <div class="tc-sw" style="background:#d4a017" onclick="pickTC('insideText','#d4a017',this)"></div>
+          <div class="tc-sw" style="background:#8b2635" onclick="pickTC('insideText','#8b2635',this)"></div>
+          <div class="tc-sw" style="background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)" onclick="document.getElementById('tci').click()"></div>
         </div>
-        <div class="slabel" style="margin-top:22px">Font size</div>
-        <div class="fsrow">
-          <input type="range" id="fsize" min="10" max="42" value="22" oninput="state.f.size=+this.value;document.getElementById('fsizev').textContent=this.value;rebuildModel()">
-          <span id="fsizev">22</span>
-        </div>
+        <input type="color" id="tci" onchange="pickTC('insideText',this.value,null)">
+
+        <div class="mob-continue"><button class="btn btn-primary btn-full" onclick="nextStep()">Continue</button></div>
       </div>
       <div class="panel-footer">
         <button class="btn btn-secondary" onclick="prevStep()">Back</button>
@@ -264,44 +382,101 @@
       </div>
     </div>
 
-    <!-- STEP 4 -->
+    <!-- STEP 4 MATCH -->
     <div id="step-4" class="step-content">
-      <div class="panel-header"><h2>Back side</h2><p>Contact info, a short message, or leave it clean.</p></div>
+      <div class="panel-header">
+        <h2>Match</h2>
+        <p id="match-desc">Customize the match tip color and stick style.</p>
+      </div>
       <div class="panel-body">
-        <div class="slabel">Text</div>
-        <div class="field"><label>Line 1</label><input id="bl1" maxlength="28" placeholder="Address or website" oninput="syncText();rebuildModel()"></div>
-        <div class="field"><label>Line 2</label><input id="bl2" maxlength="32" placeholder="Phone or tagline" oninput="syncText();rebuildModel()"></div>
-        <div class="slabel">Text color</div>
-        <div class="tc-row" id="btc">
-          <div class="tc-sw selected" style="background:#fff;border-color:var(--gray-300)" onclick="pickTC('b','#ffffff',this)"></div>
-          <div class="tc-sw" style="background:#000" onclick="pickTC('b','#000000',this)"></div>
-          <div class="tc-sw" style="background:#d4a017" onclick="pickTC('b','#d4a017',this)"></div>
-          <div class="tc-sw" style="background:#b5b5b5" onclick="pickTC('b','#b5b5b5',this)"></div>
-          <div class="tc-sw" style="background:#f4c6c6" onclick="pickTC('b','#f4c6c6',this)"></div>
-          <div class="tc-sw" style="background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)" onclick="document.getElementById('tcb').click()"></div>
+
+        <div class="slabel">Tip color</div>
+        <div class="swatch-row" id="tip-colors">
+          <div class="swatch selected" style="background:#bb2222" onclick="pickMatchTipColor('#bb2222',this)"></div>
+          <div class="swatch"          style="background:#333333" onclick="pickMatchTipColor('#333333',this)"></div>
+          <div class="swatch"          style="background:#775522" onclick="pickMatchTipColor('#775522',this)"></div>
+          <div class="swatch"          style="background:#2d6a4f" onclick="pickMatchTipColor('#2d6a4f',this)"></div>
+          <div class="swatch"          style="background:#2c3e50" onclick="pickMatchTipColor('#2c3e50',this)"></div>
+          <div class="swatch"          style="background:#d4a017" onclick="pickMatchTipColor('#d4a017',this)"></div>
+          <div class="swatch"          style="background:#e8c5d4" onclick="pickMatchTipColor('#e8c5d4',this)"></div>
+          <div class="swatch"          style="background:#fff;border-color:var(--gray-300)" onclick="pickMatchTipColor('#ffffff',this)"></div>
+          <div class="swatch"          style="background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)" onclick="document.getElementById('tippicker').click()"></div>
         </div>
-        <input type="color" id="tcb" onchange="pickTC('b',this.value,null)">
-        <div class="slabel" style="margin-top:22px">Position</div>
-        <div class="pos-grid" id="bpos">
-          <button class="pos-btn" onclick="pickPos('b','tl',this)">Top left</button>
-          <button class="pos-btn" onclick="pickPos('b','tc',this)">Top center</button>
-          <button class="pos-btn" onclick="pickPos('b','tr',this)">Top right</button>
-          <button class="pos-btn" onclick="pickPos('b','ml',this)">Mid left</button>
-          <button class="pos-btn selected" onclick="pickPos('b','mc',this)">Center</button>
-          <button class="pos-btn" onclick="pickPos('b','mr',this)">Mid right</button>
-          <button class="pos-btn" onclick="pickPos('b','bl',this)">Bot left</button>
-          <button class="pos-btn" onclick="pickPos('b','bc',this)">Bottom</button>
-          <button class="pos-btn" onclick="pickPos('b','br',this)">Bot right</button>
+        <input type="color" id="tippicker" onchange="pickMatchTipColor(this.value,null)">
+
+        <!-- Matchbook-only: stick style -->
+        <div id="stick-style-section">
+          <div class="slabel" style="margin-top:20px;padding-top:16px;border-top:1px solid var(--gray-100)">Stick style</div>
+          <div class="finish-grid">
+            <div class="finish-card selected" data-style="colored" onclick="pickMatchStyle('colored',this)">
+              <h4>Fully colored</h4>
+              <span>Solid color stick</span>
+            </div>
+            <div class="finish-card" data-style="polished" onclick="pickMatchStyle('polished',this)">
+              <h4>Polished wood</h4>
+              <span>Natural wood grain</span>
+            </div>
+          </div>
+
+          <div class="slabel" style="margin-top:16px">Stick shape <span style="font-size:10px;color:var(--gray-300);text-transform:none;letter-spacing:0;margin-left:4px;">optional</span></div>
+          <div class="finish-grid">
+            <div class="finish-card selected" data-shape="round" onclick="pickMatchShape('round',this)">
+              <h4>Round</h4>
+              <span>Classic cylinder</span>
+            </div>
+            <div class="finish-card" data-shape="flat" onclick="pickMatchShape('flat',this)">
+              <h4>Flat</h4>
+              <span>Paddle-shaped</span>
+            </div>
+          </div>
         </div>
-        <div class="slabel" style="margin-top:22px">Font size</div>
-        <div class="fsrow">
-          <input type="range" id="bsize" min="10" max="42" value="18" oninput="state.b.size=+this.value;document.getElementById('bsizev').textContent=this.value;rebuildModel()">
-          <span id="bsizev">18</span>
+
+        <!-- Matchbox-only note -->
+        <div id="matchbox-match-note" style="display:none;margin-top:16px;padding:12px 14px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-sm);">
+          <div style="font-size:11.5px;color:var(--gray-600);line-height:1.5;">Wooden matches are standard-sized with your chosen tip color. Stick style is fixed for matchbox format.</div>
         </div>
-        <div class="slabel" style="margin-top:28px">Summary</div>
+
+        <div class="mob-continue"><button class="btn btn-primary btn-full" onclick="nextStep()">See 3D preview</button></div>
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-secondary" onclick="prevStep()">Back</button>
+        <button class="btn btn-primary"   onclick="nextStep()">See 3D preview</button>
+      </div>
+    </div>
+
+    <!-- STEP 5 3D PREVIEW -->
+    <div id="step-5" class="step-content">
+      <div class="panel-header">
+        <h2>3D Preview</h2>
+        <p>Drag to rotate and inspect every angle before requesting a quote.</p>
+      </div>
+      <div class="panel-body">
+        <!-- Legal notice strikematchbooks.com default, locked -->
+        <div style="background:#fafafa;border:1px solid var(--gray-200);border-radius:var(--radius-sm);padding:11px 14px;margin-bottom:16px;display:flex;gap:10px;align-items:flex-start;">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;margin-top:1px" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="6"/><path d="M7 6.5v3M7 4.5v.5"/></svg>
+          <div>
+            <div style="font-size:10.5px;font-weight:500;color:var(--gray-600);margin-bottom:2px;">Required by law Distributor ID</div>
+            <div style="font-size:10px;color:var(--gray-400);line-height:1.5;">Printed on the product by default. Cannot be removed or altered.</div>
+            <div style="margin-top:6px;padding:5px 10px;background:var(--white);border:1px solid var(--gray-300);border-radius:var(--radius-sm);font-size:11px;font-family:var(--font-mono);color:var(--black);display:inline-block;">strikematchbooks.com</div>
+          </div>
+        </div>
+        <div class="slabel">Summary</div>
         <div class="summary-box" id="summary"></div>
+
+        <!-- Dieline download -->
+        <div style="border:1.5px dashed var(--gray-300);border-radius:var(--radius-sm);padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:14px;cursor:pointer;" onclick="downloadDieline()" id="dieline-dl-btn">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--gray-100);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--gray-600)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M5 7l3 3 3-3"/><path d="M2 13h12"/></svg>
+          </div>
+          <div style="flex:1">
+            <div id="dieline-dl-label" style="font-size:12.5px;font-weight:500;color:var(--black);">Download dieline (SVG)</div>
+            <div style="font-size:10.5px;color:var(--gray-400);margin-top:1px;">Outside · Inside · Placement · CMYK specs</div>
+          </div>
+          <span style="font-size:10px;font-family:var(--font-mono);color:var(--gray-400);border:1px solid var(--gray-200);padding:3px 8px;border-radius:4px;">SVG</span>
+        </div>
+
         <button class="btn btn-primary btn-full" style="margin-bottom:10px" onclick="completeOrder()">Request a quote</button>
-        <p class="fine-print" style="text-align:center">Min. 500 units · 3–4 week production</p>
+        <p class="fine-print" style="text-align:center" id="moq-note">Min. 500 units (book) · 200 units (box) · 5–6 week production</p>
       </div>
       <div class="panel-footer">
         <button class="btn btn-secondary" onclick="prevStep()">Back</button>
@@ -312,7 +487,7 @@
     <div id="step-complete" class="step-content">
       <div class="panel-header">
         <h2>Your matchbook is ready</h2>
-        <p>This is your finished mockup, shown at right — drag to rotate, or start a new design.</p>
+        <p>This is your finished mockup drag to rotate, or start a new design.</p>
       </div>
       <div class="panel-body">
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px;">
@@ -325,29 +500,41 @@
         <div class="summary-box" id="summaryFinal"></div>
       </div>
       <div class="panel-footer">
-        <button class="btn btn-secondary" onclick="setStep(4)">Back to edit</button>
+        <button class="btn btn-secondary" onclick="setStep(5)">Back to edit</button>
         <button class="btn btn-primary" onclick="window.location.href='configurator.html'">Start a new design</button>
       </div>
     </div>
 
   </div>
 
-  <!-- VIEWER -->
+  <!-- VIEWER PANE -->
   <div class="viewer-wrap">
-    <div class="viewer-label">360° Preview</div>
-    <canvas id="three-canvas"></canvas>
-    <div class="viewer-hint" id="viewer-hint">Drag to rotate · Scroll to zoom</div>
 
-    <div class="open-toggle-wrap">
-      <button id="open-btn" onclick="toggleOpen()">
-        <svg id="open-icon" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="5" width="14" height="10" rx="1.5"/>
-          <path d="M2 8h14"/>
-          <path d="M6 2l3 3 3-3"/>
-        </svg>
-      </button>
-      <span id="open-label">Open<br>inside</span>
+    <!-- 2D DIE LINE VIEW (steps 1–3) -->
+    <div id="viewer-2d">
+      <span class="flat-label" id="flat-label-text">Flat die line</span>
+      <canvas id="flat-canvas"></canvas>
+      <span class="flat-hint" id="flat-hint">Updates live as you design</span>
     </div>
+
+    <!-- 3D VIEW (step 4) -->
+    <div id="viewer-3d">
+      <span class="viewer-label-3d">360° Preview</span>
+      <canvas id="three-canvas"></canvas>
+      <canvas id="dim-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;"></canvas>
+      <span class="viewer-hint-3d">Drag to rotate · Scroll to zoom</span>
+      <div class="open-toggle-wrap">
+        <button id="open-btn" onclick="toggleOpen()">
+          <svg id="open-icon" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="5" width="14" height="10" rx="1.5"/>
+            <path d="M2 8h14"/>
+            <path d="M6 2l3 3 3-3"/>
+          </svg>
+        </button>
+        <span id="open-label">Open<br>inside</span>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -357,29 +544,39 @@
 =================================================================== */
 const state = {
   step: 1,
-  type: 'classic',
+  type: 'matchbook',
+  // Outside
   cover: '#1a1a1a',
   finish: 'matte',
   strip: 'bottom',
-  matchColor: '#bb2222',
-  f: { l1:'', l2:'', color:'#ffffff', pos:'mc', size:22 },
-  b: { l1:'', l2:'', color:'#ffffff', pos:'mc', size:18 },
+  f: { l1:'', l2:'', color:'#ffffff', pos:'mc', size:18 },
+  b: { l1:'', l2:'', color:'#ffffff', pos:'mc', size:14 },
+  // Inside
+  insideColor: '#f5f0e8',
+  insideText: { l1:'', l2:'', color:'#1a1a1a', pos:'mc', size:14 },
+  // Match
+  matchTipColor: '#bb2222',
+  matchStyle: 'colored',   // 'colored' | 'polished' (matchbook)
+  matchShape: 'round',     // 'round' | 'flat' (matchbook)
+  // Logo
+  logo: { dataUrl: null, side: 'f', pos: 'mc', scale: 0.55 },
   meta: { note:'', timeline:'', confidence:'' },
 };
 
+// Preloaded logo Image object for sync canvas drawing
+let logoImg = null;
+
 const TYPE_INFO = {
-  classic:  { label:'Classic Matchbook',  dims:'1.75 × 1.75 in' },
-  premium:  { label:'Premium Matchbook',  dims:'1.5 × 2.5 in' },
-  matchbox: { label:'Custom Matchbox',    dims:'2.0 × 0.75 in' },
+  matchbook: { label:'Matchbook',  dims:'2.125 × 1.5 in' },
+  matchbox:  { label:'Matchbox',   dims:'2.25 × 1.5 × 0.625 in' },
 };
 
-/* Prefill from a guided-question handoff, e.g. configurator.html?type=matchbox&cover=%232c3e50&finish=soft&matchColor=%232d6a4f */
 (function prefillFromQuery(){
   const p = new URLSearchParams(location.search);
-  if (p.has('type') && Object.keys(TYPE_INFO).includes(p.get('type'))) state.type = p.get('type');
+  if (p.has('type') && TYPE_INFO[p.get('type')]) state.type = p.get('type');
   if (p.has('cover')) state.cover = p.get('cover');
   if (p.has('finish')) state.finish = p.get('finish');
-  if (p.has('matchColor')) state.matchColor = p.get('matchColor');
+  if (p.has('matchColor')) state.matchTipColor = p.get('matchColor');
   if (p.has('fl1')) state.f.l1 = p.get('fl1');
   if (p.has('note')) state.meta.note = p.get('note');
   if (p.has('timeline')) state.meta.timeline = p.get('timeline');
@@ -390,7 +587,7 @@ const TYPE_INFO = {
    NAV
 =================================================================== */
 function goToStep(n) { if (n <= state.step) setStep(n); }
-function nextStep()  { if (state.step < 4) setStep(state.step + 1); }
+function nextStep()  { if (state.step < 5) setStep(state.step + 1); }
 function prevStep()  { if (state.step > 1) setStep(state.step - 1); }
 
 function setStep(n) {
@@ -402,55 +599,155 @@ function setStep(n) {
     t.classList.toggle('active',s===n);
     t.classList.toggle('done',s<n);
   });
-  if (n===4) buildSummary();
-  rebuildModel();
+
+  // Show/hide match-specific UI based on type
+  if (n === 4) updateMatchStepUI();
+
+  if (n === 5) {
+    document.getElementById('viewer-2d').style.display = 'none';
+    document.getElementById('viewer-3d').style.display = 'block';
+    if (!threeReady) initThree();
+    else rebuildModel();
+    buildSummary();
+  } else {
+    document.getElementById('viewer-2d').style.display = 'flex';
+    document.getElementById('viewer-3d').style.display = 'none';
+    resizeFlat();
+    draw2D();
+  }
 }
 
 /* ===================================================================
    PICKERS
 =================================================================== */
+/* ===================================================================
+   LOGO UPLOAD
+=================================================================== */
+function handleLogoDrop(e) {
+  e.preventDefault();
+  document.getElementById('logo-drop-zone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) handleLogoFile(file);
+}
+function handleLogoFile(file) {
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) { alert('File must be under 10 MB.'); return; }
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    state.logo.dataUrl = ev.target.result;
+    logoImg = new Image();
+    logoImg.onload = () => draw2D();
+    logoImg.src = ev.target.result;
+    // Update UI
+    document.getElementById('logo-thumb').src = ev.target.result;
+    document.getElementById('logo-thumb-wrap').style.display = '';
+    document.getElementById('logo-upload-icon').style.display = 'none';
+    document.getElementById('logo-upload-label').textContent = file.name;
+    document.getElementById('logo-remove-btn').style.display = '';
+    document.getElementById('logo-controls').style.display = '';
+  };
+  reader.readAsDataURL(file);
+}
+function removeLogo() {
+  state.logo.dataUrl = null; logoImg = null;
+  document.getElementById('logo-thumb-wrap').style.display = 'none';
+  document.getElementById('logo-upload-icon').style.display = '';
+  document.getElementById('logo-upload-label').textContent = 'Drag a file here or click to browse';
+  document.getElementById('logo-remove-btn').style.display = 'none';
+  document.getElementById('logo-controls').style.display = 'none';
+  document.getElementById('logo-file-input').value = '';
+  draw2D();
+}
+function pickLogoFace(face, el) {
+  state.logo.side = face;
+  document.querySelectorAll('.logo-face-btn').forEach(b => {
+    const active = b.dataset.face === face;
+    b.style.background = active ? 'var(--black)' : 'var(--white)';
+    b.style.color = active ? '#fff' : 'var(--black)';
+    b.style.borderColor = active ? 'var(--black)' : 'var(--gray-300)';
+  });
+  draw2D();
+}
+function pickLogoPos(pos, el) {
+  state.logo.pos = pos;
+  document.querySelectorAll('#logo-pos .pos-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  draw2D();
+}
+function drawLogoOnFace(ctx, side, x, y, w, h, dpr) {
+  if (!logoImg || !logoImg.complete || state.logo.side !== side) return;
+  const s = state.logo.scale;
+  const maxW = w * s, maxH = h * s;
+  const ar = logoImg.naturalWidth / logoImg.naturalHeight;
+  let iw = maxW, ih = maxW / ar;
+  if (ih > maxH) { ih = maxH; iw = maxH * ar; }
+  const pos = state.logo.pos;
+  let lx = pos.endsWith('l') ? x + w * 0.08 : pos.endsWith('r') ? x + w * 0.92 - iw : x + w/2 - iw/2;
+  let ly = pos.startsWith('t') ? y + h * 0.08 : pos.startsWith('b') ? y + h * 0.85 - ih : y + h/2 - ih/2;
+  ctx.drawImage(logoImg, lx, ly, iw, ih);
+}
+
 function selectType(type) {
   state.type = type;
   document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('selected'));
   document.querySelector(`.type-card[data-type="${type}"]`).classList.add('selected');
-  updateMatchHint();
-  rebuildModel();
+  draw2D();
 }
 function pickCover(c, el) {
   state.cover = c;
   document.querySelectorAll('#cover-colors .swatch').forEach(s=>s.classList.remove('selected'));
   if (el) el.classList.add('selected');
-  rebuildModel();
+  draw2D();
 }
-function pickMatchColor(c, el) {
-  state.matchColor = c;
-  document.querySelectorAll('#match-colors .swatch').forEach(s=>s.classList.remove('selected'));
+function pickInsideColor(c, el) {
+  state.insideColor = c;
+  document.querySelectorAll('#inside-colors .swatch').forEach(s=>s.classList.remove('selected'));
   if (el) el.classList.add('selected');
-  rebuildModel();
+  draw2D();
+}
+function pickMatchTipColor(c, el) {
+  state.matchTipColor = c;
+  document.querySelectorAll('#tip-colors .swatch').forEach(s=>s.classList.remove('selected'));
+  if (el) el.classList.add('selected');
+  draw2D();
+}
+function pickMatchStyle(s, el) {
+  state.matchStyle = s;
+  document.querySelectorAll('.finish-card[data-style]').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  draw2D();
+}
+function pickMatchShape(s, el) {
+  state.matchShape = s;
+  document.querySelectorAll('.finish-card[data-shape]').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  draw2D();
 }
 function pickFinish(f, el) {
   state.finish = f;
   document.querySelectorAll('.finish-card[data-fin]').forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected');
-  rebuildModel();
+  draw2D();
 }
 function pickStrip(s, el) {
   state.strip = s;
   document.querySelectorAll('.finish-card[data-strip]').forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected');
-  rebuildModel();
+  draw2D();
 }
-function pickTC(side, color, el) {
-  state[side].color = color;
-  document.querySelectorAll('#'+side+'tc .tc-sw').forEach(s=>s.classList.remove('selected'));
+function pickTC(key, color, el) {
+  // key = 'f', 'b', or 'insideText'
+  state[key].color = color;
+  const rowId = key==='f'?'ftc':key==='b'?'btc':'itc';
+  document.querySelectorAll('#'+rowId+' .tc-sw').forEach(s=>s.classList.remove('selected'));
   if (el) el.classList.add('selected');
-  rebuildModel();
+  draw2D();
 }
 function pickPos(side, pos, el) {
   state[side].pos = pos;
   document.getElementById(side+'pos').querySelectorAll('.pos-btn').forEach(b=>b.classList.remove('selected'));
   el.classList.add('selected');
-  rebuildModel();
+  draw2D();
 }
 function syncText() {
   state.f.l1 = document.getElementById('fl1').value;
@@ -458,27 +755,312 @@ function syncText() {
   state.b.l1 = document.getElementById('bl1').value;
   state.b.l2 = document.getElementById('bl2').value;
 }
-function updateMatchHint() {
-  const hint = document.getElementById('match-hint');
-  hint.textContent = state.type === 'matchbox' ? '— visible now' : '— matchbox only';
+function syncInsideText() {
+  state.insideText.l1 = document.getElementById('il1').value;
+  state.insideText.l2 = document.getElementById('il2').value;
+}
+function updateMatchStepUI() {
+  const isBook = state.type === 'matchbook';
+  document.getElementById('stick-style-section').style.display = isBook ? '' : 'none';
+  document.getElementById('matchbox-match-note').style.display = isBook ? 'none' : '';
+  document.getElementById('match-desc').textContent = isBook
+    ? 'Customize the match tip color, stick style, and shape.'
+    : 'Choose the wooden match tip color for your matchbox.';
 }
 function buildSummary() {
+  const styleLabel = { colored:'Fully colored', polished:'Polished wood' };
+  const shapeLabel = { round:'Round', flat:'Flat' };
   const rows = [
-    ['Type', TYPE_INFO[state.type].label],
-    ['Size', TYPE_INFO[state.type].dims],
-    ['Color', state.cover],
-    ['Finish', state.finish.charAt(0).toUpperCase()+state.finish.slice(1)],
-    ['Strip', state.strip==='bottom'?'Bottom edge':'Back panel'],
-    ['Match color', state.matchColor],
-    ['Front', [state.f.l1,state.f.l2].filter(Boolean).join(' / ')||'—'],
-    ['Back',  [state.b.l1,state.b.l2].filter(Boolean).join(' / ')||'—'],
+    ['Format',        TYPE_INFO[state.type].label],
+    ['Size',          TYPE_INFO[state.type].dims],
+    ['Cover color',   state.cover],
+    ['Finish',        state.finish.charAt(0).toUpperCase()+state.finish.slice(1)],
+    ['Strike strip',  state.strip==='bottom'?'Bottom edge':'Back panel'],
+    ['Front text',    [state.f.l1,state.f.l2].filter(Boolean).join(' / ')||'-'],
+    ['Back text',     [state.b.l1,state.b.l2].filter(Boolean).join(' / ')||'-'],
+    ['Interior color',state.insideColor],
   ];
-  if (state.meta.timeline)   rows.push(['Timeline', state.meta.timeline]);
-  if (state.meta.confidence) rows.push(['Confidence', state.meta.confidence]);
-  if (state.meta.note)       rows.push(['Note from guide', state.meta.note]);
-  document.getElementById('summary').innerHTML = rows.map(([k,v])=>
-    `<div class="sum-row"><span class="k">${k}</span><span class="v">${v}</span></div>`
-  ).join('');
+  if (state.insideText.l1||state.insideText.l2)
+    rows.push(['Inside text', [state.insideText.l1,state.insideText.l2].filter(Boolean).join(' / ')]);
+  rows.push(['Match tip',  state.matchTipColor]);
+  if (state.type==='matchbook') {
+    rows.push(['Stick style', styleLabel[state.matchStyle]||state.matchStyle]);
+    rows.push(['Stick shape', shapeLabel[state.matchShape]||state.matchShape]);
+  }
+  rows.push(['Distributor ID', 'strikematchbooks.com (required)']);
+  const html = rows.map(([k,v])=>`<div class="sum-row"><span>${k}</span><span style="text-align:right;max-width:55%;word-break:break-word">${v}</span></div>`).join('');
+  document.getElementById('summary').innerHTML = html;
+}
+
+function downloadDieline() {
+  const isBook = state.type === 'matchbook';
+  const svg = isBook ? generateMatchbookDieline() : generateMatchboxDieline();
+  const blob = new Blob([svg], {type:'image/svg+xml'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = isBook ? 'Strike-Matchbook-Dieline.svg' : 'Strike-Matchbox-Dieline.svg';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function generateMatchbookDieline() {
+  const tipHex = state.matchTipColor || '#bb2222';
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg width="900" height="640" viewBox="0 0 900 640" xmlns="http://www.w3.org/2000/svg" font-family="'Helvetica Neue',Arial,sans-serif">
+  <rect width="900" height="640" fill="#ffffff"/>
+
+  <!-- TITLE -->
+  <text x="40" y="40" font-size="18" font-weight="700" fill="#0a0a0a">Strike Matchbooks Matchbook Dieline</text>
+  <text x="40" y="58" font-size="11" fill="#9ca3af">FOR REFERENCE ONLY · NOT TO SCALE · Submit artwork as vector PDF/AI/EPS · All units in inches</text>
+
+  <!-- SAFE ZONE note -->
+  <text x="40" y="80" font-size="10" fill="#6b7280">Bleed: 0.125 in all sides · Safe zone: 0.0625 in from trim · Color: CMYK only (no RGB, no spot colors)</text>
+
+  <!-- === FLAT DIE LINE === -->
+  <!-- Staple flap -->
+  <rect x="220" y="120" width="120" height="30" rx="3" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1" stroke-dasharray="5,3"/>
+  <text x="280" y="139" text-anchor="middle" font-size="9" fill="#9ca3af" font-weight="600">STAPLE FLAP</text>
+  <circle cx="260" cy="132" r="3" fill="#9ca3af" opacity="0.6"/>
+  <circle cx="280" cy="132" r="3" fill="#9ca3af" opacity="0.6"/>
+  <circle cx="300" cy="132" r="3" fill="#9ca3af" opacity="0.6"/>
+
+  <!-- BACK panel -->
+  <rect x="100" y="150" width="180" height="250" rx="3" fill="#f9fafb" stroke="#0a0a0a" stroke-width="2"/>
+  <!-- bleed -->
+  <rect x="88" y="138" width="204" height="274" rx="2" fill="none" stroke="#ef4444" stroke-width="0.75" stroke-dasharray="4,2"/>
+  <!-- safe zone -->
+  <rect x="112" y="162" width="156" height="226" fill="none" stroke="#3b82f6" stroke-width="0.75" stroke-dasharray="3,3"/>
+  <!-- strike strip back -->
+  <rect x="100" y="376" width="180" height="24" fill="#2a1a08" opacity="0.7"/>
+  <text x="190" y="392" text-anchor="middle" font-size="7" fill="#fff" font-weight="600">STRIKE STRIP</text>
+  <!-- back label -->
+  <text x="190" y="230" text-anchor="middle" font-size="13" font-weight="700" fill="#4b5563">BACK</text>
+  <text x="190" y="248" text-anchor="middle" font-size="9" fill="#9ca3af">outside · print area</text>
+  <text x="190" y="262" text-anchor="middle" font-size="8" fill="#d1d5db" font-family="monospace">1.0625 × 1.5 in</text>
+
+  <!-- Fold line -->
+  <line x1="280" y1="150" x2="280" y2="400" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="284" y="280" font-size="8" fill="#9ca3af" transform="rotate(90,284,280)">FOLD</text>
+
+  <!-- FRONT panel -->
+  <rect x="280" y="150" width="180" height="250" rx="3" fill="#f9fafb" stroke="#0a0a0a" stroke-width="2"/>
+  <!-- bleed front -->
+  <rect x="268" y="138" width="204" height="274" rx="2" fill="none" stroke="#ef4444" stroke-width="0.75" stroke-dasharray="4,2"/>
+  <!-- safe zone front -->
+  <rect x="292" y="162" width="156" height="226" fill="none" stroke="#3b82f6" stroke-width="0.75" stroke-dasharray="3,3"/>
+  <!-- strike strip front bottom edge -->
+  <rect x="280" y="395" width="180" height="5" fill="#2a1a08" opacity="0.5" rx="0"/>
+  <!-- front label -->
+  <text x="370" y="230" text-anchor="middle" font-size="13" font-weight="700" fill="#4b5563">FRONT</text>
+  <text x="370" y="248" text-anchor="middle" font-size="9" fill="#9ca3af">outside · print area</text>
+  <text x="370" y="262" text-anchor="middle" font-size="8" fill="#d1d5db" font-family="monospace">1.0625 × 1.5 in</text>
+  <!-- strikematchbooks.com distributor note -->
+  <text x="370" y="360" text-anchor="middle" font-size="7" fill="#9ca3af">"strikematchbooks.com"</text>
+  <text x="370" y="372" text-anchor="middle" font-size="7" fill="#9ca3af">printed here by law</text>
+
+  <!-- === DIMENSION ARROWS === -->
+  <!-- Width total -->
+  <line x1="100" y1="420" x2="460" y2="420" stroke="#9ca3af" stroke-width="0.75" marker-end="url(#arr)" marker-start="url(#arr)"/>
+  <text x="280" y="435" text-anchor="middle" font-size="10" fill="#6b7280" font-weight="600">2.125 in (closed width)</text>
+  <!-- Height -->
+  <line x1="480" y1="150" x2="480" y2="400" stroke="#9ca3af" stroke-width="0.75" marker-end="url(#arr)" marker-start="url(#arr)"/>
+  <text x="500" y="278" font-size="10" fill="#6b7280" font-weight="600" transform="rotate(90,500,278)">1.5 in</text>
+
+  <!-- === INSIDE VIEW === -->
+  <text x="560" y="160" font-size="13" font-weight="700" fill="#0a0a0a">Inside view</text>
+  <rect x="560" y="170" width="180" height="250" rx="3" fill="#f5f0e8" stroke="#0a0a0a" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <rect x="572" y="182" width="156" height="226" fill="none" stroke="#3b82f6" stroke-width="0.75" stroke-dasharray="3,3"/>
+  <text x="650" y="285" text-anchor="middle" font-size="11" font-weight="600" fill="#9ca3af">INSIDE</text>
+  <text x="650" y="300" text-anchor="middle" font-size="9" fill="#b0b0b0">custom color + text</text>
+  <!-- matches illustration -->
+  <rect x="630" y="320" width="8" height="50" rx="2" fill="${tipHex}" opacity="0.9"/>
+  <rect x="645" y="315" width="8" height="55" rx="2" fill="${tipHex}" opacity="0.9"/>
+  <rect x="660" y="322" width="8" height="48" rx="2" fill="${tipHex}" opacity="0.9"/>
+  <text x="650" y="386" text-anchor="middle" font-size="7" fill="#9ca3af">match tip color preview</text>
+
+  <!-- === SPECS PANEL === -->
+  <rect x="40" y="450" width="820" height="170" rx="6" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="60" y="475" font-size="12" font-weight="700" fill="#0a0a0a">Artwork Specifications</text>
+
+  <!-- col 1 -->
+  <text x="60" y="498" font-size="10" font-weight="600" fill="#374151">File format</text>
+  <text x="60" y="512" font-size="10" fill="#6b7280">Vector only: PDF, AI, EPS, SVG</text>
+  <text x="60" y="524" font-size="10" fill="#6b7280">No PNG/JPG on print area</text>
+
+  <text x="60" y="546" font-size="10" font-weight="600" fill="#374151">Color mode</text>
+  <text x="60" y="560" font-size="10" fill="#6b7280">CMYK only no RGB, no spot colors</text>
+  <text x="60" y="572" font-size="10" fill="#6b7280">Colors converted from RGB may shift</text>
+
+  <text x="60" y="595" font-size="10" font-weight="600" fill="#374151">Bleed &amp; Safe zone</text>
+  <text x="60" y="607" font-size="10" fill="#6b7280">Bleed: 0.125 in all sides (shown in red)</text>
+  <text x="60" y="619" font-size="10" fill="#6b7280">Safe: 0.0625 in from trim (shown in blue)</text>
+
+  <!-- col 2 -->
+  <text x="300" y="498" font-size="10" font-weight="600" fill="#374151">Resolution</text>
+  <text x="300" y="512" font-size="10" fill="#6b7280">300 DPI min at final print size</text>
+  <text x="300" y="524" font-size="10" fill="#6b7280">Logos must remain vector</text>
+
+  <text x="300" y="546" font-size="10" font-weight="600" fill="#374151">Fonts</text>
+  <text x="300" y="560" font-size="10" fill="#6b7280">Outline all text before submitting</text>
+  <text x="300" y="572" font-size="10" fill="#6b7280">Missing fonts cause production delays</text>
+
+  <text x="300" y="595" font-size="10" font-weight="600" fill="#374151">Distributor ID (required by law)</text>
+  <text x="300" y="607" font-size="10" fill="#6b7280">"strikematchbooks.com" printed on back</text>
+  <text x="300" y="619" font-size="10" fill="#6b7280">Cannot be removed or altered</text>
+
+  <!-- col 3: match tip options -->
+  <text x="560" y="498" font-size="10" font-weight="600" fill="#374151">Match tip color options</text>
+  <rect x="560" y="506" width="14" height="14" rx="2" fill="#bb2222"/>
+  <text x="578" y="518" font-size="9" fill="#6b7280">Red (standard)</text>
+  <rect x="560" y="524" width="14" height="14" rx="2" fill="#333333"/>
+  <text x="578" y="536" font-size="9" fill="#6b7280">Black</text>
+  <rect x="560" y="542" width="14" height="14" rx="2" fill="#775522"/>
+  <text x="578" y="554" font-size="9" fill="#6b7280">Brown</text>
+  <rect x="560" y="560" width="14" height="14" rx="2" fill="#2d6a4f"/>
+  <text x="578" y="572" font-size="9" fill="#6b7280">Green</text>
+  <rect x="560" y="578" width="14" height="14" rx="2" fill="${tipHex}" stroke="#e5e7eb" stroke-width="0.5"/>
+  <text x="578" y="590" font-size="9" fill="#374151" font-weight="600">Your selection</text>
+
+  <text x="680" y="498" font-size="10" font-weight="600" fill="#374151">Order info</text>
+  <text x="680" y="512" font-size="10" fill="#6b7280">Min. order: 500 units</text>
+  <text x="680" y="524" font-size="10" fill="#6b7280">From $2.55 per unit</text>
+  <text x="680" y="538" font-size="10" fill="#6b7280">Production: 5–6 weeks</text>
+  <text x="680" y="552" font-size="10" fill="#6b7280">Proof approval required</text>
+  <text x="680" y="566" font-size="10" fill="#6b7280">100% recycled cardboard</text>
+  <text x="680" y="580" font-size="10" fill="#6b7280">Sulphur-free · No heavy metals</text>
+
+  <!-- Legend -->
+  <line x1="60" y1="630" x2="90" y2="630" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="96" y="634" font-size="9" fill="#6b7280">Bleed line</text>
+  <line x1="150" y1="630" x2="180" y2="630" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3,3"/>
+  <text x="186" y="634" font-size="9" fill="#6b7280">Safe zone</text>
+  <line x1="240" y1="630" x2="270" y2="630" stroke="#0a0a0a" stroke-width="2"/>
+  <text x="276" y="634" font-size="9" fill="#6b7280">Trim / fold</text>
+  <line x1="330" y1="630" x2="360" y2="630" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="366" y="634" font-size="9" fill="#6b7280">Inside area</text>
+
+  <defs>
+    <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#9ca3af"/>
+    </marker>
+  </defs>
+</svg>`;
+}
+
+function generateMatchboxDieline() {
+  const tipHex = state.matchTipColor || '#bb2222';
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1000" height="640" viewBox="0 0 1000 640" xmlns="http://www.w3.org/2000/svg" font-family="'Helvetica Neue',Arial,sans-serif">
+  <rect width="1000" height="640" fill="#ffffff"/>
+
+  <text x="40" y="40" font-size="18" font-weight="700" fill="#0a0a0a">Strike Matchbooks Matchbox Dieline</text>
+  <text x="40" y="58" font-size="11" fill="#9ca3af">FOR REFERENCE ONLY · NOT TO SCALE · Submit artwork as vector PDF/AI/EPS · All units in inches</text>
+  <text x="40" y="76" font-size="10" fill="#6b7280">Bleed: 0.125 in all sides · Safe zone: 0.0625 in from trim · Color: CMYK only</text>
+
+  <!-- SLEEVE FRONT -->
+  <text x="100" y="112" font-size="11" font-weight="700" fill="#0a0a0a">Sleeve Front</text>
+  <rect x="100" y="120" width="200" height="140" rx="3" fill="#f9fafb" stroke="#0a0a0a" stroke-width="2"/>
+  <rect x="88" y="108" width="224" height="164" rx="2" fill="none" stroke="#ef4444" stroke-width="0.75" stroke-dasharray="4,2"/>
+  <rect x="112" y="132" width="176" height="116" fill="none" stroke="#3b82f6" stroke-width="0.75" stroke-dasharray="3,3"/>
+  <rect x="100" y="244" width="200" height="16" fill="#2a1a08" opacity="0.7"/>
+  <text x="200" y="256" text-anchor="middle" font-size="7" fill="#fff" font-weight="600">STRIKE STRIP</text>
+  <text x="200" y="178" text-anchor="middle" font-size="11" font-weight="700" fill="#4b5563">FRONT</text>
+  <text x="200" y="194" text-anchor="middle" font-size="9" fill="#9ca3af">print area · 2.25 × 1.5 in</text>
+  <text x="200" y="222" text-anchor="middle" font-size="7" fill="#b0b0b0">"strikematchbooks.com" printed here</text>
+
+  <!-- FOLD LINE -->
+  <line x1="300" y1="120" x2="300" y2="260" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="5,3"/>
+
+  <!-- SLEEVE BACK -->
+  <text x="305" y="112" font-size="11" font-weight="700" fill="#0a0a0a">Sleeve Back</text>
+  <rect x="300" y="120" width="200" height="140" rx="3" fill="#f9fafb" stroke="#0a0a0a" stroke-width="2"/>
+  <rect x="288" y="108" width="224" height="164" rx="2" fill="none" stroke="#ef4444" stroke-width="0.75" stroke-dasharray="4,2"/>
+  <rect x="312" y="132" width="176" height="116" fill="none" stroke="#3b82f6" stroke-width="0.75" stroke-dasharray="3,3"/>
+  <rect x="300" y="244" width="200" height="16" fill="#2a1a08" opacity="0.7"/>
+  <text x="400" y="256" text-anchor="middle" font-size="7" fill="#fff" font-weight="600">STRIKE STRIP</text>
+  <text x="400" y="178" text-anchor="middle" font-size="11" font-weight="700" fill="#4b5563">BACK</text>
+  <text x="400" y="194" text-anchor="middle" font-size="9" fill="#9ca3af">print area · 2.25 × 1.5 in</text>
+
+  <!-- SIDES (gussets) -->
+  <text x="510" y="112" font-size="11" font-weight="700" fill="#0a0a0a">Side gusset</text>
+  <rect x="510" y="120" width="44" height="140" rx="3" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="532" y="192" text-anchor="middle" font-size="8" fill="#9ca3af" transform="rotate(90,532,192)">SIDE · 0.625 in</text>
+
+  <!-- TRAY -->
+  <text x="100" y="310" font-size="11" font-weight="700" fill="#0a0a0a">Tray (inside)</text>
+  <rect x="100" y="320" width="200" height="100" rx="3" fill="#ede9e1" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <rect x="112" y="332" width="176" height="76" fill="none" stroke="#3b82f6" stroke-width="0.75" stroke-dasharray="3,3"/>
+  <text x="200" y="368" text-anchor="middle" font-size="11" font-weight="600" fill="#9ca3af">TRAY</text>
+  <text x="200" y="384" text-anchor="middle" font-size="9" fill="#b0b0b0">inside · custom color</text>
+  <!-- matches in tray -->
+  <rect x="172" y="350" width="6" height="40" rx="1" fill="${tipHex}" opacity="0.8"/>
+  <rect x="183" y="346" width="6" height="44" rx="1" fill="${tipHex}" opacity="0.8"/>
+  <rect x="194" y="352" width="6" height="38" rx="1" fill="${tipHex}" opacity="0.8"/>
+  <rect x="205" y="347" width="6" height="43" rx="1" fill="${tipHex}" opacity="0.8"/>
+  <rect x="216" y="351" width="6" height="39" rx="1" fill="${tipHex}" opacity="0.8"/>
+
+  <!-- DIMENSION ARROWS -->
+  <line x1="100" y1="290" x2="500" y2="290" stroke="#9ca3af" stroke-width="0.75"/>
+  <text x="300" y="305" text-anchor="middle" font-size="10" fill="#6b7280" font-weight="600">4.5 in (unfolded width: front + back)</text>
+  <line x1="560" y1="120" x2="560" y2="260" stroke="#9ca3af" stroke-width="0.75"/>
+  <text x="578" y="193" font-size="10" fill="#6b7280" font-weight="600" transform="rotate(90,578,193)">1.5 in</text>
+  <line x1="510" y1="280" x2="554" y2="280" stroke="#9ca3af" stroke-width="0.75"/>
+  <text x="532" y="294" text-anchor="middle" font-size="9" fill="#6b7280">0.625</text>
+
+  <!-- SPECS PANEL -->
+  <rect x="40" y="445" width="900" height="180" rx="6" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="60" y="470" font-size="12" font-weight="700" fill="#0a0a0a">Artwork Specifications</text>
+
+  <text x="60" y="492" font-size="10" font-weight="600" fill="#374151">File format</text>
+  <text x="60" y="506" font-size="10" fill="#6b7280">Vector only: PDF, AI, EPS, SVG</text>
+  <text x="60" y="518" font-size="10" fill="#6b7280">No PNG/JPG in print area</text>
+
+  <text x="60" y="540" font-size="10" font-weight="600" fill="#374151">Color mode</text>
+  <text x="60" y="554" font-size="10" fill="#6b7280">CMYK only no RGB, no spot colors</text>
+
+  <text x="60" y="576" font-size="10" font-weight="600" fill="#374151">Bleed &amp; safe zone</text>
+  <text x="60" y="590" font-size="10" fill="#6b7280">Bleed: 0.125 in (red dashed)</text>
+  <text x="60" y="602" font-size="10" fill="#6b7280">Safe: 0.0625 in (blue dashed)</text>
+
+  <text x="280" y="492" font-size="10" font-weight="600" fill="#374151">Fonts</text>
+  <text x="280" y="506" font-size="10" fill="#6b7280">Outline all text before submitting</text>
+
+  <text x="280" y="528" font-size="10" font-weight="600" fill="#374151">Resolution</text>
+  <text x="280" y="542" font-size="10" fill="#6b7280">300 DPI min at final size</text>
+
+  <text x="280" y="564" font-size="10" font-weight="600" fill="#374151">Distributor ID (required by law)</text>
+  <text x="280" y="578" font-size="10" fill="#6b7280">"strikematchbooks.com" on sleeve</text>
+  <text x="280" y="590" font-size="10" fill="#6b7280">Cannot be removed or altered</text>
+
+  <text x="520" y="492" font-size="10" font-weight="600" fill="#374151">Match tip color options</text>
+  <rect x="520" y="500" width="12" height="12" rx="2" fill="#bb2222"/>
+  <text x="536" y="511" font-size="9" fill="#6b7280">Red (standard)</text>
+  <rect x="520" y="516" width="12" height="12" rx="2" fill="#333333"/>
+  <text x="536" y="527" font-size="9" fill="#6b7280">Black</text>
+  <rect x="520" y="532" width="12" height="12" rx="2" fill="#775522"/>
+  <text x="536" y="543" font-size="9" fill="#6b7280">Brown</text>
+  <rect x="520" y="548" width="12" height="12" rx="2" fill="${tipHex}" stroke="#e5e7eb" stroke-width="0.5"/>
+  <text x="536" y="559" font-size="9" fill="#374151" font-weight="600">Your selection</text>
+
+  <text x="700" y="492" font-size="10" font-weight="600" fill="#374151">Order info</text>
+  <text x="700" y="506" font-size="10" fill="#6b7280">Min. order: 200 units</text>
+  <text x="700" y="520" font-size="10" fill="#6b7280">From $2.16 per unit</text>
+  <text x="700" y="534" font-size="10" fill="#6b7280">Production: 5–6 weeks</text>
+  <text x="700" y="548" font-size="10" fill="#6b7280">Proof approval required</text>
+  <text x="700" y="562" font-size="10" fill="#6b7280">100% recycled cardboard</text>
+  <text x="700" y="576" font-size="10" fill="#6b7280">Sulphur-free · No heavy metals</text>
+
+  <!-- Legend -->
+  <line x1="60" y1="615" x2="88" y2="615" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="94" y="619" font-size="9" fill="#6b7280">Bleed</text>
+  <line x1="140" y1="615" x2="168" y2="615" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3,3"/>
+  <text x="174" y="619" font-size="9" fill="#6b7280">Safe zone</text>
+  <line x1="222" y1="615" x2="250" y2="615" stroke="#0a0a0a" stroke-width="2"/>
+  <text x="256" y="619" font-size="9" fill="#6b7280">Trim line</text>
+  <line x1="300" y1="615" x2="328" y2="615" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="334" y="619" font-size="9" fill="#6b7280">Fold / tray</text>
+</svg>`;
 }
 
 function completeOrder() {
@@ -489,33 +1071,381 @@ function completeOrder() {
 }
 
 /* ===================================================================
-   SHARED GEOMETRY HELPERS
+   2D FLAT DIE LINE RENDERER
 =================================================================== */
+function resizeFlat() {
+  const cv = document.getElementById('flat-canvas');
+  const wrap = document.querySelector('.viewer-wrap');
+  cv.width  = wrap.clientWidth  * window.devicePixelRatio;
+  cv.height = wrap.clientHeight * window.devicePixelRatio;
+  cv.style.width  = wrap.clientWidth  + 'px';
+  cv.style.height = wrap.clientHeight + 'px';
+}
+
+function draw2D() {
+  if (state.step >= 5) return;
+  const cv = document.getElementById('flat-canvas');
+  if (!cv.width) resizeFlat();
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const dpr = window.devicePixelRatio || 1;
+
+  ctx.clearRect(0, 0, W, H);
+  if (state.type === 'matchbook') drawMatchbookDieline(ctx, W, H, dpr);
+  else drawMatchboxDieline(ctx, W, H, dpr);
+}
+
+/* ---- helpers ---- */
+function hexToRgb(hex) {
+  const h = hex.replace('#','');
+  return { r:parseInt(h.slice(0,2),16), g:parseInt(h.slice(2,4),16), b:parseInt(h.slice(4,6),16) };
+}
+function luminance(hex) {
+  const {r,g,b} = hexToRgb(hex);
+  return (0.299*r + 0.587*g + 0.114*b)/255;
+}
+function darken(hex, factor) {
+  const {r,g,b} = hexToRgb(hex);
+  return `rgb(${Math.round(r*factor)},${Math.round(g*factor)},${Math.round(b*factor)})`;
+}
+function lighten(hex, factor) {
+  const {r,g,b} = hexToRgb(hex);
+  return `rgb(${Math.round(r+(255-r)*factor)},${Math.round(g+(255-g)*factor)},${Math.round(b+(255-b)*factor)})`;
+}
+
+function drawFaceText(ctx, side, x, y, w, h, dpr) {
+  const s = state[side];
+  const lines = [s.l1, s.l2].filter(Boolean);
+  if (!lines.length) return;
+  const size = s.size * dpr;
+  const lh   = size * 1.45;
+  let tx, ty, align;
+  align = s.pos.endsWith('l') ? 'left' : s.pos.endsWith('r') ? 'right' : 'center';
+  tx    = s.pos.endsWith('l') ? x+w*.1  : s.pos.endsWith('r') ? x+w*.9 : x+w*.5;
+  ty    = s.pos.startsWith('t') ? y+h*.15 : s.pos.startsWith('b') ? y+h*.75 : y+h*.5 - lines.length*lh*.5 + size*.5;
+  ctx.textAlign = align; ctx.textBaseline = 'middle'; ctx.fillStyle = s.color;
+  lines.forEach((ln, i) => {
+    ctx.font = `${i===0?'500':'400'} ${i===0?size:size*.72}px Diatype, ABC Diatype, Helvetica Neue, sans-serif`;
+    ctx.fillText(ln, tx, ty + i*lh);
+  });
+}
+
+/* ---- matchbook die line ---- */
+function drawMatchbookDieline(ctx, W, H, dpr) {
+  // Matchbook: 2.125 wide × 1.5 tall closed.  Ratio: w:h = 2.125:1.5 = 1.417:1
+  // Die line shows FRONT and BACK panels side by side with fold line, then staple flap at top.
+  // Actual panels each = 1.0625" wide × 1.5" tall → ratio 0.708:1
+
+  const maxPanelW = Math.min(W * 0.30, 210 * dpr);
+  const panelW    = maxPanelW;
+  const panelH    = panelW * (1.5 / 1.0625); // keep real aspect ratio
+
+  // Keep within height
+  const clampedH  = Math.min(panelH, H * 0.60);
+  const scale     = clampedH / panelH;
+  const pW = panelW * scale;
+  const pH = clampedH;
+
+  const gutter  = 18 * dpr; // gap between panels
+  const totalW  = pW * 2 + gutter;
+  const x0 = (W - totalW) / 2;
+  const y0 = (H - pH) / 2 + 20 * dpr;
+
+  const cover  = state.cover;
+  const radius = 4 * dpr;
+
+  // --- helper: rounded rect ---
+  function rRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.lineTo(x+w-r, y); ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+    ctx.lineTo(x+w, y+h-r); ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+    ctx.lineTo(x+r, y+h); ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+    ctx.lineTo(x, y+r); ctx.quadraticCurveTo(x, y, x+r, y);
+    ctx.closePath();
+  }
+
+  const stripH = pH * 0.10;
+
+  // --- STAPLE FLAP (top of back panel) ---
+  const flapH = 16 * dpr;
+  const flapW = pW * 0.70;
+  ctx.fillStyle = darken(cover, 0.75);
+  ctx.beginPath();
+  ctx.rect(x0 + (pW - flapW) / 2, y0 - flapH - 2*dpr, flapW, flapH);
+  ctx.fill();
+  // staple dots
+  ctx.fillStyle = '#aaa';
+  [-1,0,1].forEach(d => {
+    ctx.beginPath();
+    ctx.arc(x0 + pW/2 + d*8*dpr, y0 - flapH/2 - 2*dpr, 2.5*dpr, 0, Math.PI*2);
+    ctx.fill();
+  });
+
+  // --- BACK PANEL ---
+  ctx.save();
+  rRect(x0, y0, pW, pH, radius);
+  ctx.clip();
+  ctx.fillStyle = cover; ctx.fillRect(x0, y0, pW, pH);
+  // strike strip at bottom of back
+  if (state.strip === 'bottom' || state.strip === 'back') {
+    ctx.fillStyle = '#2a1a08';
+    ctx.fillRect(x0, y0 + pH - stripH, pW, stripH);
+    // sandpaper texture hint
+    ctx.fillStyle = 'rgba(255,255,255,0.07)';
+    for (let i=0; i<pW; i+=3*dpr) for(let j=0; j<stripH; j+=3*dpr) if(Math.random()>.5) ctx.fillRect(x0+i,y0+pH-stripH+j,1.5*dpr,1.5*dpr);
+  }
+  // gloss sheen
+  if (state.finish === 'gloss' || state.finish === 'foil') {
+    const g = ctx.createLinearGradient(x0, y0, x0+pW*.6, y0+pH*.4);
+    g.addColorStop(0,'rgba(255,255,255,0.15)'); g.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle = g; ctx.fillRect(x0, y0, pW, pH);
+  }
+  ctx.restore();
+  // back face: logo then text
+  drawLogoOnFace(ctx, 'b', x0, y0, pW, pH - stripH, dpr);
+  drawFaceText(ctx, 'b', x0, y0, pW, pH - stripH, dpr);
+  // outline
+  ctx.strokeStyle = luminance(cover)>.85 ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.12)';
+  ctx.lineWidth = 1*dpr;
+  rRect(x0, y0, pW, pH, radius); ctx.stroke();
+
+  // --- FOLD LINE ---
+  ctx.save();
+  ctx.setLineDash([5*dpr, 4*dpr]);
+  ctx.strokeStyle = 'rgba(0,0,0,0.18)';
+  ctx.lineWidth = 1.5*dpr;
+  ctx.beginPath();
+  ctx.moveTo(x0 + pW + gutter/2, y0 - 28*dpr);
+  ctx.lineTo(x0 + pW + gutter/2, y0 + pH + 12*dpr);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
+
+  // --- FRONT PANEL ---
+  const fx = x0 + pW + gutter;
+  ctx.save();
+  rRect(fx, y0, pW, pH, radius);
+  ctx.clip();
+  ctx.fillStyle = cover; ctx.fillRect(fx, y0, pW, pH);
+  if (state.finish === 'gloss' || state.finish === 'foil') {
+    const g = ctx.createLinearGradient(fx, y0, fx+pW*.6, y0+pH*.4);
+    g.addColorStop(0,'rgba(255,255,255,0.15)'); g.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle = g; ctx.fillRect(fx, y0, pW, pH);
+  }
+  ctx.restore();
+  drawLogoOnFace(ctx, 'f', fx, y0, pW, pH, dpr);
+  drawFaceText(ctx, 'f', fx, y0, pW, pH, dpr);
+  ctx.strokeStyle = luminance(cover)>.85 ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.12)';
+  ctx.lineWidth = 1*dpr;
+  rRect(fx, y0, pW, pH, radius); ctx.stroke();
+
+  // --- LABELS ---
+  const lum = luminance(cover);
+  ctx.fillStyle = lum>.7 ? '#666' : '#999';
+  ctx.font = `400 ${10*dpr}px Diatype, ABC Diatype, Helvetica Neue, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText('BACK', x0+pW/2, y0+pH+18*dpr);
+  ctx.fillText('FRONT', fx+pW/2, y0+pH+18*dpr);
+
+  // fold indicator
+  ctx.fillStyle = 'rgba(0,0,0,0.22)';
+  ctx.font = `400 ${9*dpr}px Diatype, ABC Diatype, Helvetica Neue, sans-serif`;
+  ctx.fillText('fold', x0+pW+gutter/2, y0 - 36*dpr);
+
+  // --- DIMENSIONS ---
+  ctx.fillStyle = 'rgba(0,0,0,0.28)';
+  ctx.font = `400 ${9*dpr}px "Courier New", monospace`;
+  ctx.textAlign = 'center';
+  ctx.fillText('1.0625"', x0 + pW/2, y0 - 50*dpr);
+  ctx.fillText('1.0625"', fx  + pW/2, y0 - 50*dpr);
+  // height dim on left
+  ctx.save();
+  ctx.translate(x0 - 22*dpr, y0 + pH/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText('1.5"', 0, 0);
+  ctx.restore();
+}
+
+/* ---- matchbox die line ---- */
+function drawMatchboxDieline(ctx, W, H, dpr) {
+  // Matchbox: 2.25 × 1.5 × 0.625 in
+  // Die line: sleeve (outer) shown as front face + show side faces extended, tray shown below
+
+  const sleeveW = Math.min(W * 0.50, 300 * dpr);
+  const sleeveH = sleeveW * (1.5 / 2.25);
+  const sideW   = sleeveW * (0.625 / 2.25);
+  const trayW   = sleeveW - sideW * 2;
+  const trayH   = sleeveH * 0.82;
+  const gap     = 32 * dpr;
+  const radius  = 4 * dpr;
+
+  const totalH = sleeveH + gap + trayH;
+  const x0 = (W - sleeveW) / 2;
+  const y0 = (H - totalH) / 2;
+  const cover = state.cover;
+
+  function rRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.lineTo(x+w-r, y); ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+    ctx.lineTo(x+w, y+h-r); ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+    ctx.lineTo(x+r, y+h); ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+    ctx.lineTo(x, y+r); ctx.quadraticCurveTo(x, y, x+r, y);
+    ctx.closePath();
+  }
+
+  // --- SLEEVE left side face ---
+  ctx.save();
+  rRect(x0, y0, sideW, sleeveH, radius);
+  ctx.clip();
+  ctx.fillStyle = darken(cover, 0.82); ctx.fillRect(x0, y0, sideW, sleeveH);
+  if (state.finish==='gloss'||state.finish==='foil') {
+    const g=ctx.createLinearGradient(x0,y0,x0+sideW*.8,y0+sleeveH*.5);
+    g.addColorStop(0,'rgba(255,255,255,0.12)'); g.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=g; ctx.fillRect(x0,y0,sideW,sleeveH);
+  }
+  ctx.restore();
+  ctx.strokeStyle = 'rgba(0,0,0,0.12)'; ctx.lineWidth=1*dpr;
+  rRect(x0, y0, sideW, sleeveH, radius); ctx.stroke();
+
+  // --- SLEEVE front face (center) ---
+  const cx0 = x0 + sideW;
+  ctx.save();
+  rRect(cx0, y0, trayW, sleeveH, 0);
+  ctx.clip();
+  ctx.fillStyle = cover; ctx.fillRect(cx0, y0, trayW, sleeveH);
+  // strike strip
+  const stripH = sleeveH * 0.10;
+  if (state.strip === 'bottom') {
+    ctx.fillStyle = '#2a1a08';
+    ctx.fillRect(cx0, y0+sleeveH-stripH, trayW, stripH);
+    ctx.fillStyle='rgba(255,255,255,0.06)';
+    for(let i=0;i<trayW;i+=3*dpr) for(let j=0;j<stripH;j+=3*dpr) if(Math.random()>.5) ctx.fillRect(cx0+i,y0+sleeveH-stripH+j,1.5*dpr,1.5*dpr);
+  }
+  if (state.finish==='gloss'||state.finish==='foil') {
+    const g=ctx.createLinearGradient(cx0,y0,cx0+trayW*.6,y0+sleeveH*.4);
+    g.addColorStop(0,'rgba(255,255,255,0.15)'); g.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=g; ctx.fillRect(cx0,y0,trayW,sleeveH);
+  }
+  ctx.restore();
+  drawLogoOnFace(ctx, 'f', cx0, y0, trayW, sleeveH - (state.strip==='bottom'?stripH:0), dpr);
+  drawFaceText(ctx, 'f', cx0, y0, trayW, sleeveH - (state.strip==='bottom'?stripH:0), dpr);
+  ctx.strokeStyle='rgba(0,0,0,0.08)'; ctx.lineWidth=1*dpr;
+  ctx.beginPath(); ctx.moveTo(cx0,y0); ctx.lineTo(cx0,y0+sleeveH); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx0+trayW,y0); ctx.lineTo(cx0+trayW,y0+sleeveH); ctx.stroke();
+
+  // --- SLEEVE right side face ---
+  const rx0 = cx0 + trayW;
+  ctx.save();
+  rRect(rx0, y0, sideW, sleeveH, radius);
+  ctx.clip();
+  ctx.fillStyle = darken(cover, 0.82); ctx.fillRect(rx0, y0, sideW, sleeveH);
+  if (state.finish==='gloss'||state.finish==='foil') {
+    const g=ctx.createLinearGradient(rx0,y0,rx0+sideW*.8,y0+sleeveH*.5);
+    g.addColorStop(0,'rgba(255,255,255,0.10)'); g.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=g; ctx.fillRect(rx0,y0,sideW,sleeveH);
+  }
+  ctx.restore();
+  ctx.strokeStyle='rgba(0,0,0,0.12)'; ctx.lineWidth=1*dpr;
+  rRect(rx0,y0,sideW,sleeveH,radius); ctx.stroke();
+
+  // sleeve outer outline
+  ctx.strokeStyle = luminance(cover)>.85 ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.12)';
+  ctx.lineWidth = 1.5*dpr;
+  rRect(x0, y0, sleeveW, sleeveH, radius); ctx.stroke();
+
+  // --- CONNECTOR DASHES ---
+  ctx.save();
+  ctx.setLineDash([4*dpr,3*dpr]);
+  ctx.strokeStyle='rgba(0,0,0,0.15)';
+  ctx.lineWidth=1*dpr;
+  ctx.beginPath();
+  ctx.moveTo(x0+sideW, y0+sleeveH);
+  ctx.lineTo(x0+sideW, y0+sleeveH+gap);
+  ctx.moveTo(x0+sleeveW-sideW, y0+sleeveH);
+  ctx.lineTo(x0+sleeveW-sideW, y0+sleeveH+gap);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
+
+  // --- TRAY ---
+  const ty0 = y0 + sleeveH + gap;
+  const tx0 = x0 + sideW;
+  ctx.save();
+  rRect(tx0, ty0, trayW, trayH, radius);
+  ctx.clip();
+  ctx.fillStyle = lighten(cover, 0.15); ctx.fillRect(tx0, ty0, trayW, trayH);
+  // match sticks inside
+  const matchCount = 10;
+  const mSpacing = (trayW - 20*dpr) / (matchCount);
+  const tipCol = state.matchTipColor;
+  for (let i=0; i<matchCount; i++) {
+    const mx = tx0 + 10*dpr + i*mSpacing + mSpacing/2;
+    // stick
+    ctx.fillStyle = '#ddd5c0';
+    ctx.fillRect(mx - 1.5*dpr, ty0 + 12*dpr, 3*dpr, trayH - 24*dpr);
+    // tip
+    ctx.fillStyle = tipCol;
+    ctx.beginPath();
+    ctx.arc(mx, ty0 + 12*dpr, 4*dpr, 0, Math.PI*2);
+    ctx.fill();
+  }
+  ctx.restore();
+  drawLogoOnFace(ctx, 'b', tx0, ty0, trayW, trayH, dpr);
+  drawFaceText(ctx, 'b', tx0, ty0, trayW, trayH, dpr);
+  ctx.strokeStyle = luminance(cover)>.85 ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.12)';
+  ctx.lineWidth=1.5*dpr;
+  rRect(tx0, ty0, trayW, trayH, radius); ctx.stroke();
+
+  // --- LABELS ---
+  ctx.fillStyle='rgba(0,0,0,0.32)';
+  ctx.font=`400 ${10*dpr}px Diatype, ABC Diatype, Helvetica Neue, sans-serif`;
+  ctx.textAlign='center';
+  ctx.fillText('SLEEVE (outer)', x0+sleeveW/2, y0+sleeveH+gap/2);
+  ctx.fillText('TRAY (inner)', tx0+trayW/2, ty0+trayH+18*dpr);
+
+  // dimensions
+  ctx.fillStyle='rgba(0,0,0,0.28)';
+  ctx.font=`400 ${9*dpr}px "Courier New", monospace`;
+  ctx.fillText('2.25"', x0+sleeveW/2, y0-16*dpr);
+  ctx.save();
+  ctx.translate(x0-22*dpr, y0+sleeveH/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText('1.5"', 0, 0);
+  ctx.restore();
+}
+
+/* ===================================================================
+   THREE.JS GEOMETRY HELPERS
+=================================================================== */
+let threeReady = false;
+let scene, camera, renderer, modelGroup;
+let rot = { x:.35, y:.5 }, rotTarget = { x:.35, y:.5 };
+let vel = { x:0, y:0 }, dragging=false, prev={x:0,y:0};
+let camPos = { x:0, y:0, z:10 }, camTarget = { x:0, y:0, z:10 };
+let isOpen = false;
+
 function roughMetal() {
   if (state.finish==='gloss') return [0.06,0];
   if (state.finish==='foil')  return [0.25,0.55];
   return [0.82,0];
 }
-
 function stdMat(color, r, m) {
   return new THREE.MeshStandardMaterial({ color, roughness:r??0.82, metalness:m??0 });
 }
-
 function canvasMat(cw, ch, fn, r, m) {
-  const cv = document.createElement('canvas'); cv.width=cw; cv.height=ch;
-  fn(cv.getContext('2d'), cw, ch);
-  const tex = new THREE.CanvasTexture(cv);
-  return new THREE.MeshStandardMaterial({ map:tex, roughness:r??0.82, metalness:m??0 });
+  const cv=document.createElement('canvas'); cv.width=cw; cv.height=ch;
+  fn(cv.getContext('2d'),cw,ch);
+  return new THREE.MeshStandardMaterial({ map:new THREE.CanvasTexture(cv), roughness:r??0.82, metalness:m??0 });
 }
-
 function blendHex(hexA, hexB, t) {
-  const a=parseInt(hexA.replace('#',''),16), b=hexB;
+  const a=parseInt(hexA.replace('#',''),16);
   const ra=(a>>16)&255, ga=(a>>8)&255, ba=a&255;
-  const rb=(b>>16)&255, gb=(b>>8)&255, bb=b&255;
+  const rb=(hexB>>16)&255, gb=(hexB>>8)&255, bb=hexB&255;
   return ((Math.round(ra+(rb-ra)*t)<<16)|(Math.round(ga+(gb-ga)*t)<<8)|Math.round(ba+(bb-ba)*t));
 }
-
-function drawText(ctx, lines, color, pos, size, cw, ch) {
+function drawText3D(ctx, lines, color, pos, size, cw, ch) {
   if (!lines.filter(Boolean).length) return;
   const lh=size*1.42;
   let tx, ty, align;
@@ -524,11 +1454,10 @@ function drawText(ctx, lines, color, pos, size, cw, ch) {
   ty    = pos.startsWith('t')?ch*.15:pos.startsWith('b')?ch*.72:ch*.5-lines.length*lh*.5+size*.5;
   ctx.textAlign=align; ctx.textBaseline='middle'; ctx.fillStyle=color;
   lines.forEach((ln,i)=>{
-    ctx.font=`${i===0?'500':'400'} ${i===0?size:Math.max(size*.7,9)}px 'Jost',sans-serif`;
+    ctx.font=`${i===0?'500':'400'} ${i===0?size:Math.max(size*.7,9)}px Inter,sans-serif`;
     ctx.fillText(ln, tx, ty+i*lh);
   });
 }
-
 function makeFaceTex(cw, ch, side, isBack) {
   const [r,m]=roughMetal();
   return canvasMat(cw, ch, (ctx)=>{
@@ -538,46 +1467,65 @@ function makeFaceTex(cw, ch, side, isBack) {
       g.addColorStop(0,'rgba(255,255,255,0.13)'); g.addColorStop(1,'rgba(255,255,255,0)');
       ctx.fillStyle=g; ctx.fillRect(0,0,cw,ch);
     }
-    if (isBack&&state.strip==='back'){
-      const sh=ch*.13; ctx.fillStyle='#3a2208'; ctx.fillRect(0,ch-sh,cw,sh);
-      ctx.fillStyle='rgba(0,0,0,0.2)';
-      for (let i=0;i<cw;i+=3) for (let j=0;j<sh;j+=3) if (Math.random()>.5) ctx.fillRect(i,ch-sh+j,2,2);
+    if (isBack&&state.strip!=='none'){
+      const sh=ch*.12; ctx.fillStyle='#2a1a08'; ctx.fillRect(0,ch-sh,cw,sh);
+      ctx.fillStyle='rgba(255,255,255,0.08)';
+      for(let i=0;i<cw;i+=4) for(let j=0;j<sh;j+=4) if(Math.random()>.5) ctx.fillRect(i,ch-sh+j,2,2);
     }
-    const s=isBack?state.b:state.f;
-    drawText(ctx,[s.l1,s.l2],s.color,s.pos,s.size*(cw/200),cw,ch);
+    const side = isBack ? 'b' : 'f';
+    const s = isBack ? state.b : state.f;
+    // Logo on 3D face
+    if (logoImg && logoImg.complete && state.logo.side === side) {
+      const sc = state.logo.scale;
+      const maxW = cw * sc, maxH = ch * sc;
+      const ar = logoImg.naturalWidth / logoImg.naturalHeight;
+      let iw = maxW, ih = maxW / ar;
+      if (ih > maxH) { ih = maxH; iw = maxH * ar; }
+      const pos = state.logo.pos;
+      const lx = pos.endsWith('l') ? cw*0.08 : pos.endsWith('r') ? cw*0.92-iw : cw/2-iw/2;
+      const ly = pos.startsWith('t') ? ch*0.08 : pos.startsWith('b') ? ch*0.85-ih : ch/2-ih/2;
+      ctx.drawImage(logoImg, lx, ly, iw, ih);
+    }
+    drawText3D(ctx,[s.l1,s.l2],s.color,s.pos,s.size*(cw/200),cw,ch);
+    // Mandatory distributor ID printed on flap area, required by law
+    if (isBack) {
+      const lum = (parseInt(state.cover.replace('#',''),16)>>16&255)*.299+(parseInt(state.cover.replace('#',''),16)>>8&255&255)*.587+(parseInt(state.cover.replace('#',''),16)&255)*.114;
+      ctx.fillStyle = lum>128 ? 'rgba(0,0,0,0.35)' : 'rgba(255,255,255,0.35)';
+      ctx.font = `400 ${Math.max(8,cw*0.038)}px Inter, sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ctx.fillText('strikematchbooks.com', cw/2, ch*0.04);
+    }
   }, r, m);
 }
-
 function makeSpineTex(n) {
   return canvasMat(256,64,(ctx,cw,ch)=>{
     ctx.fillStyle='#ede9e1'; ctx.fillRect(0,0,cw,ch);
     for(let i=0;i<n;i++){
-      ctx.fillStyle=i%2===0?'rgba(0,0,0,0.04)':'rgba(255,255,255,0.06)';
-      ctx.fillRect(i*(cw/n),0,cw/n,ch);
+      ctx.fillStyle=i%2===0?'rgba(0,0,0,0.04)':'rgba(255,255,255,0.06)'; ctx.fillRect(i*(cw/n),0,cw/n,ch);
       ctx.fillStyle=i%3===0?'#c0392b':i%3===1?'#e67e22':'#2980b9';
       ctx.fillRect(i*(cw/n)+1,0,cw/n-2,ch*.38);
     }
     ctx.fillStyle='#aaa'; ctx.fillRect(cw*.44,ch*.25,cw*.12,ch*.5);
   }, 0.9, 0);
 }
-
 function makeStripTex() {
   return canvasMat(256,64,(ctx,cw,ch)=>{
-    if(state.strip==='bottom'){
-      ctx.fillStyle='#2a1a08'; ctx.fillRect(0,0,cw,ch);
-      ctx.fillStyle='rgba(0,0,0,0.22)';
-      for(let i=0;i<cw;i+=3) for(let j=0;j<ch;j+=3) if(Math.random()>.5) ctx.fillRect(i,j,2,2);
-    } else { ctx.fillStyle=state.cover; ctx.fillRect(0,0,cw,ch); }
+    ctx.fillStyle='#2a1a08'; ctx.fillRect(0,0,cw,ch);
+    ctx.fillStyle='rgba(255,255,255,0.07)';
+    for(let i=0;i<cw;i+=3) for(let j=0;j<ch;j+=3) if(Math.random()>.5) ctx.fillRect(i,j,2,2);
   }, 0.95, 0);
 }
 
 /* ===================================================================
-   CLASSIC MODEL  (square booklet)
+   MATCHBOOK 3D MODEL  (2.125 × 1.5 × ~0.2 in scale 1.6 units/inch)
 =================================================================== */
-function buildClassicMesh(group, w, h, d, coverColor, isPreview) {
+function buildMatchbookMesh(group, w, h, d, coverColor, isPreview) {
   const [r,m] = isPreview ? [0.75,0] : roughMetal();
-  const side   = stdMat(blendHex(coverColor??state.cover, 0x888888, 0.2), r, m);
-  const spine  = isPreview
+  const cc = coverColor ?? state.cover;
+  const ccInt = parseInt(cc.replace('#',''),16);
+  // sides: exact cover color, slightly darkened at edges (realistic lighting does the rest)
+  const side  = stdMat(ccInt, r, m);
+  const spine = isPreview
     ? canvasMat(256,64,(ctx,cw,ch)=>{
         ctx.fillStyle='#ede9e1'; ctx.fillRect(0,0,cw,ch);
         for(let i=0;i<14;i++){
@@ -588,222 +1536,165 @@ function buildClassicMesh(group, w, h, d, coverColor, isPreview) {
         ctx.fillStyle='#aaa'; ctx.fillRect(cw*.44,ch*.25,cw*.12,ch*.5);
       }, 0.9, 0)
     : makeSpineTex(14);
-  const strip  = isPreview
-    ? stdMat(0x1a1a1a, 0.95)
-    : makeStripTex();
-  const front  = isPreview
-    ? stdMat(parseInt((coverColor??state.cover).replace('#',''),16), r, m)
-    : makeFaceTex(300,300,state.f,false);
-  const back   = isPreview
-    ? stdMat(parseInt((coverColor??state.cover).replace('#',''),16), r, m)
-    : makeFaceTex(300,300,state.b,true);
-
-  // +x,-x,+y(spine),-y(strip),+z(front),-z(back)
-  const body = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), [side,side,spine,strip,front,back]);
-  group.add(body);
-
-  // Thin staple line at top
-  const staple = new THREE.Mesh(new THREE.BoxGeometry(w*.18,0.06,d+.02), stdMat(0x999999,0.7));
-  staple.position.y = h/2+.03;
-  group.add(staple);
-}
-
-/* ===================================================================
-   PREMIUM MODEL  (tall booklet)
-=================================================================== */
-function buildPremiumMesh(group, w, h, d, coverColor, isPreview) {
-  const [r,m] = isPreview ? [0.75,0] : roughMetal();
-  const side  = stdMat(blendHex(coverColor??state.cover, 0x888888, 0.2), r, m);
-  const spine = isPreview
-    ? canvasMat(256,64,(ctx,cw,ch)=>{
-        ctx.fillStyle='#ede9e1'; ctx.fillRect(0,0,cw,ch);
-        for(let i=0;i<16;i++){
-          ctx.fillStyle='rgba(0,0,0,0.04)'; ctx.fillRect(i*(cw/16),0,cw/16,ch);
-          ctx.fillStyle=i%3===0?'#c0392b':i%3===1?'#e67e22':'#2980b9';
-          ctx.fillRect(i*(cw/16)+1,0,cw/16-2,ch*.38);
-        }
-      }, 0.9, 0)
-    : makeSpineTex(16);
   const strip = isPreview ? stdMat(0x1a1a1a,0.95) : makeStripTex();
   const front = isPreview
-    ? stdMat(parseInt((coverColor??state.cover).replace('#',''),16), r, m)
-    : makeFaceTex(260,400,state.f,false);
+    ? stdMat(ccInt, r, m)
+    : makeFaceTex(340,240,state.f,false);
   const back  = isPreview
-    ? stdMat(parseInt((coverColor??state.cover).replace('#',''),16), r, m)
-    : makeFaceTex(260,400,state.b,true);
+    ? stdMat(ccInt, r, m)
+    : makeFaceTex(340,240,state.b,true);
 
+  // BoxGeometry face order: +x right, -x left, +y top(spine), -y bottom(strip), +z front, -z back
   const body = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), [side,side,spine,strip,front,back]);
   group.add(body);
 
-  const staple = new THREE.Mesh(new THREE.BoxGeometry(w*.16,0.06,d+.02), stdMat(0x999999,0.7));
+  // Staple at top spine
+  const staple = new THREE.Mesh(new THREE.BoxGeometry(w*.15,0.06,d+.02), stdMat(0x999999,0.7));
   staple.position.y = h/2+.03;
   group.add(staple);
 }
 
 /* ===================================================================
-   MATCHBOX MODEL  (sleeve + tray)
+   MATCHBOX 3D MODEL  (2.25 × 1.5 × 0.625 in scale 1.6 units/inch)
 =================================================================== */
-function buildMatchboxMesh(group, sw, sh, sd, coverColor, isPreview) {
+function buildMatchboxMesh3D(group, sw, sh, sd, coverColor, isPreview) {
   const [r,m] = isPreview ? [0.75,0] : roughMetal();
-  const cc = parseInt((coverColor??state.cover).replace('#',''),16);
-  const sMat  = stdMat(cc, r, m);
-  const sSide = stdMat(blendHex(coverColor??state.cover, 0x888888, 0.2), r, m);
+  const cc    = coverColor ?? state.cover;
+  const ccInt = parseInt(cc.replace('#',''),16);
+  const sMat  = stdMat(ccInt, r, m);
+  const t = 0.07; // wall thickness in world units
 
-  // Sleeve panels
-  const top  = new THREE.Mesh(new THREE.BoxGeometry(sw,.09,sd), sMat);  top.position.y=sh/2;   group.add(top);
-  const bot  = new THREE.Mesh(new THREE.BoxGeometry(sw,.09,sd), sMat);  bot.position.y=-sh/2;  group.add(bot);
-  const back = new THREE.Mesh(new THREE.BoxGeometry(sw,sh,.09), isPreview ? sMat : makeFaceTex(440,165,state.b,true));
-  back.position.z=-sd/2; group.add(back);
-  const front = new THREE.Mesh(new THREE.BoxGeometry(sw,sh,.09), isPreview ? sMat : makeFaceTex(440,165,state.f,false));
-  front.position.z=sd/2; group.add(front);
-  // Left (closed) end
-  const leftEnd = new THREE.Mesh(new THREE.BoxGeometry(.09,sh,sd), sSide);
-  leftEnd.position.x=-sw/2; group.add(leftEnd);
-  // Right (partial, open end)
-  const rightRim = new THREE.Mesh(new THREE.BoxGeometry(.09,sh,.09), sSide);
-  rightRim.position.set(sw/2,0,sd/2-.045); group.add(rightRim);
-  const rightRim2 = new THREE.Mesh(new THREE.BoxGeometry(.09,sh,.09), sSide);
-  rightRim2.position.set(sw/2,0,-sd/2+.045); group.add(rightRim2);
+  // Sleeve: front + back panels
+  const frMat = isPreview ? sMat : makeFaceTex(Math.round(sw*80), Math.round(sh*80), state.f, false);
+  const bkMat = isPreview ? sMat : makeFaceTex(Math.round(sw*80), Math.round(sh*80), state.b, true);
+  const fr = new THREE.Mesh(new THREE.BoxGeometry(sw,sh,t), frMat); fr.position.z=sd/2; group.add(fr);
+  const bk = new THREE.Mesh(new THREE.BoxGeometry(sw,sh,t), bkMat); bk.position.z=-sd/2; group.add(bk);
 
-  // Strike strips
+  // Top + bottom caps
+  const top = new THREE.Mesh(new THREE.BoxGeometry(sw,t,sd), sMat); top.position.y=sh/2; group.add(top);
+  const bot = new THREE.Mesh(new THREE.BoxGeometry(sw,t,sd), sMat); bot.position.y=-sh/2; group.add(bot);
+
+  // Left end (closed)
+  const leftEnd = new THREE.Mesh(new THREE.BoxGeometry(t,sh,sd), sMat); leftEnd.position.x=-sw/2; group.add(leftEnd);
+  // Right end: two corner strips (open tray slot)
+  const rr1 = new THREE.Mesh(new THREE.BoxGeometry(t,sh,t), sMat); rr1.position.set(sw/2,0,sd/2-t/2); group.add(rr1);
+  const rr2 = new THREE.Mesh(new THREE.BoxGeometry(t,sh,t), sMat); rr2.position.set(sw/2,0,-sd/2+t/2); group.add(rr2);
+
+  // Strike strips on front + back bottom edges
   const stripMat = isPreview ? stdMat(0x1a1a1a,.95) : makeStripTex();
-  const sf = new THREE.Mesh(new THREE.BoxGeometry(sw,.22,.11), isPreview?stdMat(0x1a1a1a):(state.strip==='bottom'?stripMat:sMat));
-  sf.position.set(0,-sh/2+.11,sd/2+.01); group.add(sf);
-  const sb = new THREE.Mesh(new THREE.BoxGeometry(sw,.22,.11), isPreview?stdMat(0x1a1a1a):(state.strip==='bottom'?stripMat:sMat));
-  sb.position.set(0,-sh/2+.11,-sd/2-.01); group.add(sb);
+  const stripH = sh * 0.14, stripD = t*1.4;
+  const sf = new THREE.Mesh(new THREE.BoxGeometry(sw,stripH,stripD), stripMat);
+  sf.position.set(0, -sh/2+stripH/2, sd/2+stripD/2-t/2); group.add(sf);
+  const sb = new THREE.Mesh(new THREE.BoxGeometry(sw,stripH,stripD), stripMat);
+  sb.position.set(0, -sh/2+stripH/2, -sd/2-stripD/2+t/2); group.add(sb);
 
-  // Tray (partially extended)
-  const pullX = sw * .28;
-  const tw=sw-.22, th=sh-.26, td=sd-.26;
-  const trayColor = new THREE.Color(coverColor??state.cover).lerp(new THREE.Color(0xcccccc), isPreview?.35:.22);
-  const tray = new THREE.Mesh(new THREE.BoxGeometry(tw,th,td),
-    new THREE.MeshStandardMaterial({ color:trayColor, roughness:.88 }));
+  // Inner tray (pulled out slightly to the right)
+  const pullX = sw * 0.22;
+  const tw = sw - t*3, th = sh - t*3, td = sd - t*2;
+  const trayColor = isPreview
+    ? new THREE.Color(cc).lerp(new THREE.Color(0xcccccc), .35)
+    : new THREE.Color(state.insideColor);
+  const tray = new THREE.Mesh(new THREE.BoxGeometry(tw,th,td), new THREE.MeshStandardMaterial({color:trayColor,roughness:.88}));
   tray.position.x = pullX; group.add(tray);
 
-  // Match sticks on tray — tip color is the customer's chosen match color
-  const mCount=10, mSpacing=td/(mCount+1);
-  const tipColor = isPreview ? 0xbb2222 : parseInt(state.matchColor.replace('#',''),16);
-  for(let i=0;i<mCount;i++){
-    const stick = new THREE.Mesh(
-      new THREE.CylinderGeometry(.04,.04,tw*.78,6),
-      stdMat(0xddd5c0,.9)
-    );
-    stick.rotation.z=Math.PI/2;
-    stick.position.set(pullX+tw*.02, th/2+.05, -td/2+mSpacing*(i+1));
+  // Matches inside tray
+  const mCount = 8, mSpacing = td / (mCount + 1);
+  const tipColor = isPreview ? 0xbb2222 : parseInt(state.matchTipColor.replace('#',''),16);
+  for (let i = 0; i < mCount; i++) {
+    const stick = new THREE.Mesh(new THREE.CylinderGeometry(.038,.038,tw*.80,6), stdMat(0xddd5c0,.9));
+    stick.rotation.z = Math.PI/2;
+    stick.position.set(pullX, th/2+.04, -td/2+mSpacing*(i+1));
     group.add(stick);
-    const tip = new THREE.Mesh(new THREE.SphereGeometry(.075,6,4), stdMat(tipColor,.7));
-    tip.position.set(pullX+tw*.42, th/2+.05, -td/2+mSpacing*(i+1));
+    const tip = new THREE.Mesh(new THREE.SphereGeometry(.065,6,4), stdMat(tipColor,.7));
+    tip.position.set(pullX+tw*.41, th/2+.04, -td/2+mSpacing*(i+1));
     group.add(tip);
   }
 }
 
 /* ===================================================================
-   MINI PREVIEWS  (one-shot renders for the type cards)
+   MINI PREVIEWS
 =================================================================== */
 function renderMiniPreviews() {
   const MINI = [
-    { id:'mini-classic',  rx:.36, ry:.48, camZ:7.0,  build:(g)=>buildClassicMesh(g,1.8,1.7,.38,'#f0f0f0',true)  },
-    { id:'mini-premium',  rx:.30, ry:.46, camZ:8.5,  build:(g)=>buildPremiumMesh(g,1.4,2.4,.38,'#f0f0f0',true)  },
-    { id:'mini-matchbox', rx:.36, ry:.54, camZ:9.0,  build:(g)=>buildMatchboxMesh(g,2.8,1.0,1.4,'#f0f0f0',true) },
+    { id:'mini-matchbook', rx:.30, ry:.44, camZ:6.0, build:(g)=>buildMatchbookMesh(g, MB_W, MB_H, MB_D,'#f0f0f0',true) },
+    { id:'mini-matchbox',  rx:.34, ry:.52, camZ:6.0, build:(g)=>buildMatchboxMesh3D(g,MX_W, MX_H, MX_D,'#f0f0f0',true) },
   ];
-
-  MINI.forEach(({ id, rx, ry, camZ, build }) => {
-    const cv = document.getElementById(id);
+  MINI.forEach(({id,rx,ry,camZ,build})=>{
+    const cv=document.getElementById(id);
     if (!cv) return;
-    const dw = cv.clientWidth  || 160;
-    const dh = cv.clientHeight || 160;
-
-    const mr = new THREE.WebGLRenderer({ canvas:cv, antialias:true, alpha:true });
+    const dw=cv.clientWidth||160, dh=cv.clientHeight||160;
+    const mr=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});
     mr.setPixelRatio(Math.min(window.devicePixelRatio,2));
-    mr.setSize(dw, dh);
-
-    const ms = new THREE.Scene();
+    mr.setSize(dw,dh);
+    const ms=new THREE.Scene();
     ms.add(new THREE.AmbientLight(0xffffff,.85));
-    const kl = new THREE.DirectionalLight(0xffffff,1.2); kl.position.set(4,6,5); ms.add(kl);
-    const fl = new THREE.DirectionalLight(0xfff8f0,.4); fl.position.set(-3,1,3); ms.add(fl);
-    const rl = new THREE.DirectionalLight(0xf0f4ff,.25); rl.position.set(0,-3,-4); ms.add(rl);
-
-    const mc = new THREE.PerspectiveCamera(52, dw/dh, .1, 100);
-    mc.position.z = camZ;
-
-    const g = new THREE.Group();
-    build(g);
-    g.rotation.x = rx;
-    g.rotation.y = ry;
-    ms.add(g);
-
-    mr.render(ms, mc);
+    const kl=new THREE.DirectionalLight(0xffffff,1.2); kl.position.set(4,6,5); ms.add(kl);
+    const fl=new THREE.DirectionalLight(0xfff8f0,.4);  fl.position.set(-3,1,3); ms.add(fl);
+    const rl=new THREE.DirectionalLight(0xf0f4ff,.25); rl.position.set(0,-3,-4); ms.add(rl);
+    const mc=new THREE.PerspectiveCamera(52,dw/dh,.1,100);
+    mc.position.z=camZ;
+    const g=new THREE.Group(); build(g); g.rotation.x=rx; g.rotation.y=ry; ms.add(g);
+    mr.render(ms,mc);
     mr.dispose();
   });
 }
 
 /* ===================================================================
-   MAIN 3D VIEWER
+   MAIN THREE.JS VIEWER
 =================================================================== */
-let scene, camera, renderer, modelGroup;
-let rot = { x:.35, y:.5 }, rotTarget = { x:.35, y:.5 };
-let vel = { x:0, y:0 }, dragging=false, prev={x:0,y:0};
-
-let camPos    = { x:0, y:0, z:10 };
-let camTarget = { x:0, y:0, z:10 };
-let isOpen = false;
-
 function toggleOpen() {
   isOpen = !isOpen;
-  const btn = document.getElementById('open-btn');
-  const lbl = document.getElementById('open-label');
-  const hint = document.getElementById('viewer-hint');
-
+  const btn=document.getElementById('open-btn');
+  const lbl=document.getElementById('open-label');
   if (isOpen) {
-    rotTarget.x = 0.1;
-    rotTarget.y = 0.0;
-    vel = { x:0, y:0 };
-    btn.style.background = '#0a0a0a';
-    btn.querySelector('svg').style.stroke = '#fff';
-    lbl.textContent = 'Close';
-    hint.textContent = 'Showing inside';
+    rotTarget.x=0.1; rotTarget.y=0.0; vel={x:0,y:0};
+    btn.style.background='#0a0a0a'; btn.querySelector('svg').style.stroke='#fff';
+    lbl.textContent='Close';
   } else {
-    rotTarget.x = 0.35;
-    rotTarget.y = 0.5;
-    btn.style.background = '#fff';
-    btn.querySelector('svg').style.stroke = '#0a0a0a';
-    lbl.innerHTML = 'Open<br>inside';
-    hint.textContent = 'Drag to rotate · Scroll to zoom';
+    rotTarget.x=.35; rotTarget.y=.5;
+    btn.style.background='#fff'; btn.querySelector('svg').style.stroke='#0a0a0a';
+    lbl.innerHTML='Open<br>inside';
   }
 }
 
 function initThree() {
+  threeReady = true;
   const canvas = document.getElementById('three-canvas');
-  renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+  renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(36,1,.1,100);
   camera.position.set(0,0,10);
-
-  const al = new THREE.AmbientLight(0xffffff,.80); scene.add(al);
-  const kl = new THREE.DirectionalLight(0xffffff,1.2); kl.position.set(5,8,6); scene.add(kl);
-  const fl = new THREE.DirectionalLight(0xfff5e8,.50); fl.position.set(-4,2,4); scene.add(fl);
-  const rl = new THREE.DirectionalLight(0xeef0ff,.30); rl.position.set(0,-4,-5); scene.add(rl);
-
+  const al=new THREE.AmbientLight(0xffffff,.80); scene.add(al);
+  const kl=new THREE.DirectionalLight(0xffffff,1.2); kl.position.set(5,8,6); scene.add(kl);
+  const fl=new THREE.DirectionalLight(0xfff5e8,.50); fl.position.set(-4,2,4); scene.add(fl);
+  const rl=new THREE.DirectionalLight(0xeef0ff,.30); rl.position.set(0,-4,-5); scene.add(rl);
   rebuildModel();
   bindDrag(canvas);
-  onResize();
-  window.addEventListener('resize', onResize);
+  initDimCanvas();
+  onResize3D();
+  window.addEventListener('resize', onResize3D);
   animate();
-
-  requestAnimationFrame(renderMiniPreviews);
 }
 
-function onResize() {
-  const wrap = document.querySelector('.viewer-wrap');
+function onResize3D() {
+  if (!renderer) return;
+  const wrap=document.querySelector('.viewer-wrap');
   const w=wrap.clientWidth, h=wrap.clientHeight;
   renderer.setSize(w,h);
   camera.aspect=w/h;
   camera.updateProjectionMatrix();
 }
 
+// Scale: 1.6 world units per inch matches die line proportions exactly
+const S = 1.6;
+// Matchbook: 2.125w × 1.5h × 0.2d inches
+const MB_W=2.125*S, MB_H=1.5*S, MB_D=0.20*S;
+// Matchbox: 2.25w × 1.5h × 0.625d inches
+const MX_W=2.25*S, MX_H=1.5*S, MX_D=0.625*S;
+
 function rebuildModel() {
+  if (!scene) return;
   if (modelGroup) {
     scene.remove(modelGroup);
     modelGroup.traverse(c=>{
@@ -812,89 +1703,161 @@ function rebuildModel() {
     });
   }
   modelGroup = new THREE.Group();
-  if (state.type==='classic')  buildClassicMesh(modelGroup,  3.0, 2.8, .52, null, false);
-  if (state.type==='premium')  buildPremiumMesh(modelGroup,  2.5, 4.0, .52, null, false);
-  if (state.type==='matchbox') buildMatchboxMesh(modelGroup, 4.6, 1.65, 2.2, null, false);
+  if (state.type==='matchbook') buildMatchbookMesh(modelGroup, MB_W, MB_H, MB_D, null, false);
+  if (state.type==='matchbox')  buildMatchboxMesh3D(modelGroup, MX_W, MX_H, MX_D, null, false);
   scene.add(modelGroup);
-  const baseZ = state.type==='matchbox'?11.5:state.type==='premium'?11:10;
-  if (!isOpen) { camTarget.z = baseZ; camPos.z = baseZ; camera.position.z = baseZ; }
+  const baseZ = state.type==='matchbox' ? 9 : 8;
+  if (!isOpen){ camTarget.z=baseZ; camPos.z=baseZ; camera.position.z=baseZ; }
   camera.updateProjectionMatrix();
   modelGroup.rotation.x=rot.x;
   modelGroup.rotation.y=rot.y;
 }
 
-/* ===================================================================
-   DRAG / ZOOM
-=================================================================== */
 function bindDrag(canvas) {
-  canvas.addEventListener('mousedown', e=>{ dragging=true; prev={x:e.clientX,y:e.clientY}; vel={x:0,y:0}; });
-  window.addEventListener('mousemove', e=>{
-    if(!dragging) return;
+  canvas.addEventListener('mousedown',e=>{dragging=true;prev={x:e.clientX,y:e.clientY};vel={x:0,y:0};});
+  window.addEventListener('mousemove',e=>{
+    if(!dragging)return;
     vel.y=(e.clientX-prev.x)*.009; vel.x=(e.clientY-prev.y)*.009;
     rotTarget.y+=vel.y; rotTarget.x+=vel.x;
     prev={x:e.clientX,y:e.clientY};
   });
-  window.addEventListener('mouseup', ()=>{ dragging=false; });
-  canvas.addEventListener('touchstart', e=>{ dragging=true; prev={x:e.touches[0].clientX,y:e.touches[0].clientY}; vel={x:0,y:0}; },{passive:true});
-  canvas.addEventListener('touchmove', e=>{
-    if(!dragging) return;
+  window.addEventListener('mouseup',()=>{dragging=false;});
+  canvas.addEventListener('touchstart',e=>{dragging=true;prev={x:e.touches[0].clientX,y:e.touches[0].clientY};vel={x:0,y:0};},{passive:true});
+  canvas.addEventListener('touchmove',e=>{
+    if(!dragging)return;
     vel.y=(e.touches[0].clientX-prev.x)*.009; vel.x=(e.touches[0].clientY-prev.y)*.009;
     rotTarget.y+=vel.y; rotTarget.x+=vel.x;
     prev={x:e.touches[0].clientX,y:e.touches[0].clientY};
   },{passive:true});
-  canvas.addEventListener('touchend',()=>{ dragging=false; },{passive:true});
-  canvas.addEventListener('wheel', e=>{
+  canvas.addEventListener('touchend',()=>{dragging=false;},{passive:true});
+  canvas.addEventListener('wheel',e=>{
     camera.position.z=Math.max(4,Math.min(20,camera.position.z+e.deltaY*.015));
     e.preventDefault();
   },{passive:false});
 }
 
 /* ===================================================================
-   ANIMATE  (no auto-spin)
+   DIMENSION OVERLAY  draws inch labels around the 3D model
 =================================================================== */
+let dimCanvas, dimCtx;
+function initDimCanvas() {
+  dimCanvas = document.getElementById('dim-canvas');
+  dimCtx = dimCanvas.getContext('2d');
+}
+
+function project(vec3, w, h) {
+  // Project world point → canvas pixel, accounting for model rotation
+  const v = vec3.clone().applyEuler(new THREE.Euler(rot.x, rot.y, 0, 'YXZ'));
+  const proj = v.project(camera);
+  return { x: (proj.x+1)/2*w, y: (1-proj.y)/2*h, z: proj.z };
+}
+
+function drawDimLabel(ctx, ax, ay, bx, by, label, w, h) {
+  // Clamp label position to canvas bounds with margin
+  const mx=(ax+bx)/2, my=(ay+by)/2;
+  if (mx<0||mx>w||my<0||my>h) return;
+  ctx.save();
+  ctx.font = '500 11px "Helvetica Neue", Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  // small pill background
+  const tw = ctx.measureText(label).width + 12;
+  const th = 18;
+  ctx.fillStyle = 'rgba(10,10,10,0.55)';
+  ctx.beginPath();
+  ctx.roundRect(mx-tw/2, my-th/2, tw, th, 4);
+  ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.88)';
+  ctx.fillText(label, mx, my);
+  // tick lines
+  ctx.strokeStyle='rgba(255,255,255,0.35)'; ctx.lineWidth=1;
+  ctx.setLineDash([3,3]);
+  ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(mx-tw/2-4, my); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(mx+tw/2+4, my); ctx.stroke();
+  ctx.restore();
+}
+
+function drawDimensions() {
+  if (!dimCanvas || !dimCtx || !renderer) return;
+  const wrap = document.querySelector('.viewer-wrap');
+  const w = wrap.clientWidth, h = wrap.clientHeight;
+  if (w===0||h===0) return;
+  dimCanvas.width = w * window.devicePixelRatio;
+  dimCanvas.height = h * window.devicePixelRatio;
+  dimCanvas.style.width = w+'px'; dimCanvas.style.height = h+'px';
+  const ctx = dimCtx;
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  ctx.clearRect(0,0,w,h);
+  if (!modelGroup) return;
+
+  if (state.type === 'matchbook') {
+    const hw=MB_W/2, hh=MB_H/2, hd=MB_D/2;
+    // Width label along bottom edge of front face
+    const wL = project(new THREE.Vector3(-hw, -hh-0.18, hd), w, h);
+    const wR = project(new THREE.Vector3( hw, -hh-0.18, hd), w, h);
+    drawDimLabel(ctx, wL.x, wL.y, wR.x, wR.y, '2.125"', w, h);
+    // Height label along left edge
+    const hT = project(new THREE.Vector3(-hw-0.22, hh, hd), w, h);
+    const hB = project(new THREE.Vector3(-hw-0.22,-hh, hd), w, h);
+    drawDimLabel(ctx, hT.x, hT.y, hB.x, hB.y, '1.5"', w, h);
+  } else {
+    const hw=MX_W/2, hh=MX_H/2, hd=MX_D/2;
+    // Width label
+    const wL = project(new THREE.Vector3(-hw, -hh-0.18, hd), w, h);
+    const wR = project(new THREE.Vector3( hw, -hh-0.18, hd), w, h);
+    drawDimLabel(ctx, wL.x, wL.y, wR.x, wR.y, '2.25"', w, h);
+    // Height label
+    const hT = project(new THREE.Vector3(-hw-0.22, hh, hd), w, h);
+    const hB = project(new THREE.Vector3(-hw-0.22,-hh, hd), w, h);
+    drawDimLabel(ctx, hT.x, hT.y, hB.x, hB.y, '1.5"', w, h);
+    // Depth label along right side
+    const dF = project(new THREE.Vector3(hw+0.22, -hh-0.18, hd), w, h);
+    const dB = project(new THREE.Vector3(hw+0.22, -hh-0.18,-hd), w, h);
+    drawDimLabel(ctx, dF.x, dF.y, dB.x, dB.y, '0.625"', w, h);
+  }
+}
+
 function animate() {
   requestAnimationFrame(animate);
-
-  if (!dragging && !isOpen) {
-    vel.x*=.90; vel.y*=.90;
-    rotTarget.x+=vel.x; rotTarget.y+=vel.y;
-  }
+  if (!dragging&&!isOpen){ vel.x*=.90; vel.y*=.90; rotTarget.x+=vel.x; rotTarget.y+=vel.y; }
   if (!isOpen) rotTarget.x=Math.max(-1.3,Math.min(1.3,rotTarget.x));
   rot.x+=(rotTarget.x-rot.x)*.07;
   rot.y+=(rotTarget.y-rot.y)*.07;
-  if(modelGroup){ modelGroup.rotation.x=rot.x; modelGroup.rotation.y=rot.y; }
-
-  const lerpSpeed = 0.06;
-  camPos.x+=(camTarget.x-camPos.x)*lerpSpeed;
-  camPos.y+=(camTarget.y-camPos.y)*lerpSpeed;
-  camPos.z+=(camTarget.z-camPos.z)*lerpSpeed;
-  camera.position.set(camPos.x, camPos.y, camPos.z);
-  camera.lookAt(0, 0, 0);
-
+  if(modelGroup){modelGroup.rotation.x=rot.x;modelGroup.rotation.y=rot.y;}
+  const ls=0.06;
+  camPos.x+=(camTarget.x-camPos.x)*ls;
+  camPos.y+=(camTarget.y-camPos.y)*ls;
+  camPos.z+=(camTarget.z-camPos.z)*ls;
+  camera.position.set(camPos.x,camPos.y,camPos.z);
+  camera.lookAt(0,0,0);
   renderer.render(scene,camera);
+  drawDimensions();
 }
 
 /* ===================================================================
-   BOOT — sync UI to any prefilled state, wait for font, then start
+   BOOT
 =================================================================== */
 function syncUIToState() {
-  document.querySelectorAll('.type-card').forEach(c=>c.classList.toggle('selected', c.dataset.type===state.type));
-  document.querySelectorAll('#cover-colors .swatch').forEach(s=>s.classList.remove('selected'));
-  document.querySelectorAll('#match-colors .swatch').forEach(s=>s.classList.remove('selected'));
-  document.querySelectorAll('.finish-card[data-fin]').forEach(c=>c.classList.toggle('selected', c.dataset.fin===state.finish));
-  if (state.f.l1) document.getElementById('fl1').value = state.f.l1;
-  updateMatchHint();
+  document.querySelectorAll('.type-card').forEach(c=>c.classList.toggle('selected',c.dataset.type===state.type));
+  document.querySelectorAll('.finish-card[data-fin]').forEach(c=>c.classList.toggle('selected',c.dataset.fin===state.finish));
+  if (state.f.l1) document.getElementById('fl1').value=state.f.l1;
 }
 
-window.addEventListener('load', () => {
+window.addEventListener('load', ()=>{
   syncUIToState();
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(initThree);
-  } else {
-    initThree();
-  }
+  resizeFlat();
+  window.addEventListener('resize', ()=>{ resizeFlat(); draw2D(); });
+
+  const boot = () => {
+    draw2D();
+    requestAnimationFrame(renderMiniPreviews);
+  };
+
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(boot);
+  else boot();
 });
 </script>
 <script src="js/testing-bar.js"></script>
+<script src="js/cursor.js"></script>
 </body>
 </html>

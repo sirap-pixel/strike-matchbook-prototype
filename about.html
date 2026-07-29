@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Strike Matchbooks</title>
+<link rel="stylesheet" href="css/design-system.css">
+<style>
+  body { padding-top: 64px; overflow-x: hidden; }
+
+  .nav-links { display: flex; align-items: center; gap: 28px; font-size: 13px; color: var(--gray-600); }
+  .nav-links a { transition: color var(--ease); }
+  .nav-links a:hover { color: var(--black); }
+  .nav-cta { background: var(--black); color: #fff !important; padding: 8px 18px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 500; }
+  .nav-cta:hover { background: var(--gray-800) !important; }
+
+  .about-hero { padding: 80px 0 72px; border-bottom: 1px solid var(--gray-300); }
+  .about-hero .eyebrow { font-size: 11px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 22px; }
+  .about-hero h1 { font-size: clamp(36px, 5.5vw, 72px); font-weight: 500; letter-spacing: -.03em; line-height: 1.06; max-width: 820px; }
+
+  .about-body { padding: 80px 0; border-bottom: 1px solid var(--gray-300); }
+  .about-grid { display: grid; grid-template-columns: 5fr 7fr; gap: 80px; align-items: start; }
+
+  .about-sidebar { position: sticky; top: 88px; }
+  .sidebar-img { aspect-ratio: 3/4; background: var(--gray-100); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+  .sidebar-img span { font-size: 11px; color: var(--gray-400); letter-spacing: .1em; text-transform: uppercase; }
+  .sidebar-caption { font-size: 12px; color: var(--gray-400); line-height: 1.6; }
+
+  .about-prose h2 { font-size: clamp(22px, 3vw, 32px); font-weight: 500; letter-spacing: -.02em; line-height: 1.2; margin-bottom: 24px; margin-top: 0; }
+  .about-prose p { font-size: 15px; color: var(--gray-600); line-height: 1.8; margin-bottom: 22px; }
+  .about-prose p:last-of-type { margin-bottom: 0; }
+  .about-prose .pull-quote { font-size: clamp(18px, 2.5vw, 24px); font-weight: 500; letter-spacing: -.02em; line-height: 1.35; color: var(--black); border-left: 3px solid var(--black); padding-left: 24px; margin: 40px 0; }
+
+  .values-strip { padding: 80px 0; border-bottom: 1px solid var(--gray-300); }
+  .values-strip h2 { font-size: 24px; font-weight: 500; letter-spacing: -.02em; margin-bottom: 40px; }
+  .values-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+  .value-card { padding: 28px 0; border-top: 1px solid var(--gray-300); }
+  .value-card .vn { font-family: var(--font-mono); font-size: 10px; color: var(--gray-300); margin-bottom: 14px; }
+  .value-card h3 { font-size: 15px; font-weight: 500; margin-bottom: 10px; }
+  .value-card p { font-size: 13px; color: var(--gray-600); line-height: 1.7; }
+
+  .cta-strip { padding: 80px 0; }
+  .cta-inner { border: 1px solid var(--gray-300); border-radius: var(--radius-sm); padding: 52px 60px; display: flex; align-items: center; justify-content: space-between; gap: 40px; }
+  .cta-inner h2 { font-size: 26px; font-weight: 500; letter-spacing: -.02em; max-width: 440px; line-height: 1.3; }
+  .cta-btns { display: flex; gap: 10px; flex-shrink: 0; }
+
+  footer { border-top: 1px solid var(--gray-300); padding: 40px 0; }
+  .footer-inner { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--gray-400); }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a:hover { color: var(--black); }
+
+  @media (max-width: 860px) {
+    .about-grid { grid-template-columns: 1fr; gap: 40px; }
+    .about-sidebar { position: static; }
+    .sidebar-img { display: none; }
+    .values-grid { grid-template-columns: 1fr; gap: 0; }
+    .cta-inner { flex-direction: column; padding: 36px 28px; }
+    .footer-inner { flex-direction: column; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="wordmark" href="index.html" style="padding:0"><img src="img/logo.webp" alt="Strike" style="height:38px;display:block;"></a>
+  <div class="nav-links">
+    <a href="products.html">Products</a>
+    <a href="about.html" style="color:var(--black);font-weight:500;">About</a>
+    <a href="wholesale.html">Wholesale</a>
+    <a href="products.html#order" class="nav-cta">Start an order</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="about-hero">
+  <div class="container">
+    <div class="eyebrow">About Strike</div>
+    <h1>Three college friends.<br>A lot of matchbooks.<br>One big idea.</h1>
+  </div>
+</header>
+
+<!-- STORY -->
+<section class="about-body">
+  <div class="container">
+    <div class="about-grid">
+
+      <div class="about-sidebar">
+        <div class="sidebar-img"><span>Photo coming soon</span></div>
+        <p class="sidebar-caption">Three Brown University rugby players who kept collecting matchbooks and eventually decided to build the company that should have been making them.</p>
+      </div>
+
+      <div class="about-prose">
+        <h2>We are three college friends who all played rugby at Brown, and we wanted to build something together.</h2>
+
+        <p>A lot of the matchbooks we collected over the years bring us back to specific memories and moments. The one from the bar in New Orleans. The hotel in the Catskills. The restaurant where someone got engaged. In a world of so much digital, we believe there will be a pushback toward the physical objects that connect us.</p>
+
+        <div class="pull-quote">"In a world of so much digital, we believe there will be a pushback toward the physical objects that connect us."</div>
+
+        <p>What we noticed in this industry is that it's dominated by generic print shops, Etsy sellers, and B2C platforms focused on one-off personal orders. We wanted to go after B2B brands hotels, bars, restaurants, event companies, consumer brands and offer a premium product that can elevate what they put into the world.</p>
+
+        <p>The central tension we're trying to hold is fun but premium. Playful enough to feel approachable and rooted in who we are we are not serious or super buttoned up as people but elevated enough to sit clearly above the Etsys and Vistaprints of the world.</p>
+
+        <p>We also want the matchbooks themselves to do a lot of the talking. We have orders in production and we're ready to launch. If you're working on something that deserves a match, we'd love to hear about it.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- VALUES -->
+<section class="values-strip">
+  <div class="container">
+    <h2>What we're building toward</h2>
+    <div class="values-grid">
+      <div class="value-card">
+        <div class="vn">01</div>
+        <h3>Premium, not generic</h3>
+        <p>100% recycled cardboard, sulphur-free, no toxic heavy metals. Every matchbook is custom-built to make your brand the hottest thing in the room.</p>
+      </div>
+      <div class="value-card">
+        <div class="vn">02</div>
+        <h3>B2B-first</h3>
+        <p>We're not building for one-off wedding favors. We're built for brands hotels, bars, restaurants, and event companies that care about the details.</p>
+      </div>
+      <div class="value-card">
+        <div class="vn">03</div>
+        <h3>No surprises</h3>
+        <p>Digital proof before production. CMYK-ready dielines. Clear MOQs from $2.16/unit. We confirm everything in writing before a single match is struck.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-strip">
+  <div class="container">
+    <div class="cta-inner">
+      <h2>Ready to put your name on something worth keeping?</h2>
+      <div class="cta-btns">
+        <a href="products.html#order" class="btn btn-primary">Order now</a>
+        <a href="wholesale.html" class="btn btn-secondary">Talk to us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-inner">
+    <span>© 2025 Strike · strikematchbooks.com</span>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="products.html">Products</a>
+      <a href="wholesale.html">Wholesale</a>
+      <a href="mailto:hello@strikematchbooks.com">hello@strikematchbooks.com</a>
+    </div>
+  </div>
+  <div style="overflow:hidden;padding:32px 0 0;border-top:1px solid var(--gray-200);margin-top:32px;">
+    <div class="footer-logo-stamp" style="position:relative;width:90%;max-width:1100px;margin:0 auto;">
+      <img src="img/logo.webp" alt="Strike" style="display:block;width:100%;opacity:0.07;filter:grayscale(1);">
+      <img src="img/logo.webp" aria-hidden="true" class="footer-logo-lit" style="position:absolute;top:0;left:0;width:100%;opacity:0;transition:opacity .35s ease;clip-path:inset(-40% 38% -5% 50%);">
+    </div>
+  </div>
+  <style>
+    .footer-logo-stamp:hover .footer-logo-lit { opacity: 1; }
+  </style>
+</footer>
+
+<script src="js/cursor.js"></script>
+</body>
+</html>

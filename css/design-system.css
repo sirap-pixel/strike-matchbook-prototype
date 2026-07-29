@@ -6,7 +6,7 @@
    generous whitespace, thin hairline borders.
 =================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
   /* palette — lifted from sabre-paris.com theme vars (0,0,0 text / 255,255,255 bg / 217,217,217 border) */
@@ -20,7 +20,7 @@
   --gray-600: #696868;   /* sabre theme border-darker */
   --gray-800: #262626;
 
-  --font: 'Jost', 'Helvetica Neue', Arial, sans-serif;
+  --font: 'Diatype', 'ABC Diatype', 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
   --radius-pill: 9999px;

@@ -3,127 +3,245 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Strike — Prototype Test</title>
+<title>Strike Custom Matchbooks &amp; Matchboxes</title>
 <link rel="stylesheet" href="css/design-system.css">
 <style>
-  body { padding-top: 64px; }
+  body { padding-top: 64px; overflow-x: hidden; }
 
-  .hero { padding: 100px 0 64px; border-bottom: 1px solid var(--gray-300); }
-  .hero .eyebrow { margin-bottom: 18px; }
-  .hero h1 { font-size: 40px; line-height: 1.15; max-width: 720px; margin-bottom: 20px; }
-  .hero p { font-size: 15px; color: var(--gray-600); max-width: 560px; line-height: 1.6; }
+  /* NAV */
+  .nav-links { display: flex; align-items: center; gap: 28px; font-size: 13px; color: var(--gray-600); }
+  .nav-links a { transition: color var(--ease); }
+  .nav-links a:hover { color: var(--black); }
+  .nav-cta { background: var(--black); color: #fff !important; padding: 8px 18px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 500; letter-spacing: .03em; }
+  .nav-cta:hover { background: var(--gray-800) !important; color: #fff !important; }
 
-  .modes { padding: 56px 0 100px; }
-  .modes .slabel { font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 22px; }
+  /* HERO */
+  .hero {
+    min-height: calc(100vh - 64px);
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 80px 0 80px;
+    border-bottom: 1px solid var(--gray-300);
+    position: relative; overflow: hidden;
+  }
+  .hero-label { font-size: 11px; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 28px; }
+  .hero h1 {
+    font-size: clamp(40px, 6vw, 84px);
+    font-weight: 500;
+    line-height: 1.04;
+    letter-spacing: -.03em;
+    max-width: 820px;
+    margin-bottom: 28px;
+  }
+  .hero h1 em { font-style: italic; color: var(--gray-400); }
+  .hero-sub { font-size: 16px; color: var(--gray-600); max-width: 480px; line-height: 1.65; margin-bottom: 40px; }
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .hero-scroll { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .hero-scroll span { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--gray-300); }
+  .hero-scroll-line { width: 1px; height: 40px; background: var(--gray-300); }
 
-  .mode-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--gray-300); border: 1px solid var(--gray-300); }
-  .mode-card { background: var(--white); padding: 36px; display: flex; flex-direction: column; min-height: 300px; transition: background var(--ease); }
-  .mode-card:hover { background: var(--gray-50); }
-  .mode-card .num { font-family: var(--font-mono); font-size: 12px; color: var(--gray-400); margin-bottom: 18px; }
-  .mode-card h3 { font-size: 20px; font-weight: 500; margin-bottom: 10px; }
-  .mode-card .desc { font-size: 13px; color: var(--gray-600); line-height: 1.6; margin-bottom: 20px; }
-  .mode-card .feature-list { list-style: none; margin-bottom: 28px; flex: 1; }
-  .mode-card .feature-list li { font-size: 12.5px; color: var(--gray-400); padding: 6px 0; border-top: 1px solid var(--gray-100); display: flex; gap: 10px; align-items: baseline; }
-  .mode-card .feature-list li:first-child { border-top: none; }
-  .mode-card .feature-list li .tick { font-family: var(--font-mono); color: var(--black); flex-shrink: 0; }
-  .mode-card .feature-list li.off { color: var(--gray-300); }
-  .mode-card .feature-list li.off .tick { color: var(--gray-300); }
-  .mode-card .btn { align-self: flex-start; }
+  /* PRODUCTS TEASER */
+  .products-teaser { padding: 100px 0; border-bottom: 1px solid var(--gray-300); }
+  .section-label { font-size: 11px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 36px; }
+  .product-split { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--gray-300); border: 1px solid var(--gray-300); margin-top: 40px; }
+  .product-panel { background: var(--white); padding: 48px 44px 44px; }
+  .product-panel:hover { background: var(--gray-50); transition: background var(--ease); }
+  .product-panel .tag { font-family: var(--font-mono); font-size: 10.5px; color: var(--gray-400); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 22px; }
+  .product-panel h2 { font-size: 28px; font-weight: 500; letter-spacing: -.02em; margin-bottom: 10px; }
+  .product-panel .desc { font-size: 13.5px; color: var(--gray-600); line-height: 1.65; margin-bottom: 28px; max-width: 340px; }
+  .product-spec-row { display: flex; justify-content: space-between; padding: 9px 0; border-top: 1px solid var(--gray-100); font-size: 12px; }
+  .product-spec-row:last-of-type { border-bottom: 1px solid var(--gray-100); margin-bottom: 28px; }
+  .product-spec-row .k { color: var(--gray-400); }
+  .product-spec-row .v { font-family: var(--font-mono); font-size: 11px; color: var(--black); }
+  .product-panel .moq-badge { display: inline-block; padding: 4px 10px; background: var(--gray-100); border-radius: var(--radius-pill); font-size: 11px; font-weight: 500; color: var(--gray-600); margin-bottom: 24px; }
 
-  .configurator-link { padding: 40px 0 100px; }
-  .configurator-link .strip { border: 1px solid var(--gray-300); border-radius: var(--radius-sm); padding: 26px 32px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-  .configurator-link .strip h4 { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
-  .configurator-link .strip p { font-size: 12.5px; color: var(--gray-400); }
+  /* VALUES */
+  .values { padding: 100px 0; border-bottom: 1px solid var(--gray-300); }
+  .values-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; margin-top: 52px; }
+  .value-item h3 { font-size: 16px; font-weight: 500; margin-bottom: 10px; }
+  .value-item p { font-size: 13px; color: var(--gray-600); line-height: 1.7; }
+  .value-num { font-family: var(--font-mono); font-size: 11px; color: var(--gray-300); margin-bottom: 18px; }
 
-  @media (max-width: 760px) {
-    .mode-grid { grid-template-columns: 1fr; }
-    .hero h1 { font-size: 30px; }
-    .configurator-link .strip { flex-direction: column; align-items: flex-start; }
+  /* ABOUT */
+  .about { padding: 100px 0; border-bottom: 1px solid var(--gray-300); }
+  .about-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+  .about-text h2 { font-size: 32px; font-weight: 500; letter-spacing: -.02em; line-height: 1.2; margin-bottom: 22px; }
+  .about-text p { font-size: 14px; color: var(--gray-600); line-height: 1.75; margin-bottom: 16px; }
+  .about-text p:last-child { margin-bottom: 0; }
+  .about-image { aspect-ratio: 4/5; background: var(--gray-100); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; }
+  .about-image span { font-size: 11px; color: var(--gray-400); letter-spacing: .1em; text-transform: uppercase; }
+
+  /* CTA STRIP */
+  .cta-strip { padding: 100px 0; }
+  .cta-inner { border: 1px solid var(--gray-300); border-radius: var(--radius-sm); padding: 56px 64px; display: flex; align-items: center; justify-content: space-between; gap: 40px; }
+  .cta-inner h2 { font-size: 28px; font-weight: 500; letter-spacing: -.02em; max-width: 480px; line-height: 1.25; }
+  .cta-inner .cta-btns { display: flex; gap: 10px; flex-shrink: 0; }
+
+  /* FOOTER */
+  footer { border-top: 1px solid var(--gray-300); padding: 40px 0; }
+  .footer-inner { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--gray-400); }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a:hover { color: var(--black); }
+
+  /* RESPONSIVE */
+  @media (max-width: 860px) {
+    .product-split { grid-template-columns: 1fr; }
+    .values-grid { grid-template-columns: 1fr; gap: 36px; }
+    .about-inner { grid-template-columns: 1fr; gap: 40px; }
+    .about-image { display: none; }
+    .cta-inner { flex-direction: column; padding: 40px 32px; }
+    .nav-links .nav-cta { display: none; }
+    .hero { min-height: 80vh; }
+  }
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 36px; }
+    .cta-inner h2 { font-size: 22px; }
+    .product-panel { padding: 32px 24px; }
+    .footer-inner { flex-direction: column; gap: 12px; text-align: center; }
   }
 </style>
 </head>
 <body>
 
 <nav class="nav">
-  <a class="wordmark" href="index.html">STRIKE</a>
-  <div class="nav-right"><span>Prototype test build</span></div>
+  <a class="wordmark" href="index.html" style="padding:0"><img src="img/logo.webp" alt="Strike" style="height:38px;display:block;"></a>
+  <div class="nav-links">
+    <a href="products.html">Products</a>
+    <a href="about.html">About</a>
+    <a href="wholesale.html">Wholesale</a>
+    <a href="products.html#order" class="nav-cta">Start an order</a>
+  </div>
 </nav>
 
+<!-- HERO -->
 <header class="hero container">
-  <div class="eyebrow">Internal — for user testing</div>
-  <h1>Four ways to help someone who doesn't know what they want yet.</h1>
-  <p>Every flow ends at the same 360° matchbook configurator. What changes is how we get a first-time customer there — whether they can upload their own artwork, and what happens when they get stuck. Pick a flow below to walk through it.</p>
+  <div class="hero-label">Custom matches · Small batch · Made to order</div>
+  <h1>Your brand,<br><em>strikingly custom.</em></h1>
+  <p class="hero-sub">Premium, made-to-order matchbooks and matchboxes for brands, bars, and big days. Big brands have billboards. Yours can have matchbooks.</p>
+  <div class="hero-actions">
+    <a href="products.html" class="btn btn-primary">See the products</a>
+    <a href="wholesale.html" class="btn btn-secondary">Talk to us</a>
+  </div>
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+    <span>Scroll</span>
+  </div>
 </header>
 
-<main class="modes container">
-  <div class="slabel">Choose a flow to test</div>
-  <div class="mode-grid">
+<!-- PRODUCTS TEASER -->
+<section class="products-teaser">
+  <div class="container">
+    <div class="section-label">Two formats. One standard.</div>
+    <p style="font-size:15px;color:var(--gray-600);max-width:560px;line-height:1.65;">Whether you want the classic booklet or the sliding box, every Strike order is printed on real wooden matches no plastic, no shortcuts.</p>
 
-    <div class="mode-card">
-      <div class="num">01 / 04</div>
-      <h3>Upload &amp; Guide</h3>
-      <p class="desc">The baseline flow. Customers can upload existing artwork, or answer a short set of guided questions to build a starting point.</p>
-      <ul class="feature-list">
-        <li><span class="tick">＋</span> Upload your own logo/artwork</li>
-        <li><span class="tick">＋</span> Guided questions if you don't have one</li>
-        <li class="off"><span class="tick">−</span> No human fallback</li>
-        <li class="off"><span class="tick">−</span> No AI assistant</li>
-      </ul>
-      <a class="btn btn-primary" href="mode-1/index.html">Test this flow</a>
+    <div class="product-split">
+      <!-- BOOK -->
+      <div class="product-panel">
+        <div class="tag">01 The Book</div>
+        <h2>Matchbook</h2>
+        <p class="desc">Saddle-stitched booklet with 20 wooden matches. The format restaurants and bars have trusted for a century.</p>
+        <div class="product-spec-row"><span class="k">Size</span><span class="v">2.125 × 1.5 in</span></div>
+        <div class="product-spec-row"><span class="k">Matches</span><span class="v">20 stems per book</span></div>
+        <div class="product-spec-row"><span class="k">Strike strip</span><span class="v">Bottom edge or back</span></div>
+        <span class="moq-badge">Minimum 500 units</span>
+        <a href="products.html#matchbook" class="btn btn-secondary">Learn more</a>
+      </div>
+
+      <!-- BOX -->
+      <div class="product-panel">
+        <div class="tag">02 The Box</div>
+        <h2>Matchbox</h2>
+        <p class="desc">Sliding drawer matchbox. A modern collector's format heavier, giftable, and designed to live on a shelf.</p>
+        <div class="product-spec-row"><span class="k">Size</span><span class="v">2.25 × 1.5 × 0.625 in</span></div>
+        <div class="product-spec-row"><span class="k">Matches</span><span class="v">~40 stems per box</span></div>
+        <div class="product-spec-row"><span class="k">Strike strip</span><span class="v">Front &amp; back panels</span></div>
+        <span class="moq-badge">Minimum 200 units</span>
+        <a href="products.html#matchbox" class="btn btn-secondary">Learn more</a>
+      </div>
     </div>
-
-    <div class="mode-card">
-      <div class="num">02 / 04</div>
-      <h3>Upload &amp; Guide + Human</h3>
-      <p class="desc">Same starting point as flow 1, with a fallback to talk to a real person for anything the guided questions and FAQ can't answer.</p>
-      <ul class="feature-list">
-        <li><span class="tick">＋</span> Upload your own logo/artwork</li>
-        <li><span class="tick">＋</span> Guided questions if you don't have one</li>
-        <li><span class="tick">＋</span> "Talk to us" — human touchpoint</li>
-        <li class="off"><span class="tick">−</span> No AI assistant</li>
-      </ul>
-      <a class="btn btn-primary" href="mode-2/index.html">Test this flow</a>
-    </div>
-
-    <div class="mode-card">
-      <div class="num">03 / 04</div>
-      <h3>Upload &amp; Guide + AI</h3>
-      <p class="desc">Same starting point as flow 1, with an AI chat assistant as the fallback instead of a human — testing whether that fallback still feels supportive.</p>
-      <ul class="feature-list">
-        <li><span class="tick">＋</span> Upload your own logo/artwork</li>
-        <li><span class="tick">＋</span> Guided questions if you don't have one</li>
-        <li><span class="tick">＋</span> AI chat assistant fallback</li>
-        <li class="off"><span class="tick">−</span> No human touchpoint</li>
-      </ul>
-      <a class="btn btn-primary" href="mode-3/index.html">Test this flow</a>
-    </div>
-
-    <div class="mode-card">
-      <div class="num">04 / 04</div>
-      <h3>Guide Only</h3>
-      <p class="desc">No upload option at all — every customer is walked through the same guided questions, regardless of whether they already have artwork.</p>
-      <ul class="feature-list">
-        <li class="off"><span class="tick">−</span> No upload option</li>
-        <li><span class="tick">＋</span> Guided questions, required for everyone</li>
-        <li class="off"><span class="tick">−</span> No human fallback</li>
-        <li class="off"><span class="tick">−</span> No AI assistant</li>
-      </ul>
-      <a class="btn btn-primary" href="mode-4/index.html">Test this flow</a>
-    </div>
-
-  </div>
-</main>
-
-<section class="configurator-link container">
-  <div class="strip">
-    <div>
-      <h4>Just want the 360° configurator on its own?</h4>
-      <p>Skip the guided flow and jump straight to the product builder.</p>
-    </div>
-    <a class="btn btn-secondary" href="configurator.html">Open configurator</a>
   </div>
 </section>
 
-<script src="js/testing-bar.js"></script>
+<!-- VALUES -->
+<section class="values">
+  <div class="container">
+    <div class="section-label">Why Strike</div>
+    <div class="values-grid">
+      <div class="value-item">
+        <div class="value-num">01</div>
+        <h3>Premium, not generic</h3>
+        <p>Every matchbook is custom-built to make your brand the hottest thing in the room. 100% recycled cardboard, sulphur-free, and free from toxic heavy metals the kind worth keeping.</p>
+      </div>
+      <div class="value-item">
+        <div class="value-num">02</div>
+        <h3>B2B-first, built for brands</h3>
+        <p>We go after hotels, bars, restaurants, event companies, and consumer brands not one-off personal orders. If you're trying to elevate what you put into the world, we're built for you.</p>
+      </div>
+      <div class="value-item">
+        <div class="value-num">03</div>
+        <h3>No surprises at delivery</h3>
+        <p>Digital proof approval before production. Exact CMYK specs. Vector-ready dielines. Matchboxes start at 200 units. Matchbooks start at 500. From $2.16 per unit, 5–6 week lead time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about">
+  <div class="container">
+    <div class="about-inner">
+      <div class="about-text">
+        <div class="section-label">About Strike</div>
+        <h2>Three college friends. A lot of matchbooks. One big idea.</h2>
+        <p>Strike was built by three friends who played rugby together at Brown. Over the years, we kept collecting matchbooks from restaurants, bars, hotels the kind of thing you pocket on the way out and find months later, and it takes you right back.</p>
+        <p>A lot of the matchbooks we collected bring us back to specific memories and moments. In a world of so much digital, we believe there will be a pushback toward physical objects that connect us. We noticed the industry was dominated by generic print shops, Etsy sellers, and one-off B2C platforms. We wanted to go after B2B brands hotels, bars, restaurants, event companies and offer something premium that could elevate what they put into the world.</p>
+        <p>The tension we're holding: fun but premium. Playful enough to feel like us, elevated enough to sit clearly above the Etsys and Vistaprints of the world. We have orders in production and we're ready to launch.</p>
+        <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;">
+          <a href="products.html#order" class="btn btn-primary">Order now</a>
+          <a href="wholesale.html" class="btn btn-secondary">Talk to us</a>
+        </div>
+      </div>
+      <div class="about-image">
+        <span>Photo coming soon</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA STRIP -->
+<section class="cta-strip">
+  <div class="container">
+    <div class="cta-inner">
+      <h2>Ready to put your name on something worth keeping?</h2>
+      <div class="cta-btns">
+        <a href="products.html" class="btn btn-primary">See products &amp; pricing</a>
+        <a href="wholesale.html" class="btn btn-secondary">Talk to us first</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container footer-inner">
+    <span>© 2025 Strike · strikematchbooks.com</span>
+    <div class="footer-links">
+      <a href="products.html">Products</a>
+      <a href="about.html">About</a>
+    <a href="wholesale.html">Wholesale</a>
+      <a href="mailto:hello@strikematchbooks.com">hello@strikematchbooks.com</a>
+    </div>
+  </div>
+  <div style="overflow:hidden;padding:32px 0 0;border-top:1px solid var(--gray-200);margin-top:32px;">
+    <div class="footer-logo-stamp" style="position:relative;width:90%;max-width:1100px;margin:0 auto;">
+      <img src="img/logo.webp" alt="Strike" style="display:block;width:100%;opacity:0.07;filter:grayscale(1);">
+      <img src="img/logo.webp" aria-hidden="true" class="footer-logo-lit" style="position:absolute;top:0;left:0;width:100%;opacity:0;transition:opacity .35s ease;clip-path:inset(-40% 38% -5% 50%);">
+    </div>
+  </div>
+  <style>
+    .footer-logo-stamp:hover .footer-logo-lit { opacity: 1; }
+  </style>
+</footer>
+
+<script src="js/cursor.js"></script>
 </body>
 </html>
