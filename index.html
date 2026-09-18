@@ -8,6 +8,64 @@
 <style>
   body { padding-top: 64px; overflow-x: hidden; }
 
+  /* INTRO SECTION */
+  .intro-section {
+    height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    background: #fff;
+    overflow: hidden;
+  }
+  .intro-logo-wrap {
+    position: relative;
+    width: 78vw;
+    max-width: 820px;
+  }
+  .intro-wordmark {
+    width: 100%;
+    display: block;
+    user-select: none;
+  }
+  /* The `i` in "strike" sits at ~17% from left of the wordmark.
+     Match images are portrait — we size by width (3vw) so they scale with the wordmark. */
+  .intro-match,
+  .intro-match-lit {
+    position: absolute;
+    left: 16%;
+    bottom: 0;
+    width: 3vw;
+    max-width: 26px;
+    height: auto;
+    pointer-events: none;
+    transform: translateX(-50%);
+  }
+  .intro-match-unlit {
+    animation: matchhide 3s ease-in-out infinite;
+  }
+  .intro-match-lit {
+    animation: matchshow 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px rgba(255,140,30,0.95));
+  }
+  @keyframes matchhide {
+    0%, 50%  { opacity: 1; }
+    60%, 90% { opacity: 0; }
+    100%     { opacity: 1; }
+  }
+  @keyframes matchshow {
+    0%, 50%  { opacity: 0; }
+    60%, 90% { opacity: 1; }
+    100%     { opacity: 0; }
+  }
+  @keyframes matchlight {
+    0%, 55%   { opacity: 1; }
+    65%, 90%  { opacity: 0; }
+    100%      { opacity: 1; }
+  }
+  @keyframes matchglow {
+    0%, 55%   { opacity: 0; }
+    65%, 90%  { opacity: 1; filter: drop-shadow(0 0 24px rgba(255,140,30,0.95)); }
+    100%      { opacity: 0; }
+  }
+
   /* NAV */
   .nav-links { display: flex; align-items: center; gap: 28px; font-size: 13px; color: var(--gray-600); }
   .nav-links a { transition: color var(--ease); }
@@ -82,6 +140,135 @@
   .footer-links { display: flex; gap: 24px; }
   .footer-links a:hover { color: var(--black); }
 
+  /* MATCH DRIP */
+  .match-drip-section {
+    background: #faf8f5;
+    overflow: hidden;
+  }
+  .match-drip-inner {
+    height: 400vh;
+    position: relative;
+  }
+  .match-drip-sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 80px;
+    padding: 0 48px;
+    overflow: hidden;
+  }
+  .match-drip-headline {
+    flex: 0 0 360px;
+    max-width: 360px;
+  }
+  .drip-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    margin-bottom: 20px;
+  }
+  .match-drip-headline h2 {
+    font-size: clamp(36px, 4vw, 60px);
+    font-weight: 500;
+    letter-spacing: -.03em;
+    line-height: 1.05;
+  }
+  .match-drip-headline h2 em {
+    font-style: italic;
+    color: var(--gray-400);
+  }
+  .match-drip-track {
+    position: relative;
+    width: 520px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 56px;
+  }
+  .match-drip-line {
+    position: absolute;
+    left: 17px;
+    top: 0;
+    width: 3px;
+    height: 0%;
+    background: linear-gradient(to bottom, #FF6B1A, #FFD700 40%, #1a1a1a);
+    border-radius: 2px;
+    transition: height 0.05s linear;
+  }
+  .match-flame {
+    position: absolute;
+    left: 0px;
+    top: 0;
+    transform: translateY(-8px);
+    transition: top 0.05s linear;
+    filter: drop-shadow(0 0 12px rgba(255,107,26,0.6));
+    z-index: 10;
+  }
+  .drip-points {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .drip-point {
+    display: flex;
+    align-items: flex-start;
+    gap: 28px;
+    padding: 28px 0;
+    opacity: 0;
+    transform: translateX(16px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    border-bottom: 1px solid var(--gray-200);
+    position: relative;
+  }
+  .drip-point:first-child { border-top: 1px solid var(--gray-200); }
+  .drip-point.lit {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .drip-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--gray-200);
+    flex-shrink: 0;
+    margin-top: 6px;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    position: absolute;
+    left: -45px;
+    top: 34px;
+  }
+  .drip-point.lit .drip-dot {
+    background: #FF6B1A;
+    box-shadow: 0 0 8px rgba(255,107,26,0.5);
+  }
+  .drip-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--gray-300);
+    letter-spacing: .1em;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .drip-content h3 {
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -.01em;
+    margin-bottom: 6px;
+  }
+  .drip-content p {
+    font-size: 13px;
+    color: var(--gray-600);
+    line-height: 1.65;
+    max-width: 360px;
+  }
+
   /* RESPONSIVE */
   @media (max-width: 860px) {
     .product-split { grid-template-columns: 1fr; }
@@ -100,10 +287,19 @@
   }
 </style>
 </head>
-<body>
+<body class="intro-active">
+
+<!-- INTRO SECTION -->
+<section class="intro-section">
+  <div class="intro-logo-wrap">
+    <img class="intro-wordmark" src="img/logo-wordmark.png" alt="Strike Matchbooks">
+    <img class="intro-match intro-match-unlit" src="img/match-unlit.png" alt="">
+    <img class="intro-match-lit" src="img/match-lit.png" alt="">
+  </div>
+</section>
 
 <nav class="nav">
-  <a class="wordmark" href="index.html" style="padding:0"><img src="img/logo.webp" alt="Strike" style="height:38px;display:block;"></a>
+  <a class="wordmark" href="index.html" style="padding:0"><img src="img/logo-strike.png" alt="Strike" style="height:32px;display:block;width:auto;"></a>
   <div class="nav-links">
     <a href="products.html">Products</a>
     <a href="about.html">About</a>
@@ -126,6 +322,74 @@
     <span>Scroll</span>
   </div>
 </header>
+
+<!-- MATCH DRIP SECTION -->
+<section class="match-drip-section">
+  <div class="match-drip-inner">
+    <div class="match-drip-sticky">
+      <div class="match-drip-track">
+        <div class="match-drip-line" id="drip-line"></div>
+        <div class="match-flame" id="match-flame">
+          <svg width="36" height="56" viewBox="0 0 36 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- flame -->
+            <ellipse cx="18" cy="10" rx="7" ry="10" fill="#FF6B1A" opacity="0.9"/>
+            <ellipse cx="18" cy="12" rx="4.5" ry="7" fill="#FFD700"/>
+            <ellipse cx="18" cy="13" rx="2.5" ry="4" fill="#fff" opacity="0.5"/>
+            <!-- stick -->
+            <rect x="16" y="18" width="4" height="34" rx="2" fill="#C8A882"/>
+            <rect x="16" y="18" width="4" height="6" rx="1" fill="#1a1a1a"/>
+          </svg>
+        </div>
+        <div class="drip-points" id="drip-points">
+          <div class="drip-point" data-index="0">
+            <div class="drip-dot"></div>
+            <div class="drip-content">
+              <span class="drip-num">01</span>
+              <h3>Real wood matches, not plastic</h3>
+              <p>Every Strike order uses genuine wooden matchsticks. No cheap plastic novelties, no shortcuts.</p>
+            </div>
+          </div>
+          <div class="drip-point" data-index="1">
+            <div class="drip-dot"></div>
+            <div class="drip-content">
+              <span class="drip-num">02</span>
+              <h3>Premium print, not generic</h3>
+              <p>Full custom CMYK printing with digital proof approval before a single match is made. Exact specs every time.</p>
+            </div>
+          </div>
+          <div class="drip-point" data-index="2">
+            <div class="drip-dot"></div>
+            <div class="drip-content">
+              <span class="drip-num">03</span>
+              <h3>B2B-first. Built for brands.</h3>
+              <p>Designed for hotels, bars, restaurants, and events — not one-off Etsy orders. Minimum 200 units per run.</p>
+            </div>
+          </div>
+          <div class="drip-point" data-index="3">
+            <div class="drip-dot"></div>
+            <div class="drip-content">
+              <span class="drip-num">04</span>
+              <h3>No surprises at delivery</h3>
+              <p>Vector-ready dielines, exact lead times, and pricing from $2.16/unit. 5–6 week turnaround, guaranteed.</p>
+            </div>
+          </div>
+          <div class="drip-point" data-index="4">
+            <div class="drip-dot"></div>
+            <div class="drip-content">
+              <span class="drip-num">05</span>
+              <h3>Something worth keeping</h3>
+              <p>Objects people pocket and find months later. That's the whole point. In a digital world, make something physical.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="match-drip-headline">
+        <div class="drip-eyebrow">Why Strike</div>
+        <h2>Not your grandma's<br><em>match supplier.</em></h2>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- PRODUCTS TEASER -->
 <section class="products-teaser">
@@ -243,5 +507,46 @@
 </footer>
 
 <script src="js/cursor.js"></script>
+<script>
+  // Match drip scroll animation
+  (function() {
+    const section = document.querySelector('.match-drip-inner');
+    const line = document.getElementById('drip-line');
+    const flame = document.getElementById('match-flame');
+    const points = document.querySelectorAll('.drip-point');
+    if (!section || !line || !flame) return;
+
+    const trackEl = document.querySelector('.match-drip-track');
+
+    function update() {
+      const rect = section.getBoundingClientRect();
+      const totalScroll = section.offsetHeight - window.innerHeight;
+      const scrolled = Math.max(0, -rect.top);
+      const progress = Math.min(1, scrolled / totalScroll);
+
+      // Track height for flame position
+      const trackRect = trackEl.getBoundingClientRect();
+      const trackHeight = trackEl.offsetHeight;
+      const lineHeight = progress * trackHeight;
+
+      line.style.height = lineHeight + 'px';
+      flame.style.top = Math.max(0, lineHeight - 28) + 'px';
+
+      // Reveal points based on progress
+      const numPoints = points.length;
+      points.forEach((pt, i) => {
+        const threshold = (i + 0.5) / numPoints;
+        if (progress >= threshold) {
+          pt.classList.add('lit');
+        } else {
+          pt.classList.remove('lit');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  })();
+</script>
 </body>
 </html>
